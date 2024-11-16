@@ -1,6 +1,8 @@
 [package]
 name = "gm"
 version = "0.1.0"
+description = "Ghozi Mahdi CLI"
+authors = ["Ghozi Mahdi"]
 edition = "2021"
 
 [dependencies]
