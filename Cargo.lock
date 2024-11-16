@@ -108,7 +108,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ghozi_mahdi_cli"
+name = "gm"
 version = "0.1.0"
 dependencies = [
  "clap",
