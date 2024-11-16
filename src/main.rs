@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::process::{Command as ProcessCommand, exit};
 use colored::*;
+use std::io::Write;
 
 fn main() {
     let output = ProcessCommand::new("melos")
@@ -47,13 +48,17 @@ fn main() {
 
     print_side_by_side_table(&data_modules, &domain_modules, &feature_modules, &other_modules);
 
-    println!(
-        "Total modules available: {}, Pilih module (contoh: 1,2,3 atau 0 untuk semua):",
-        available_modules.len()
+    let total_modules = data_modules.len() + domain_modules.len() + feature_modules.len() + other_modules.len();
+    print!(
+        "Total modules available: {}, Pilih module (contoh: 1,2,3 atau 0 untuk semua): ",
+        total_modules.to_string().green()
     );
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input).expect("Gagal membaca input");
+    std::io::stdout().flush().unwrap();
 
+    let mut input = String::new();
+    std::io::stdin()
+        .read_line(&mut input)
+        .expect("Gagal membaca input");
     let input = input.trim();
 
     if input == "0" {
