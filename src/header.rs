@@ -11,7 +11,8 @@ pub fn print_header() {
 | |_\ \ | | | (_) / /| | | |  | | (_| | | | | (_| | |
  \____/_| |_|\___/___|_| \_|  |_/\__,_|_| |_|\__,_|_|
                             
-        ".yellow()
+        "
+        .yellow()
     );
 
     println!(
@@ -24,6 +25,7 @@ Github       : https://github.com/mbahgojol
 Email        : ghozimahdi@carpkingdom.com
 Website      : www.mbahgojol.com
 Number       : -
-".green()
+"
+        .green()
     );
 }

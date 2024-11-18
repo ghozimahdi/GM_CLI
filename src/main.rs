@@ -1,47 +1,146 @@
+use clap::{Arg, ArgAction, Command};
+use colored::*;
+use std::process::Command as StdCommand;
+
+mod build_runner;
+mod flutter_gen_runner;
+mod gen_easy_localization;
 mod header;
 mod modules;
 mod table;
 mod version;
 
-use colored::*;
-use std::io::Write;
-
 fn main() {
     version::handle_version();
     header::print_header();
 
-    let available_modules = modules::get_available_modules();
+    let matches = Command::new("gm")
+        .version(env!("CARGO_PKG_VERSION"))
+        .author("Ghozi Mahdi <ghozimahdi@example.com>")
+        .about("CLI tool for Flutter project management")
+        .arg(
+            Arg::new("build")
+                .short('b')
+                .long("build")
+                .action(ArgAction::SetTrue)
+                .help("Run build_runner after module selection"),
+        )
+        .arg(
+            Arg::new("localize")
+                .short('l')
+                .long("localize")
+                .action(ArgAction::SetTrue)
+                .help("Generate easy_localization files"),
+        )
+        .arg(
+            Arg::new("assets")
+                .short('a')
+                .long("assets")
+                .action(ArgAction::SetTrue)
+                .help("Generate assets"),
+        )
+        .arg(
+            Arg::new("flutter_clean")
+                .short('c')
+                .long("flutter_clean")
+                .action(ArgAction::SetTrue)
+                .help("Flutter Clean"),
+        )
+        .arg(
+            Arg::new("flutter_get")
+                .short('g')
+                .long("flutter_get")
+                .action(ArgAction::SetTrue)
+                .help("Flutter Pub Get"),
+        )
+        .arg(
+            Arg::new("flutter_clear")
+                .short('d')
+                .long("flutter_clear")
+                .action(ArgAction::SetTrue)
+                .help("Flutter Clean + Delete pub lock"),
+        )
+        .arg(
+            Arg::new("all")
+                .long("all")
+                .action(ArgAction::SetTrue)
+                .help("Run build_runner, generate easy_localization, and assets"),
+        )
+        .get_matches();
 
-    if available_modules.is_empty() {
-        println!("{}", "Tidak ada modul yang ditemukan.".yellow());
+    if matches.get_flag("flutter_get") {
+        run_flutter_get();
+        return;
+    }
+    if matches.get_flag("flutter_clean") {
+        run_flutter_clean();
+        return;
+    }
+    if matches.get_flag("flutter_clear") {
+        run_flutter_clear();
         return;
     }
 
-    let categorized_modules = modules::categorize_modules(&available_modules);
-    table::print_side_by_side_table(
-        &categorized_modules.data,
-        &categorized_modules.domain,
-        &categorized_modules.feature,
-        &categorized_modules.other,
-    );
-
-    let total_modules = available_modules.len();
-    print!(
-        "Total modules available: {}, Pilih module (contoh: 1,2,3 atau 0 untuk semua): ",
-        total_modules.to_string().green()
-    );
-    std::io::stdout().flush().unwrap();
-
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input).expect("Gagal membaca input");
-    let input = input.trim();
-
-    if input == "0" {
-        println!("{}", "Building all modules...".green());
-        modules::run_build_command(None);
-    } else {
-        modules::handle_selected_modules(&input, &categorized_modules.map);
+    if matches.get_flag("build") {
+        build_runner::build_runner();
     }
+    if matches.get_flag("localize") {
+        gen_easy_localization::easy_localization();
+    }
+    if matches.get_flag("assets") {
+        flutter_gen_runner::gen_assets();
+    }
+    if matches.get_flag("all") {
+        build_runner::build_runner();
+        gen_easy_localization::easy_localization();
+        flutter_gen_runner::gen_assets();
+    }
+    if !(matches.get_flag("build")
+        || matches.get_flag("localize")
+        || matches.get_flag("assets")
+        || matches.get_flag("all"))
+    {
+        show_help()
+    }
+}
 
-    println!("{}", "Memulai ulang terminal...".cyan());
+fn show_help() {
+    println!("{}", "Usage: gm -b | -l | -a | --all".yellow());
+}
+
+fn execute_command(program: &str, args: &[&str]) {
+    println!(
+        "{}",
+        format!("Running {} {}...", program, args.join(" ")).green()
+    );
+
+    let output = StdCommand::new(program)
+        .args(args)
+        .output()
+        .expect(&format!("Failed to execute {} {}", program, args.join(" ")));
+
+    if output.status.success() {
+        println!("{}", String::from_utf8_lossy(&output.stdout));
+    } else {
+        println!("{}", String::from_utf8_lossy(&output.stderr).red());
+    }
+}
+
+fn run_flutter_get() {
+    execute_command("flutter", &["pub", "get"]);
+}
+
+fn run_flutter_clean() {
+    execute_command("flutter", &["clean"]);
+}
+
+fn run_flutter_clear() {
+    execute_command("flutter", &["clean"]);
+
+    println!("{}", "Deleting pubspec.lock...".green());
+    if std::fs::remove_file("pubspec.lock").is_ok() {
+        println!("{}", "Deleted pubspec.lock".green());
+    } else {
+        println!("{}", "Failed to delete pubspec.lock".red());
+    }
 }

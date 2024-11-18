@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use std::process::{Command as ProcessCommand, exit};
 use colored::*;
+use std::collections::HashMap;
+use std::process::{exit, Command as ProcessCommand};
 
 pub struct CategorizedModules {
     pub data: Vec<String>,
@@ -48,7 +48,13 @@ pub fn categorize_modules(modules: &[String]) -> CategorizedModules {
         map.insert(idx, module.clone());
     }
 
-    CategorizedModules { data, domain, feature, other, map }
+    CategorizedModules {
+        data,
+        domain,
+        feature,
+        other,
+        map,
+    }
 }
 
 pub fn run_build_command(scope: Option<&String>) {
@@ -80,14 +86,14 @@ pub fn handle_selected_modules(input: &str, module_map: &HashMap<usize, String>)
 
     for index in selected_indices {
         if let Some(selected_module) = module_map.get(&index) {
-            println!(
-                "{}: {}",
-                "Building module".green(),
-                selected_module
-            );
+            println!("{}: {}", "Building module".green(), selected_module);
             run_build_command(Some(selected_module));
         } else {
-            println!("{}: Modul dengan nomor {} tidak ditemukan.", "Error".red(), index);
+            println!(
+                "{}: Modul dengan nomor {} tidak ditemukan.",
+                "Error".red(),
+                index
+            );
         }
     }
 }
