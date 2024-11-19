@@ -2,9 +2,9 @@ use crate::module_manager::ModuleManager;
 use crate::{flutter_gen_runner, gen_easy_localization};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command as StdCommand;
-use std::{thread, time::Duration};
+use std::{fs, thread, time::Duration};
 
 pub struct FlutterCommandHandler;
 
@@ -171,13 +171,12 @@ impl FlutterCommandHandler {
         } else {
             println!("{}", "Flutter clean berhasil.".green());
 
-            // Cari path modul berdasarkan nama scope
+            // Cari lokasi modul menggunakan Melos
             if let Some(scope_name) = scope {
-                let module_path = Self::find_module_directory(scope_name);
-                if let Some(module_path) = module_path {
+                if let Some(module_path) = Self::get_module_path_from_melos(scope_name) {
                     let pubspec_lock_path = module_path.join("pubspec.lock");
-                    if std::fs::metadata(&pubspec_lock_path).is_ok() {
-                        if std::fs::remove_file(&pubspec_lock_path).is_ok() {
+                    if fs::metadata(&pubspec_lock_path).is_ok() {
+                        if fs::remove_file(&pubspec_lock_path).is_ok() {
                             println!(
                                 "{}: {}",
                                 "Berhasil menghapus pubspec.lock di modul".green(),
@@ -208,18 +207,37 @@ impl FlutterCommandHandler {
         }
     }
 
-    fn find_module_directory(module_name: &str) -> Option<std::path::PathBuf> {
-        let current_dir = std::env::current_dir().expect("Gagal mendapatkan direktori saat ini");
-        let entries = std::fs::read_dir(current_dir).expect("Gagal membaca direktori saat ini");
+    fn get_module_path_from_melos(module_name: &str) -> Option<PathBuf> {
+        let output = StdCommand::new("melos")
+            .arg("list")
+            .arg("--json")
+            .output()
+            .expect("Gagal menjalankan perintah melos list");
 
-        for entry in entries {
-            if let Ok(entry) = entry {
-                let path = entry.path();
-                if path.is_dir() && path.file_name().map_or(false, |name| name == module_name) {
-                    return Some(path);
+        if !output.status.success() {
+            eprintln!(
+                "{}: {}",
+                "Melos list gagal dijalankan".red(),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return None;
+        }
+
+        let stdout = String::from_utf8_lossy(&output.stdout);
+
+        let modules: serde_json::Value =
+            serde_json::from_str(&stdout).expect("Gagal parse output Melos ke JSON");
+
+        for module in modules.as_array().unwrap_or(&vec![]) {
+            if let Some(name) = module["name"].as_str() {
+                if name == module_name {
+                    if let Some(location) = module["location"].as_str() {
+                        return Some(PathBuf::from(location));
+                    }
                 }
             }
         }
+
         None
     }
 
