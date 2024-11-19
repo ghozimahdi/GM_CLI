@@ -50,7 +50,7 @@ Pastikan Anda memiliki prasyarat berikut sebelum menggunakan CLI ini:
    ```bash
    cargo build --release
    tar -czvf gm-v106.tar.gz gm
-   shasum -a 256 gm.tar.gz
+   shasum -a 256 gm-v107.tar.gz
    ```
 
 4. Copy file binary ke direktori global:
