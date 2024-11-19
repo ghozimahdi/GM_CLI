@@ -1,16 +1,20 @@
+use crate::flutter_build_app::FlutterBuildApp;
+use crate::flutter_commands::FlutterCommandHandler;
 use clap::{Arg, ArgAction, Command};
-use colored::*;
-use std::process::Command as StdCommand;
+use colored::Colorize;
 
-mod build_runner;
+mod flutter_build_app;
+mod flutter_commands;
 mod flutter_gen_runner;
 mod gen_easy_localization;
 mod header;
-mod modules;
+mod module_manager;
 mod table;
 mod version;
 
 fn main() {
+    let handler = FlutterCommandHandler;
+
     version::handle_version();
     header::print_header();
 
@@ -18,6 +22,8 @@ fn main() {
         .version(env!("CARGO_PKG_VERSION"))
         .author("Ghozi Mahdi <ghozimahdi@example.com>")
         .about("CLI tool for Flutter project management")
+        .subcommand(Command::new("clear").about("Run flutter_clear for selected modules"))
+        .subcommand(Command::new("app").about("Build APK or IPA interactively"))
         .arg(
             Arg::new("build")
                 .short('b')
@@ -54,13 +60,6 @@ fn main() {
                 .help("Flutter Pub Get"),
         )
         .arg(
-            Arg::new("flutter_clear")
-                .short('d')
-                .long("flutter_clear")
-                .action(ArgAction::SetTrue)
-                .help("Flutter Clean + Delete pub lock"),
-        )
-        .arg(
             Arg::new("all")
                 .long("all")
                 .action(ArgAction::SetTrue)
@@ -68,79 +67,30 @@ fn main() {
         )
         .get_matches();
 
-    if matches.get_flag("flutter_get") {
-        run_flutter_get();
-        return;
-    }
-    if matches.get_flag("flutter_clean") {
-        run_flutter_clean();
-        return;
-    }
-    if matches.get_flag("flutter_clear") {
-        run_flutter_clear();
-        return;
-    }
-
-    if matches.get_flag("build") {
-        build_runner::build_runner();
-    }
-    if matches.get_flag("localize") {
-        gen_easy_localization::easy_localization();
-    }
-    if matches.get_flag("assets") {
-        flutter_gen_runner::gen_assets();
-    }
-    if matches.get_flag("all") {
-        build_runner::build_runner();
-        gen_easy_localization::easy_localization();
-        flutter_gen_runner::gen_assets();
-    }
-    if !(matches.get_flag("build")
-        || matches.get_flag("localize")
-        || matches.get_flag("assets")
-        || matches.get_flag("all"))
-    {
-        show_help()
+    match matches.subcommand() {
+        Some(("clear", _)) => FlutterCommandHandler::flutter_clear(),
+        Some(("get", _)) => FlutterCommandHandler::flutter_get(),
+        Some(("app", _)) => FlutterBuildApp::build_app(),
+        _ => {
+            if matches.get_flag("flutter_get") {
+                handler.run_flutter_get();
+                return;
+            }
+            if matches.get_flag("flutter_clean") {
+                handler.run_flutter_clean();
+                return;
+            }
+            FlutterCommandHandler::handle_flutter_commands(&matches);
+            if !(matches.get_flag("build")
+                || matches.get_flag("localize")
+                || matches.get_flag("assets")
+                || matches.get_flag("all"))
+            {
+                show_help()
+            }
+        }
     }
 }
-
 fn show_help() {
-    println!("{}", "Usage: gm -b | -l | -a | --all".yellow());
-}
-
-fn execute_command(program: &str, args: &[&str]) {
-    println!(
-        "{}",
-        format!("Running {} {}...", program, args.join(" ")).green()
-    );
-
-    let output = StdCommand::new(program)
-        .args(args)
-        .output()
-        .expect(&format!("Failed to execute {} {}", program, args.join(" ")));
-
-    if output.status.success() {
-        println!("{}", String::from_utf8_lossy(&output.stdout));
-    } else {
-        println!("{}", String::from_utf8_lossy(&output.stderr).red());
-    }
-}
-
-fn run_flutter_get() {
-    execute_command("flutter", &["pub", "get"]);
-}
-
-fn run_flutter_clean() {
-    execute_command("flutter", &["clean"]);
-}
-
-fn run_flutter_clear() {
-    execute_command("flutter", &["clean"]);
-
-    println!("{}", "Deleting pubspec.lock...".green());
-    if std::fs::remove_file("pubspec.lock").is_ok() {
-        println!("{}", "Deleted pubspec.lock".green());
-    } else {
-        println!("{}", "Failed to delete pubspec.lock".red());
-    }
+    println!("{}", "Usage: gm --help".yellow());
 }
