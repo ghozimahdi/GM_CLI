@@ -2,9 +2,16 @@ use crate::module_manager::ModuleManager;
 use crate::{flutter_gen_runner, gen_easy_localization};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
+use serde::Deserialize;
 use std::path::{Path, PathBuf};
 use std::process::Command as StdCommand;
 use std::{fs, thread, time::Duration};
+
+#[derive(Deserialize, Debug)]
+struct Module {
+    name: String,
+    location: String,
+}
 
 pub struct FlutterCommandHandler;
 
@@ -170,8 +177,6 @@ impl FlutterCommandHandler {
             eprintln!("{}", "Clear gagal.".red());
         } else {
             println!("{}", "Flutter clean berhasil.".green());
-
-            // Cari lokasi modul menggunakan Melos
             if let Some(scope_name) = scope {
                 if let Some(module_path) = Self::get_module_path_from_melos(scope_name) {
                     let pubspec_lock_path = module_path.join("pubspec.lock");
@@ -223,24 +228,31 @@ impl FlutterCommandHandler {
             return None;
         }
 
-        let stdout = String::from_utf8_lossy(&output.stdout);
+        let raw_output = String::from_utf8_lossy(&output.stdout);
+        let end_of_json = raw_output.rfind(']');
 
-        let modules: serde_json::Value =
-            serde_json::from_str(&stdout).expect("Gagal parse output Melos ke JSON");
-
-        for module in modules.as_array().unwrap_or(&vec![]) {
-            if let Some(name) = module["name"].as_str() {
-                if name == module_name {
-                    if let Some(location) = module["location"].as_str() {
-                        return Some(PathBuf::from(location));
+        if let Some(pos) = end_of_json {
+            let valid_json = &raw_output[..=pos];
+            match serde_json::from_str::<Vec<Module>>(valid_json) {
+                Ok(modules) => {
+                    for module in modules {
+                        if module.name.trim().to_lowercase() == module_name.trim().to_lowercase() {
+                            let module_path = PathBuf::from(module.location);
+                            return Some(module_path);
+                        }
                     }
                 }
+                Err(e) => {
+                    eprintln!("Error parsing Melos JSON output: {}", e);
+                    eprintln!("Cleaned output: {}", valid_json);
+                }
             }
+        } else {
+            eprintln!("No valid JSON found in output.");
         }
 
         None
     }
-
     pub fn flutter_build_runner() {
         if let Some(mut selected_modules) = ModuleManager::select_modules() {
             // Inisialisasi grup prioritas
