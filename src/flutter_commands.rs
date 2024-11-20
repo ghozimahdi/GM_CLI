@@ -256,6 +256,7 @@ impl FlutterCommandHandler {
     pub fn flutter_build_runner() {
         if let Some(mut selected_modules) = ModuleManager::select_modules() {
             // Inisialisasi grup prioritas
+            let mut domain_common_modules: Vec<(usize, String)> = Vec::new();
             let mut common_modules: Vec<(usize, String)> = Vec::new();
             let mut domain_modules: Vec<(usize, String)> = Vec::new();
             let mut data_modules: Vec<(usize, String)> = Vec::new();
@@ -263,7 +264,9 @@ impl FlutterCommandHandler {
 
             // Kelompokkan modul berdasarkan prioritas
             for (index, module) in selected_modules.drain() {
-                if module.contains("common") {
+                if module.contains("common") && module.contains("domain") {
+                    domain_common_modules.push((index, module));
+                } else if module.contains("common") {
                     common_modules.push((index, module));
                 } else if module.contains("domain") {
                     domain_modules.push((index, module));
@@ -275,8 +278,9 @@ impl FlutterCommandHandler {
             }
 
             // Urutkan berdasarkan prioritas: common -> domain -> data -> presentation/feature
-            let prioritized_modules = common_modules
+            let prioritized_modules = domain_common_modules
                 .into_iter()
+                .chain(common_modules.into_iter())
                 .chain(domain_modules.into_iter())
                 .chain(data_modules.into_iter())
                 .chain(presentation_modules.into_iter())
