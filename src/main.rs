@@ -1,3 +1,5 @@
+extern crate core;
+
 use crate::flutter_build_app::FlutterBuildApp;
 use crate::flutter_commands::FlutterCommandHandler;
 use clap::{Arg, ArgAction, Command};
