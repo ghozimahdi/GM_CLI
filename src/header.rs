@@ -6,6 +6,7 @@ pub fn print_header() {
     let ko_fi_link = "https://ko-fi.com/ghozimahdi";
     let trakteer_link = "https://teer.id/ghozimahdi";
     let github_sponsor_link = "https://github.com/sponsors/mbahgojol";
+    let saweria_link = "https://saweria.co/ghozimahdi";
 
     let header = format!(
         "\
@@ -21,13 +22,14 @@ Dukung Karya Saya:
 Ko-fi      -> {}
 Trakteer   -> {}
 Github Sponsor   -> {}
+Saweria   -> {}
 ",
-        ko_fi_link, trakteer_link, github_sponsor_link
+        ko_fi_link, trakteer_link, github_sponsor_link, saweria_link
     );
 
     println!("{}", header.green());
-    let kofi_qr = generate_qr_code(ko_fi_link);
-    println!("{}\n{}", "QR Code Ko-fi :".bold(), kofi_qr);
+    let saweria_qr = generate_qr_code(saweria_link);
+    println!("{}\n{}", "QR Code Saweria :".bold(), saweria_qr);
 }
 
 fn generate_qr_code(data: &str) -> String {
