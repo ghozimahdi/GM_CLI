@@ -18,11 +18,11 @@ Github       : https://github.com/mbahgojol
 Email        : ghozimahdi@carpkingdom.com
 Website      : www.mbahgojol.com
 
-Dukung Karya Saya:
-Ko-fi      -> {}
-Trakteer   -> {}
-Github Sponsor   -> {}
-Saweria   -> {}
+Dukung Karya Saya
+Ko-fi           : {}
+Trakteer        : {}
+Github Sponsor  : {}
+Saweria         : {}
 ",
         ko_fi_link, trakteer_link, github_sponsor_link, saweria_link
     );
