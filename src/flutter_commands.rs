@@ -260,6 +260,7 @@ impl FlutterCommandHandler {
             let mut domain_common_modules: Vec<(usize, String)> = Vec::new();
             let mut common_modules: Vec<(usize, String)> = Vec::new();
             let mut domain_modules: Vec<(usize, String)> = Vec::new();
+            let mut feature_common_modules: Vec<(usize, String)> = Vec::new();
             let mut data_modules: Vec<(usize, String)> = Vec::new();
             let mut presentation_modules: Vec<(usize, String)> = Vec::new();
 
@@ -271,6 +272,8 @@ impl FlutterCommandHandler {
                     common_modules.push((index, module));
                 } else if module.contains("domain") {
                     domain_modules.push((index, module));
+                } else if module.contains("feature_common") {
+                    feature_common_modules.push((index, module));
                 } else if module.contains("data") {
                     data_modules.push((index, module));
                 } else {
@@ -278,12 +281,13 @@ impl FlutterCommandHandler {
                 }
             }
 
-            // Sort by priority: common -> domain -> data -> presentation/feature
+            // Sort by priority: common -> domain -> feature_common -> data -> presentation/feature
             let prioritized_modules = domain_common_modules
                 .into_iter()
                 .chain(common_modules.into_iter())
                 .chain(domain_modules.into_iter())
                 .chain(data_modules.into_iter())
+                .chain(feature_common_modules.into_iter()) // Add feature_common after domain_modules
                 .chain(presentation_modules.into_iter())
                 .collect::<Vec<_>>();
 
