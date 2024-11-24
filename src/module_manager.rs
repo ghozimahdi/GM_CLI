@@ -19,10 +19,10 @@ impl ModuleManager {
         let output = ProcessCommand::new("melos")
             .arg("list")
             .output()
-            .expect("Gagal menjalankan perintah melos list");
+            .expect("Failed to run the melos list command");
 
         if !output.status.success() {
-            eprintln!("{}: Gagal mendapatkan daftar modul.", "Error".red());
+            eprintln!("{}: Failed to retrieve module list.", "Error".red());
             exit(1);
         }
 
@@ -65,7 +65,7 @@ impl ModuleManager {
         let available_modules = Self::get_available_modules();
 
         if available_modules.is_empty() {
-            println!("{}", "Tidak ada modul yang ditemukan.".yellow());
+            println!("{}", "No modules found.".yellow());
             return None;
         }
 
@@ -80,7 +80,7 @@ impl ModuleManager {
 
         let total_modules = available_modules.len();
         print!(
-            "Total modules available: {}, Pilih module (contoh: 1,2,3 atau 0 untuk semua): ",
+            "Total modules available: {}, Select modules (example: 1,2,3 or 0 for all): ",
             total_modules.to_string().green()
         );
         io::stdout().flush().unwrap();
@@ -88,11 +88,11 @@ impl ModuleManager {
         let mut input = String::new();
         io::stdin()
             .read_line(&mut input)
-            .expect("Gagal membaca input");
+            .expect("Failed to read input");
         let input = input.trim();
 
         if input == "0" {
-            println!("{}", "Semua modul dipilih.".green());
+            println!("{}", "All modules selected.".green());
             return Some(categorized_modules.map);
         }
 
@@ -106,16 +106,12 @@ impl ModuleManager {
             if let Some(module) = categorized_modules.map.get(&index) {
                 selected_modules.insert(index, module.clone());
             } else {
-                println!(
-                    "{}: Modul dengan nomor {} tidak ditemukan.",
-                    "Error".red(),
-                    index
-                );
+                println!("{}: Module with number {} not found.", "Error".red(), index);
             }
         }
 
         if selected_modules.is_empty() {
-            println!("{}", "Tidak ada modul yang valid dipilih.".yellow());
+            println!("{}", "No valid modules selected.".yellow());
             return None;
         }
 

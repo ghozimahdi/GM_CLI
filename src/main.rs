@@ -24,7 +24,10 @@ fn main() {
         .version(env!("CARGO_PKG_VERSION"))
         .author("Ghozi Mahdi <ghozimahdi@example.com>")
         .about("CLI tool for Flutter project management")
-        .subcommand(Command::new("clear").about("Run flutter_clear for selected modules"))
+        .subcommand(
+            Command::new("clear")
+                .about("Run flutter_clean & remove pubspec.lock for selected modules"),
+        )
         .subcommand(Command::new("app").about("Build APK or IPA interactively"))
         .arg(
             Arg::new("build")

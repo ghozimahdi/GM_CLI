@@ -34,7 +34,7 @@ impl FlutterBuildApp {
     fn select_platform() -> String {
         let platforms = &["android", "ios"];
         let selection = Select::with_theme(&dialoguer::theme::ColorfulTheme::default())
-            .with_prompt("Pilih platform")
+            .with_prompt("Select platform")
             .default(0)
             .items(platforms)
             .interact()
@@ -45,7 +45,7 @@ impl FlutterBuildApp {
     fn select_flavor() -> String {
         let flavors = &["prod", "staging", "dev"];
         let selection = Select::with_theme(&dialoguer::theme::ColorfulTheme::default())
-            .with_prompt("Pilih flavor")
+            .with_prompt("Select flavor")
             .default(0)
             .items(flavors)
             .interact()
@@ -55,7 +55,7 @@ impl FlutterBuildApp {
 
     fn input_version() -> Option<String> {
         let input: String = Input::with_theme(&dialoguer::theme::ColorfulTheme::default())
-            .with_prompt("Masukkan versi (contoh: 1.2.3+123) [Optional]")
+            .with_prompt("Enter version (e.g., 1.2.3+123) [Optional]")
             .allow_empty(true)
             .interact_text()
             .unwrap();
@@ -69,7 +69,7 @@ impl FlutterBuildApp {
 
     fn input_entry_point(flavor: &str) -> Option<String> {
         let input: String = Input::with_theme(&dialoguer::theme::ColorfulTheme::default())
-            .with_prompt("Masukkan path file entry point [Optional]")
+            .with_prompt("Enter entry point file path [Optional]")
             .allow_empty(true)
             .interact_text()
             .unwrap();

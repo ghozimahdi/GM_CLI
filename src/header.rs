@@ -10,15 +10,15 @@ pub fn print_header() {
 
     let header = format!(
         "\
-Dibuat oleh  : Ghozi Mahdi
-Profesi      : Mobile Software Engineer
+Created by   : Ghozi Mahdi
+Occupation   : Mobile Software Engineer
 LinkedIn     : https://id.linkedin.com/in/ghozimahdi
 YouTube      : https://www.youtube.com/@mbahgojol
 Github       : https://github.com/mbahgojol
 Email        : ghozimahdi@carpkingdom.com
 Website      : www.mbahgojol.com
 
-Dukung Karya Saya
+Support Me
 Ko-fi           : {}
 Trakteer        : {}
 Github Sponsor  : {}
@@ -29,7 +29,7 @@ Saweria         : {}
 
     println!("{}", header.green());
     let saweria_qr = generate_qr_code(saweria_link);
-    println!("{}\n{}", "QR Code Saweria :".bold(), saweria_qr);
+    println!("{}\n{}", "Saweria QR Code:".bold(), saweria_qr);
 }
 
 fn generate_qr_code(data: &str) -> String {

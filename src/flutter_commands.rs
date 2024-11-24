@@ -71,7 +71,7 @@ impl FlutterCommandHandler {
         if let Some(selected_modules) = ModuleManager::select_modules() {
             let choices = &["Yes", "No"];
             let build_runner_selection = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Apakah ingin menjalankan build_runner?")
+                .with_prompt("Do you want to run build_runner after pub get?")
                 .default(1)
                 .items(choices)
                 .interact()
@@ -91,7 +91,7 @@ impl FlutterCommandHandler {
             }
         }
 
-        println!("{}", "Proses pub get selesai.".cyan());
+        println!("{}", "Pub get process completed.".cyan());
     }
 
     fn run_get_command(scope: Option<&String>) {
@@ -108,9 +108,9 @@ impl FlutterCommandHandler {
 
         let status = command
             .status()
-            .expect("Gagal menjalankan perintah flutter pub get");
+            .expect("Failed to run flutter pub get command");
         if !status.success() {
-            eprintln!("{}", "Pub get gagal.".red());
+            eprintln!("{}", "Pub get failed.".red());
         }
     }
 
@@ -118,7 +118,7 @@ impl FlutterCommandHandler {
         if let Some(selected_modules) = ModuleManager::select_modules() {
             let choices = &["Yes", "No"];
             let pub_get_selection = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Apakah ingin melakukan flutter pub get?")
+                .with_prompt("Do you want to run flutter pub get after the clean process?")
                 .default(1)
                 .items(choices)
                 .interact()
@@ -127,7 +127,7 @@ impl FlutterCommandHandler {
             let do_flutter_get = pub_get_selection == 0;
 
             let build_runner_selection = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Apakah ingin menjalankan build_runner?")
+                .with_prompt("Do you want to run build_runner after the clean process?")
                 .default(1)
                 .items(choices)
                 .interact()
@@ -158,7 +158,7 @@ impl FlutterCommandHandler {
             }
         }
 
-        println!("{}", "Proses clear selesai.".cyan());
+        println!("{}", "Clear process completed.".cyan());
     }
 
     fn run_clear_command(scope: Option<&String>) {
@@ -171,12 +171,12 @@ impl FlutterCommandHandler {
 
         let status = command
             .status()
-            .expect("Gagal menjalankan perintah flutter clean");
+            .expect("Failed to run flutter clean command");
 
         if !status.success() {
-            eprintln!("{}", "Clear gagal.".red());
+            eprintln!("{}", "Clear failed.".red());
         } else {
-            println!("{}", "Flutter clean berhasil.".green());
+            println!("{}", "Flutter clean successful.".green());
             if let Some(scope_name) = scope {
                 if let Some(module_path) = Self::get_module_path_from_melos(scope_name) {
                     let pubspec_lock_path = module_path.join("pubspec.lock");
@@ -184,27 +184,27 @@ impl FlutterCommandHandler {
                         if fs::remove_file(&pubspec_lock_path).is_ok() {
                             println!(
                                 "{}: {}",
-                                "Berhasil menghapus pubspec.lock di modul".green(),
+                                "Successfully deleted pubspec.lock in module".green(),
                                 pubspec_lock_path.display()
                             );
                         } else {
                             println!(
                                 "{}: {}",
-                                "Gagal menghapus pubspec.lock di modul".yellow(),
+                                "Failed to delete pubspec.lock in module".yellow(),
                                 pubspec_lock_path.display()
                             );
                         }
                     } else {
                         println!(
                             "{}: {}",
-                            "File pubspec.lock tidak ditemukan di modul".yellow(),
+                            "pubspec.lock file not found in module".yellow(),
                             pubspec_lock_path.display()
                         );
                     }
                 } else {
                     println!(
                         "{}: {}",
-                        "Direktori modul tidak ditemukan untuk modul".red(),
+                        "Module directory not found for module".red(),
                         scope_name
                     );
                 }
@@ -217,12 +217,12 @@ impl FlutterCommandHandler {
             .arg("list")
             .arg("--json")
             .output()
-            .expect("Gagal menjalankan perintah melos list");
+            .expect("Failed to run melos list command");
 
         if !output.status.success() {
             eprintln!(
                 "{}: {}",
-                "Melos list gagal dijalankan".red(),
+                "Melos list failed to run".red(),
                 String::from_utf8_lossy(&output.stderr)
             );
             return None;
@@ -253,16 +253,17 @@ impl FlutterCommandHandler {
 
         None
     }
+
     pub fn flutter_build_runner() {
         if let Some(mut selected_modules) = ModuleManager::select_modules() {
-            // Inisialisasi grup prioritas
+            // Initialize priority groups
             let mut domain_common_modules: Vec<(usize, String)> = Vec::new();
             let mut common_modules: Vec<(usize, String)> = Vec::new();
             let mut domain_modules: Vec<(usize, String)> = Vec::new();
             let mut data_modules: Vec<(usize, String)> = Vec::new();
             let mut presentation_modules: Vec<(usize, String)> = Vec::new();
 
-            // Kelompokkan modul berdasarkan prioritas
+            // Categorize modules based on priority
             for (index, module) in selected_modules.drain() {
                 if module.contains("common") && module.contains("domain") {
                     domain_common_modules.push((index, module));
@@ -277,7 +278,7 @@ impl FlutterCommandHandler {
                 }
             }
 
-            // Urutkan berdasarkan prioritas: common -> domain -> data -> presentation/feature
+            // Sort by priority: common -> domain -> data -> presentation/feature
             let prioritized_modules = domain_common_modules
                 .into_iter()
                 .chain(common_modules.into_iter())
@@ -286,14 +287,14 @@ impl FlutterCommandHandler {
                 .chain(presentation_modules.into_iter())
                 .collect::<Vec<_>>();
 
-            // Jalankan build untuk setiap modul berdasarkan prioritas
+            // Run build for each module based on priority
             for (_, module) in prioritized_modules {
                 println!("{}: {}", "Building module".green(), module);
                 Self::run_build_command(Some(&module));
             }
         }
 
-        println!("{}", "Proses build selesai.".cyan());
+        println!("{}", "Build process completed.".cyan());
     }
 
     fn run_build_command(scope: Option<&String>) {
@@ -311,9 +312,9 @@ impl FlutterCommandHandler {
             .arg("build")
             .arg("-d");
 
-        let status = command.status().expect("Gagal menjalankan build command");
+        let status = command.status().expect("Failed to run build command");
         if !status.success() {
-            eprintln!("{}", "Build gagal.".red());
+            eprintln!("{}", "Build failed.".red());
         }
     }
 }
