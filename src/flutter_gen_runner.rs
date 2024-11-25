@@ -1,15 +1,9 @@
 use colored::*;
-use std::io::{self, Write};
+use std::io::{self, BufRead, BufReader, Write};
 use std::process::{Command as StdCommand, Stdio};
-use std::thread;
-use std::time::Duration;
 
 pub fn gen_assets() {
-    let spinner = ['|', '/', '-', '\\'];
-    let mut idx = 0;
-
-    print!("{}", "Generating assets... ".green());
-    io::stdout().flush().unwrap();
+    println!("{}", "Generating assets...".green());
 
     let mut child = StdCommand::new("melos")
         .arg("exec")
@@ -21,33 +15,45 @@ pub fn gen_assets() {
         .arg("build")
         .arg("-d")
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
+        .stderr(Stdio::null())
         .spawn()
         .expect("Failed to start asset generation process");
 
-    // Spinner loop while the process is running
-    loop {
-        // Check if the process has finished
-        match child.try_wait() {
-            Ok(Some(status)) => {
-                if status.success() {
-                    println!("\r{}", "Assets generated successfully.".green());
-                } else {
-                    println!("\r{}", "Asset generation failed.".red());
+    let stdout = child.stdout.take().expect("Failed to capture stdout");
+    let stdout_reader = BufReader::new(stdout);
+
+    let mut progress = 0.0;
+    const BAR_LENGTH: usize = 50;
+
+    for line in stdout_reader.lines() {
+        if let Ok(line) = line {
+            if line.contains("Writing") {
+                progress = 1.0;
+            } else {
+                progress += 0.01;
+                if progress > 1.0 {
+                    progress = 1.0;
                 }
-                break;
             }
-            Ok(None) => {
-                // Update spinner animation
-                print!("\r{} {}", spinner[idx], "Generating assets...".green());
-                io::stdout().flush().unwrap();
-                idx = (idx + 1) % spinner.len();
-                thread::sleep(Duration::from_millis(100));
-            }
-            Err(e) => {
-                println!("\r{}: {}", "Error checking process status".red(), e);
+
+            let filled_length = (progress * BAR_LENGTH as f32).round() as usize;
+            let bar: String = "=".repeat(filled_length) + &" ".repeat(BAR_LENGTH - filled_length);
+            print!("\r[{}] {:.0}%", bar, progress * 100.0);
+            io::stdout().flush().unwrap();
+
+            if progress == 1.0 {
                 break;
             }
         }
+    }
+
+    let status = child.wait().expect("Failed to wait on child process");
+
+    print!("\r[{}] 100%\n", "=".repeat(BAR_LENGTH));
+
+    if status.success() {
+        println!("{}", "Assets generated successfully.".green());
+    } else {
+        println!("{}", "Asset generation failed.".red());
     }
 }
