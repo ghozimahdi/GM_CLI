@@ -1,3 +1,4 @@
+use crate::create_project::create_file_project_flutter::CreateFileProjectFlutter;
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
 use indoc::indoc;
@@ -72,7 +73,7 @@ impl CreateProjectFlutter {
 
         if modular {
             println!("Creating modular structure...");
-            Self::create_modular_structure();
+            fs::create_dir_all("packages/app").expect("Failed to create app directory");
 
             println!("Generating Flutter project in packages/app...");
             let app_path = "./packages/app";
@@ -89,6 +90,7 @@ impl CreateProjectFlutter {
             println!("Setting up Melos...");
             Self::setup_melos(&project_name);
             Self::create_default_modules();
+            CreateFileProjectFlutter::build();
 
             println!("{}", "Running `flutter pub get`...".yellow());
             Self::run_command(&["flutter", "pub", "get"]);
@@ -174,20 +176,6 @@ impl CreateProjectFlutter {
         }
     }
 
-    fn create_modular_structure() {
-        let directories = [
-            "packages/app",
-            "packages/data/data_auth",
-            "packages/domain/domain_auth",
-            "packages/presentation/feature_login",
-        ];
-
-        for dir in directories.iter() {
-            fs::create_dir_all(format!("{}/lib", dir)).expect("Failed to create lib directory");
-            fs::create_dir_all(format!("{}/test", dir)).expect("Failed to create test directory");
-        }
-    }
-
     fn read_environment_from_main_project() -> String {
         let main_pubspec_path = "./packages/app/pubspec.yaml".to_string();
 
@@ -249,6 +237,9 @@ impl CreateProjectFlutter {
         println!("Creating module: {}", module_name);
 
         fs::create_dir_all(module_path).expect("Failed to create module directory");
+        fs::create_dir_all(format!("{}/lib", module_path)).expect("Failed to create lib directory");
+        fs::create_dir_all(format!("{}/test", module_path))
+            .expect("Failed to create test directory");
 
         let sdk_version = Self::read_environment_from_main_project();
 

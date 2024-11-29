@@ -15,6 +15,7 @@ mod module_manager;
 mod table;
 mod version;
 mod create_project {
+    pub mod create_file_project_flutter;
     pub mod create_project_flutter;
 }
 
