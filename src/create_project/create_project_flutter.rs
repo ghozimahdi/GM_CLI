@@ -88,21 +88,7 @@ impl CreateProjectFlutter {
 
             println!("Setting up Melos...");
             Self::setup_melos(&project_name);
-
-            println!("{}", "Configuring other modules...".yellow());
-            Self::create_module("data_auth", "./packages/data/data_auth", vec![], vec![]);
-            Self::create_module(
-                "domain_auth",
-                "./packages/domain/domain_auth",
-                vec![],
-                vec![],
-            );
-            Self::create_module(
-                "feature_login",
-                "./packages/presentation/feature_login",
-                vec![],
-                vec![],
-            );
+            Self::create_default_modules();
 
             println!("{}", "Running `flutter pub get`...".yellow());
             Self::run_command(&["flutter", "pub", "get"]);
@@ -130,6 +116,51 @@ impl CreateProjectFlutter {
 
             println!("{}", "Simple Flutter project generation completed!".green());
         }
+    }
+
+    fn create_default_modules() {
+        println!("{}", "Configuring other modules...".yellow());
+        // Data
+        Self::create_module("data_auth", "./packages/data/data_auth", vec![], vec![]);
+        Self::create_module("data_common", "./packages/data/data_common", vec![], vec![]);
+
+        // Domain
+        Self::create_module(
+            "domain_auth",
+            "./packages/domain/domain_auth",
+            vec![],
+            vec![],
+        );
+
+        Self::create_module(
+            "domain_common",
+            "./packages/domain/domain_common",
+            vec![],
+            vec![],
+        );
+
+        // Presentation
+        Self::create_module(
+            "feature_common",
+            "./packages/presentation/feature_common",
+            vec![],
+            vec![],
+        );
+        Self::create_module(
+            "feature_login",
+            "./packages/presentation/feature_login",
+            vec![],
+            vec![],
+        );
+
+        // Library
+        Self::create_module("core", "./packages/library/core", vec![], vec![]);
+        Self::create_module(
+            "design_system",
+            "./packages/library/design_system",
+            vec![],
+            vec![],
+        );
     }
 
     fn run_command(command: &[&str]) {
