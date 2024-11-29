@@ -1,4 +1,6 @@
+use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
+use indoc::indoc;
 use regex::Regex;
 use std::fs::{self, File};
 use std::io;
@@ -87,7 +89,7 @@ impl CreateProjectFlutter {
             println!("Setting up Melos...");
             Self::setup_melos(&project_name);
 
-            println!("Configuring other modules...");
+            println!("{}", "Configuring other modules...".yellow());
             Self::create_module("data_auth", "./packages/data/data_auth", vec![], vec![]);
             Self::create_module(
                 "domain_auth",
@@ -102,13 +104,16 @@ impl CreateProjectFlutter {
                 vec![],
             );
 
-            println!("Running `flutter pub get`...");
+            println!("{}", "Running `flutter pub get`...".yellow());
             Self::run_command(&["flutter", "pub", "get"]);
 
-            println!("Bootstrapping with Melos...");
+            println!("{}", "Bootstrapping with Melos...".yellow());
             Self::run_command(&["melos", "bootstrap"]);
 
-            println!("Flutter modular project generation completed!");
+            println!(
+                "{}",
+                "Flutter modular project generation completed!".green()
+            );
         } else {
             println!("Generating simple Flutter project...");
             Self::run_command(&[
@@ -120,10 +125,10 @@ impl CreateProjectFlutter {
                 ".",
             ]);
 
-            println!("Running `flutter pub get`...");
+            println!("{}", "Running `flutter pub get`...".yellow());
             Self::run_command(&["flutter", "pub", "get"]);
 
-            println!("Simple Flutter project generation completed!");
+            println!("{}", "Simple Flutter project generation completed!".green());
         }
     }
 
@@ -160,8 +165,9 @@ impl CreateProjectFlutter {
             .write_all(melos_config.as_bytes())
             .expect("Failed to write melos.yaml");
 
-        let pubspec_content = r#"
-        name: my_modular_project
+        let pubspec_content = format!(
+            indoc! {r#"
+        name: {}
         description: Modular project for Flutter with Melos
         version: 1.0.0
 
@@ -169,8 +175,10 @@ impl CreateProjectFlutter {
           sdk: ">=3.0.0 <4.0.0"
 
         dev_dependencies:
-          melos: ^3.0.0
-        "#;
+          melos: any
+        "#},
+            project_name
+        );
 
         let mut pubspec_file = File::create("pubspec.yaml").expect("Failed to create pubspec.yaml");
         pubspec_file
@@ -178,6 +186,10 @@ impl CreateProjectFlutter {
             .expect("Failed to write pubspec.yaml");
 
         println!("Adding Melos dependency...");
+        Self::run_command(&["flutter", "pub", "add", "melos", "--dev"]);
+        println!("Upgrading Melos to the latest version...");
+        Self::run_command(&["flutter", "pub", "upgrade", "melos"]);
+        println!("Running `flutter pub get`...");
         Self::run_command(&["flutter", "pub", "get"]);
     }
 
