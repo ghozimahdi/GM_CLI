@@ -1,5 +1,6 @@
 extern crate core;
 
+use crate::create_project::create_project_flutter::CreateProjectFlutter;
 use crate::flutter_build_app::FlutterBuildApp;
 use crate::flutter_commands::FlutterCommandHandler;
 use clap::{Arg, ArgAction, Command};
@@ -13,6 +14,9 @@ mod header;
 mod module_manager;
 mod table;
 mod version;
+mod create_project {
+    pub mod create_project_flutter;
+}
 
 fn main() {
     let handler = FlutterCommandHandler;
@@ -29,6 +33,7 @@ fn main() {
                 .about("Run flutter_clean & remove pubspec.lock for selected modules"),
         )
         .subcommand(Command::new("app").about("Build APK or IPA interactively"))
+        .subcommand(Command::new("create").about("Create a Flutter project with modular support"))
         .arg(
             Arg::new("build")
                 .short('b')
@@ -74,6 +79,7 @@ fn main() {
 
     match matches.subcommand() {
         Some(("clear", _)) => FlutterCommandHandler::flutter_clear(),
+        Some(("create", _)) => CreateProjectFlutter::build(),
         Some(("get", _)) => FlutterCommandHandler::flutter_get(),
         Some(("app", _)) => FlutterBuildApp::build_app(),
         _ => {
