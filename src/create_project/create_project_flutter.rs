@@ -157,7 +157,23 @@ impl CreateProjectFlutter {
         }
     }
 
+    fn read_environment_from_main_project() -> String {
+        let main_pubspec_path = "./packages/app/pubspec.yaml".to_string();
+
+        let pubspec_content = fs::read_to_string(&main_pubspec_path)
+            .expect("Failed to read app module's pubspec.yaml");
+
+        for line in pubspec_content.lines() {
+            if line.trim_start().starts_with("sdk:") {
+                return line.trim().to_string(); // Ambil baris yang mengandung `sdk`
+            }
+        }
+
+        panic!("No `sdk` environment found in the app module's pubspec.yaml");
+    }
+
     fn setup_melos(project_name: &str) {
+        let sdk_version = Self::read_environment_from_main_project();
         let melos_config = format!("name: {}\npackages:\n  - packages/**\n", project_name);
 
         let mut melos_file = File::create("melos.yaml").expect("Failed to create melos.yaml");
@@ -167,17 +183,17 @@ impl CreateProjectFlutter {
 
         let pubspec_content = format!(
             indoc! {r#"
-        name: {}
-        description: Modular project for Flutter with Melos
-        version: 1.0.0
+            name: {}
+            description: Modular project for Flutter with Melos
+            version: 1.0.0
 
-        environment:
-          sdk: ">=3.0.0 <4.0.0"
+            environment:
+              {}
 
-        dev_dependencies:
-          melos: any
-        "#},
-            project_name
+            dev_dependencies:
+              melos: any
+            "#},
+            project_name, sdk_version
         );
 
         let mut pubspec_file = File::create("pubspec.yaml").expect("Failed to create pubspec.yaml");
