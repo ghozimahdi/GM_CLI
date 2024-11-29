@@ -219,10 +219,23 @@ impl CreateProjectFlutter {
 
         fs::create_dir_all(module_path).expect("Failed to create module directory");
 
-        let pubspec_path = format!("{}/pubspec.yaml", module_path);
+        let sdk_version = Self::read_environment_from_main_project();
+
         let mut pubspec_content = format!(
-            "name: {}\ndescription: A module for {}.\nversion: 1.0.0\n\nenvironment:\n  sdk: \">=3.0.0 <4.0.0\"\n\ndependencies:\n  flutter:\n    sdk: flutter\n",
-            module_name, module_name
+            indoc! {r#"
+            name: {}
+            description: Modular project for {}
+            version: 1.0.0
+
+            environment:
+              {}
+
+            dependencies:
+              flutter:
+                sdk: flutter
+
+            "#},
+            module_name, module_name, sdk_version
         );
 
         for dependency in dependencies {
@@ -236,6 +249,7 @@ impl CreateProjectFlutter {
             }
         }
 
+        let pubspec_path = format!("{}/pubspec.yaml", module_path);
         let mut pubspec_file = File::create(&pubspec_path).expect("Failed to create pubspec.yaml");
         pubspec_file
             .write_all(pubspec_content.as_bytes())
