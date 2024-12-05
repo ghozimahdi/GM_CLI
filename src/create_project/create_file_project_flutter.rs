@@ -1,5 +1,4 @@
-use indoc::indoc;
-use std::fs::File;
+use std::fs;
 use std::io::Write;
 
 pub struct CreateFileProjectFlutter;
@@ -7,55 +6,50 @@ pub struct CreateFileProjectFlutter;
 impl CreateFileProjectFlutter {
     pub fn build() {
         Self::create_app_main_files();
-        Self::create_feature_login_files();
+        Self::create_feature_login_page_files();
     }
 
     fn create_app_main_files() {
         let app_lib_path = "packages/app/lib";
+        fs::create_dir_all(app_lib_path).expect("Failed to create app lib directory");
+
         let files = [
-            ("main_dev.dart", "void main() => runApp(MyApp(env: 'dev'));"),
+            ("main_dev.dart", include_str!("../../assets/main_dev.dart")),
             (
                 "main_prod.dart",
-                "void main() => runApp(MyApp(env: 'prod'));",
+                include_str!("../../assets/main_prod.dart"),
             ),
             (
                 "main_staging.dart",
-                "void main() => runApp(MyApp(env: 'staging'));",
+                include_str!("../../assets/main_staging.dart"),
+            ),
+            (
+                "main_common.dart",
+                include_str!("../../assets/main_common.dart"),
             ),
         ];
 
         for (file_name, content) in files.iter() {
             let file_path = format!("{}/{}", app_lib_path, file_name);
+            println!("Writing to: {}", file_path);
             Self::write_file(&file_path, content);
         }
     }
 
-    fn create_feature_login_files() {
+    fn create_feature_login_page_files() {
         let feature_login_path = "packages/presentation/feature_login/lib";
+        fs::create_dir_all(feature_login_path).expect("Failed to create feature login directory");
+
         let file_path = format!("{}/login_page.dart", feature_login_path);
-        let content = indoc! {r#"
-        import 'package:flutter/material.dart';
 
-        class LoginPage extends StatelessWidget {
-            @override
-            Widget build(BuildContext context) {
-                return Scaffold(
-                    appBar: AppBar(
-                        title: Text('Login Page'),
-                    ),
-                    body: Center(
-                        child: Text('Welcome to Login Page'),
-                    ),
-                );
-            }
-        }
-        "#};
+        let dart_file_content = include_str!("../../assets/login_page.dart");
 
-        Self::write_file(&file_path, content);
+        println!("Writing to: {}", file_path);
+        Self::write_file(&file_path, dart_file_content);
     }
 
     fn write_file(file_path: &str, content: &str) {
-        let mut file = File::create(file_path).expect("Failed to create file");
+        let mut file = fs::File::create(file_path).expect("Failed to create file");
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
     }

@@ -14,9 +14,13 @@ mod header;
 mod module_manager;
 mod table;
 mod version;
+pub mod command;
+
 mod create_project {
     pub mod create_file_project_flutter;
+    pub mod create_module_project_flutter;
     pub mod create_project_flutter;
+    pub mod setup_melos_project_flutter;
 }
 
 fn main() {
