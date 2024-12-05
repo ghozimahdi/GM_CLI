@@ -1,6 +1,7 @@
 use crate::command::Command;
 use crate::create_project::create_file_project_flutter::CreateFileProjectFlutter;
 use crate::create_project::create_module_project_flutter::CreateModuleProjectFlutter;
+use crate::create_project::setup_fvm_project_flutter::SetupFVMProjectFlutter;
 use crate::create_project::setup_melos_project_flutter::SetupMelosProjectFlutter;
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
@@ -90,11 +91,15 @@ impl CreateProjectFlutter {
 
             println!("Setting up Melos...");
             SetupMelosProjectFlutter::build(&project_name);
+
+            println!("Setting up FVM...");
+            SetupFVMProjectFlutter::build();
+
             CreateModuleProjectFlutter::build();
             CreateFileProjectFlutter::build(&project_name);
 
             println!("{}", "Running `flutter pub get`...".yellow());
-            Command::run(&["flutter", "pub", "get"]);
+            Command::run(&["fvm", "flutter", "pub", "get"]);
 
             println!("{}", "Bootstrapping with Melos...".yellow());
             Command::run(&["melos", "bootstrap"]);
@@ -115,7 +120,7 @@ impl CreateProjectFlutter {
             ]);
 
             println!("{}", "Running `flutter pub get`...".yellow());
-            Command::run(&["flutter", "pub", "get"]);
+            Command::run(&["fvm", "flutter", "pub", "get"]);
 
             println!("{}", "Simple Flutter project generation completed!".green());
         }

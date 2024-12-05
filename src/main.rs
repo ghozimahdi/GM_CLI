@@ -6,6 +6,7 @@ use crate::flutter_commands::FlutterCommandHandler;
 use clap::{Arg, ArgAction, Command};
 use colored::Colorize;
 
+pub mod command;
 mod flutter_build_app;
 mod flutter_commands;
 mod flutter_gen_runner;
@@ -14,12 +15,12 @@ mod header;
 mod module_manager;
 mod table;
 mod version;
-pub mod command;
 
 mod create_project {
     pub mod create_file_project_flutter;
     pub mod create_module_project_flutter;
     pub mod create_project_flutter;
+    pub mod setup_fvm_project_flutter;
     pub mod setup_melos_project_flutter;
 }
 
