@@ -1,1 +1,1 @@
-void main() => runApp(MyApp(env: 'staging'));
+Future<void> mainCommon() async {}

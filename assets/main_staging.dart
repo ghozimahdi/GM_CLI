@@ -1,1 +1,2 @@
-void main() => runApp(MyApp(env: 'staging'));
+Future<void> main() async {
+}
