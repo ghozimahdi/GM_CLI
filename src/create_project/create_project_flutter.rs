@@ -91,7 +91,7 @@ impl CreateProjectFlutter {
             println!("Setting up Melos...");
             SetupMelosProjectFlutter::build(&project_name);
             CreateModuleProjectFlutter::build();
-            CreateFileProjectFlutter::build();
+            CreateFileProjectFlutter::build(&project_name);
 
             println!("{}", "Running `flutter pub get`...".yellow());
             Command::run(&["flutter", "pub", "get"]);

@@ -1,13 +1,16 @@
 use crate::command::Command;
+use indoc::indoc;
 use std::fs;
 
 pub struct CreateFileProjectFlutter;
 
 impl CreateFileProjectFlutter {
-    pub fn build() {
+    pub fn build(project_name: &str) {
         Self::create_app_main_files();
         Self::create_feature_login_page_files();
         Self::create_gitignore_in_app();
+        Self::create_editorconfig_in_root();
+        Self::create_flutter_run_config_in_root(project_name);
     }
 
     fn create_app_main_files() {
@@ -57,5 +60,47 @@ impl CreateFileProjectFlutter {
 
         println!("Create a .gitignore in: {}", gitignore_path);
         Command::write_file(&gitignore_path, gitignore_content);
+    }
+
+    fn create_editorconfig_in_root() {
+        let editorconfig_path = ".editorconfig";
+        let editorconfig_content = include_str!("../../assets/.editorconfig");
+
+        println!("Creating a .editorconfig in: {}", editorconfig_path);
+        Command::write_file(editorconfig_path, editorconfig_content);
+    }
+
+    fn create_flutter_run_config_in_root(project_name: &str) {
+        let run_folder_path = ".run";
+        fs::create_dir_all(run_folder_path).expect("Failed to create .run directory");
+
+        let environments = ["dev", "staging", "prod"];
+
+        for env in environments.iter() {
+            let run_file_path = format!(
+                "{}/Flutter Run -_'{}_{}'.run.xml",
+                run_folder_path, project_name, env
+            );
+
+            let run_file_content = format!(
+                indoc! {r#"
+                <component name="ProjectRunConfigurationManager">
+                  <configuration default="false" name="Flutter Run -&gt; '{}_{}'" type="FlutterRunConfigurationType" factoryName="Flutter">
+                    <option name="additionalArgs" value="--flavor {}" />
+                    <option name="filePath" value="$PROJECT_DIR$/packages/app/lib/main_{}.dart" />
+                    <method v="2" />
+                  </configuration>
+                </component>
+                "#
+                },
+                project_name, env, env, env
+            );
+
+            println!(
+                "Creating Flutter Run configuration for '{}' environment in: {}",
+                env, run_file_path
+            );
+            Command::write_file(&run_file_path, &run_file_content);
+        }
     }
 }
