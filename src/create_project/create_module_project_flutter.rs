@@ -10,8 +10,20 @@ impl CreateModuleProjectFlutter {
     pub fn build() {
         println!("{}", "Configuring other modules...".yellow());
         // Data
-        Self::create_module("data_auth", "./packages/data/data_auth", vec![], vec![]);
-        Self::create_module("data_common", "./packages/data/data_common", vec![], vec![]);
+        Self::create_module(
+            "data_auth",
+            "./packages/data/data_auth",
+            vec![],
+            vec![],
+            vec![("core", "../../library/core")],
+        );
+        Self::create_module(
+            "data_common",
+            "./packages/data/data_common",
+            vec![],
+            vec![],
+            vec![("core", "../../library/core")],
+        );
 
         // Domain
         Self::create_module(
@@ -19,6 +31,7 @@ impl CreateModuleProjectFlutter {
             "./packages/domain/domain_auth",
             vec![],
             vec![],
+            vec![("core", "../../library/core")],
         );
 
         Self::create_module(
@@ -26,6 +39,7 @@ impl CreateModuleProjectFlutter {
             "./packages/domain/domain_common",
             vec![],
             vec![],
+            vec![("core", "../../library/core")],
         );
 
         // Presentation
@@ -34,20 +48,46 @@ impl CreateModuleProjectFlutter {
             "./packages/presentation/feature_common",
             vec![],
             vec![],
+            vec![
+                ("design_system", "../../library/design_system"),
+                ("core", "../../library/core"),
+            ],
         );
         Self::create_module(
             "feature_login",
             "./packages/presentation/feature_login",
             vec![],
             vec![],
+            vec![
+                ("design_system", "../../library/design_system"),
+                ("core", "../../library/core"),
+            ],
         );
 
         // Library
-        Self::create_module("core", "./packages/library/core", vec![], vec![]);
+        Self::create_module(
+            "core",
+            "./packages/library/core",
+            vec![],
+            vec!["injectable_generator", "build_runner", "lint"],
+            vec![],
+        );
         Self::create_module(
             "design_system",
             "./packages/library/design_system",
-            vec![],
+            vec![
+                "flutter_screenutil",
+                "freezed_annotation",
+                "easy_localization",
+            ],
+            vec![
+                "json_serializable",
+                "build_runner",
+                "lint",
+                "freezed",
+                "injectable_generator",
+                "flutter_gen_runner",
+            ],
             vec![],
         );
     }
@@ -57,6 +97,7 @@ impl CreateModuleProjectFlutter {
         module_path: &str,
         dependencies: Vec<&str>,
         dev_dependencies: Vec<&str>,
+        local_dependencies: Vec<(&str, &str)>, // Tambahkan parameter untuk dependencies lokal (nama, path)
     ) {
         println!("Creating module: {}", module_name);
 
@@ -84,15 +125,12 @@ impl CreateModuleProjectFlutter {
             module_name, module_name, sdk_version
         );
 
-        for dependency in dependencies {
-            pubspec_content.push_str(&format!("  {}\n", dependency));
-        }
-
-        if !dev_dependencies.is_empty() {
-            pubspec_content.push_str("\ndev_dependencies:\n");
-            for dev_dependency in dev_dependencies {
-                pubspec_content.push_str(&format!("  {}\n", dev_dependency));
-            }
+        // Tambahkan local dependencies ke pubspec_content
+        for (dependency_name, dependency_path) in &local_dependencies {
+            pubspec_content.push_str(&format!(
+                "  {}:\n    path: {}\n",
+                dependency_name, dependency_path
+            ));
         }
 
         let pubspec_path = format!("{}/pubspec.yaml", module_path);
@@ -100,6 +138,43 @@ impl CreateModuleProjectFlutter {
         pubspec_file
             .write_all(pubspec_content.as_bytes())
             .expect("Failed to write pubspec.yaml");
+
+        // Tambahkan dependencies menggunakan flutter pub add
+        for dependency in dependencies {
+            let output = std::process::Command::new("flutter")
+                .arg("pub")
+                .arg("add")
+                .arg(dependency)
+                .current_dir(module_path)
+                .output()
+                .expect("Failed to add dependency");
+            if !output.status.success() {
+                eprintln!(
+                    "Failed to add dependency {}: {}",
+                    dependency,
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            }
+        }
+
+        // Tambahkan dev_dependencies menggunakan flutter pub add --dev
+        for dev_dependency in dev_dependencies {
+            let output = std::process::Command::new("flutter")
+                .arg("pub")
+                .arg("add")
+                .arg("--dev")
+                .arg(dev_dependency)
+                .current_dir(module_path)
+                .output()
+                .expect("Failed to add dev dependency");
+            if !output.status.success() {
+                eprintln!(
+                    "Failed to add dev dependency {}: {}",
+                    dev_dependency,
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            }
+        }
 
         Self::add_default_files(module_path);
     }
