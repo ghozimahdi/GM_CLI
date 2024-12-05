@@ -9,61 +9,6 @@ pub struct CreateModuleProjectFlutter;
 impl CreateModuleProjectFlutter {
     pub fn build() {
         println!("{}", "Configuring other modules...".yellow());
-        // Data
-        Self::create_module(
-            "data_auth",
-            "./packages/data/data_auth",
-            vec![],
-            vec![],
-            vec![("core", "../../library/core")],
-        );
-        Self::create_module(
-            "data_common",
-            "./packages/data/data_common",
-            vec![],
-            vec![],
-            vec![("core", "../../library/core")],
-        );
-
-        // Domain
-        Self::create_module(
-            "domain_auth",
-            "./packages/domain/domain_auth",
-            vec![],
-            vec![],
-            vec![("core", "../../library/core")],
-        );
-
-        Self::create_module(
-            "domain_common",
-            "./packages/domain/domain_common",
-            vec![],
-            vec![],
-            vec![("core", "../../library/core")],
-        );
-
-        // Presentation
-        Self::create_module(
-            "feature_common",
-            "./packages/presentation/feature_common",
-            vec![],
-            vec![],
-            vec![
-                ("design_system", "../../library/design_system"),
-                ("core", "../../library/core"),
-            ],
-        );
-        Self::create_module(
-            "feature_login",
-            "./packages/presentation/feature_login",
-            vec![],
-            vec![],
-            vec![
-                ("design_system", "../../library/design_system"),
-                ("core", "../../library/core"),
-            ],
-        );
-
         // Library
         Self::create_module(
             "core",
@@ -90,6 +35,87 @@ impl CreateModuleProjectFlutter {
             ],
             vec![],
         );
+
+        // Data
+        Self::create_module(
+            "data_auth",
+            "./packages/data/data_auth",
+            vec![],
+            vec![],
+            vec![("core", "../../library/core")],
+        );
+        Self::create_module(
+            "data_common",
+            "./packages/data/data_common",
+            vec![],
+            vec![],
+            vec![("core", "../../library/core")],
+        );
+
+        // Domain
+        Self::create_module(
+            "domain_auth",
+            "./packages/domain/domain_auth",
+            vec![],
+            vec![],
+            vec![("core", "../../library/core")],
+        );
+        Self::create_module(
+            "domain_common",
+            "./packages/domain/domain_common",
+            vec![],
+            vec![],
+            vec![("core", "../../library/core")],
+        );
+
+        // Presentation
+        Self::create_module(
+            "feature_common",
+            "./packages/presentation/feature_common",
+            vec![
+                "flutter_screenutil",
+                "freezed_annotation",
+                "flutter_bloc",
+                "get_it",
+                "injectable",
+                "rxdart",
+                "auto_route",
+            ],
+            vec![
+                "auto_route_generator",
+                "injectable_generator",
+                "build_runner",
+                "freezed",
+                "lint",
+            ],
+            vec![
+                ("design_system", "../../library/design_system"),
+                ("core", "../../library/core"),
+            ],
+        );
+        Self::create_module(
+            "feature_login",
+            "./packages/presentation/feature_login",
+            vec![
+                "flutter_screenutil",
+                "freezed_annotation",
+                "flutter_bloc",
+                "get_it",
+                "injectable",
+                "auto_route",
+            ],
+            vec![
+                "auto_route_generator",
+                "injectable_generator",
+                "build_runner",
+                "freezed",
+                "lint",
+            ],
+            vec![
+                ("design_system", "../../library/design_system"),
+                ("core", "../../library/core"),
+            ],
+        );
     }
 
     fn create_module(
@@ -97,7 +123,7 @@ impl CreateModuleProjectFlutter {
         module_path: &str,
         dependencies: Vec<&str>,
         dev_dependencies: Vec<&str>,
-        local_dependencies: Vec<(&str, &str)>, // Tambahkan parameter untuk dependencies lokal (nama, path)
+        local_dependencies: Vec<(&str, &str)>,
     ) {
         println!("Creating module: {}", module_name);
 
@@ -167,6 +193,7 @@ impl CreateModuleProjectFlutter {
                 .current_dir(module_path)
                 .output()
                 .expect("Failed to add dev dependency");
+
             if !output.status.success() {
                 eprintln!(
                     "Failed to add dev dependency {}: {}",
