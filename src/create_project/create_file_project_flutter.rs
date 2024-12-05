@@ -1,5 +1,5 @@
+use crate::command::Command;
 use std::fs;
-use std::io::Write;
 
 pub struct CreateFileProjectFlutter;
 
@@ -7,6 +7,7 @@ impl CreateFileProjectFlutter {
     pub fn build() {
         Self::create_app_main_files();
         Self::create_feature_login_page_files();
+        Self::create_gitignore_in_app();
     }
 
     fn create_app_main_files() {
@@ -32,7 +33,7 @@ impl CreateFileProjectFlutter {
         for (file_name, content) in files.iter() {
             let file_path = format!("{}/{}", app_lib_path, file_name);
             println!("Writing to: {}", file_path);
-            Self::write_file(&file_path, content);
+            Command::write_file(&file_path, content);
         }
     }
 
@@ -45,12 +46,16 @@ impl CreateFileProjectFlutter {
         let dart_file_content = include_str!("../../assets/login_page.dart");
 
         println!("Writing to: {}", file_path);
-        Self::write_file(&file_path, dart_file_content);
+        Command::write_file(&file_path, dart_file_content);
     }
 
-    fn write_file(file_path: &str, content: &str) {
-        let mut file = fs::File::create(file_path).expect("Failed to create file");
-        file.write_all(content.as_bytes())
-            .expect("Failed to write to file");
+    fn create_gitignore_in_app() {
+        let app_path = "packages/app";
+        let gitignore_path = format!("{}/.gitignore", app_path);
+        let gitignore_content = include_str!("../../assets/.gitignore");
+        fs::create_dir_all(app_path).expect("Failed to create app directory");
+
+        println!("Create a .gitignore in: {}", gitignore_path);
+        Command::write_file(&gitignore_path, gitignore_content);
     }
 }

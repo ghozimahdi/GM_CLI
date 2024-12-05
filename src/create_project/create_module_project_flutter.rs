@@ -1,3 +1,4 @@
+use crate::command::Command;
 use colored::Colorize;
 use indoc::indoc;
 use std::fs;
@@ -151,12 +152,20 @@ impl CreateModuleProjectFlutter {
             module_name, module_name, sdk_version
         );
 
-        // Tambahkan local dependencies ke pubspec_content
         for (dependency_name, dependency_path) in &local_dependencies {
             pubspec_content.push_str(&format!(
                 "  {}:\n    path: {}\n",
                 dependency_name, dependency_path
             ));
+        }
+
+        pubspec_content.push_str("\n");
+
+        if !dev_dependencies.is_empty() {
+            pubspec_content.push_str("dev_dependencies:\n");
+            for dev_dependency in &dev_dependencies {
+                pubspec_content.push_str(&format!("  {}: any\n", dev_dependency));
+            }
         }
 
         let pubspec_path = format!("{}/pubspec.yaml", module_path);
@@ -165,7 +174,6 @@ impl CreateModuleProjectFlutter {
             .write_all(pubspec_content.as_bytes())
             .expect("Failed to write pubspec.yaml");
 
-        // Tambahkan dependencies menggunakan flutter pub add
         for dependency in dependencies {
             let output = std::process::Command::new("flutter")
                 .arg("pub")
@@ -183,7 +191,6 @@ impl CreateModuleProjectFlutter {
             }
         }
 
-        // Tambahkan dev_dependencies menggunakan flutter pub add --dev
         for dev_dependency in dev_dependencies {
             let output = std::process::Command::new("flutter")
                 .arg("pub")
@@ -207,13 +214,9 @@ impl CreateModuleProjectFlutter {
     }
 
     fn add_default_files(module_path: &str) {
-        let gitignore_content = "/build/\n/.dart_tool/\n/.idea/\n.packages\n";
         let gitignore_path = format!("{}/.gitignore", module_path);
-        let mut gitignore_file =
-            File::create(&gitignore_path).expect("Failed to create .gitignore");
-        gitignore_file
-            .write_all(gitignore_content.as_bytes())
-            .expect("Failed to write .gitignore");
+        let gitignore_content = include_str!("../../assets/.gitignore");
+        Command::write_file(&gitignore_path, gitignore_content);
     }
 
     pub fn read_environment_from_main_project() -> String {
