@@ -166,21 +166,24 @@ impl CreateModuleProjectFlutter {
         let mut update_progress = |step: usize| {
             progress = step as f32 / total_steps as f32;
             let filled_length = (progress * BAR_LENGTH as f32).round() as usize;
-            let bar = "=".repeat(filled_length) + &" ".repeat(BAR_LENGTH - filled_length);
+
+            let bar = "=".repeat(filled_length).to_string()
+                + ">"
+                + &" ".repeat(BAR_LENGTH - filled_length);
+
             let step_text = steps.get(step - 1).unwrap_or(&"Finalizing");
 
             print!(
-                "\r[{}] {:.0}% - {}: {}{}",
+                "\r{} {} [{}] {:.0}% - {}{}",
+                "Building".blue(),
+                module_name.blue(),
                 bar,
                 progress * 100.0,
-                module_name,
                 step_text,
                 " ".repeat(20)
             );
             io::stdout().flush().unwrap();
         };
-
-        println!("Creating module: {}", module_name);
 
         // Step 1: Create directories
         fs::create_dir_all(module_path).expect("Failed to create module directory");
@@ -242,7 +245,7 @@ impl CreateModuleProjectFlutter {
         update_progress(5);
 
         // Clear the progress bar line
-        print!("\r{}\r", " ".repeat(BAR_LENGTH + 50)); // Clear the current line
+        print!("\r{}\r", " ".repeat(BAR_LENGTH + 100)); // Clear the current line
         println!(
             "{}",
             format!("Module {} created successfully!", module_name).green()
@@ -289,10 +292,21 @@ impl CreateModuleProjectFlutter {
         let mut update_progress = |step: usize| {
             progress = step as f32 / total_steps as f32;
             let filled_length = (progress * BAR_LENGTH as f32).round() as usize;
-            let bar = "=".repeat(filled_length) + &" ".repeat(BAR_LENGTH - filled_length);
+            let bar = "=".repeat(filled_length).to_string()
+                + ">"
+                + &" ".repeat(BAR_LENGTH - filled_length);
+
             let step_text = steps.get(step - 1).unwrap_or(&"Finalizing");
 
-            print!("\r[{}] {:.0}% - {}", bar, progress * 100.0, step_text);
+            print!(
+                "\r{} {} [{}] {:.0}% - {}{}",
+                "Updating".blue(),
+                "App Module".blue(),
+                bar,
+                progress * 100.0,
+                step_text,
+                " ".repeat(20)
+            );
             io::stdout().flush().unwrap();
         };
 
