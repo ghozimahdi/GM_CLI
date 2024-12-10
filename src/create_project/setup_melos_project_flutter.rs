@@ -9,7 +9,20 @@ pub struct SetupMelosProjectFlutter;
 impl SetupMelosProjectFlutter {
     pub fn build(project_name: &str) {
         let sdk_version = CreateModuleProjectFlutter::read_environment_from_main_project();
-        let melos_config = format!("name: {}\npackages:\n  - packages/**\n", project_name);
+
+        let melos_config = indoc! {r#"
+            name: {project_name}
+            packages:
+              - packages/library/core
+              - packages/library/design_system
+              - packages/domain/domain_auth
+              - packages/domain/domain_common
+              - packages/data/data_auth
+              - packages/data/data_common
+              - packages/presentation/feature_common
+              - packages/presentation/feature_login
+        "#}
+        .replace("{project_name}", project_name);
 
         let mut melos_file = File::create("melos.yaml").expect("Failed to create melos.yaml");
         melos_file
