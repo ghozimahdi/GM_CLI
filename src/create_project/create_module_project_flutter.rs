@@ -1,9 +1,9 @@
 use crate::command::Command;
 use colored::Colorize;
 use indoc::indoc;
-use std::fs;
 use std::fs::File;
 use std::io::Write;
+use std::{fs, io};
 
 pub struct CreateModuleProjectFlutter;
 
@@ -152,15 +152,45 @@ impl CreateModuleProjectFlutter {
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,
     ) {
+        const BAR_LENGTH: usize = 50;
+        let steps = vec![
+            "Creating directories",
+            "Generating pubspec.yaml",
+            "Adding dependencies",
+            "Adding dev dependencies",
+            "Adding default files",
+        ];
+        let total_steps = steps.len();
+        let mut progress = 0.0;
+
+        let mut update_progress = |step: usize| {
+            progress = step as f32 / total_steps as f32;
+            let filled_length = (progress * BAR_LENGTH as f32).round() as usize;
+            let bar = "=".repeat(filled_length) + &" ".repeat(BAR_LENGTH - filled_length);
+            let step_text = steps.get(step - 1).unwrap_or(&"Finalizing");
+
+            print!(
+                "\r[{}] {:.0}% - {}: {}{}",
+                bar,
+                progress * 100.0,
+                module_name,
+                step_text,
+                " ".repeat(20)
+            );
+            io::stdout().flush().unwrap();
+        };
+
         println!("Creating module: {}", module_name);
 
+        // Step 1: Create directories
         fs::create_dir_all(module_path).expect("Failed to create module directory");
         fs::create_dir_all(format!("{}/lib", module_path)).expect("Failed to create lib directory");
         fs::create_dir_all(format!("{}/test", module_path))
             .expect("Failed to create test directory");
+        update_progress(1);
 
+        // Step 2: Generate pubspec.yaml
         let sdk_version = Self::read_environment_from_main_project();
-
         let mut pubspec_content = format!(
             indoc! {r#"
             name: {}
@@ -185,8 +215,6 @@ impl CreateModuleProjectFlutter {
             ));
         }
 
-        pubspec_content.push_str("\n");
-
         if !dev_dependencies.is_empty() {
             pubspec_content.push_str("dev_dependencies:\n");
             for dev_dependency in &dev_dependencies {
@@ -199,10 +227,26 @@ impl CreateModuleProjectFlutter {
         pubspec_file
             .write_all(pubspec_content.as_bytes())
             .expect("Failed to write pubspec.yaml");
+        update_progress(2);
 
+        // Step 3: Add dependencies
         Self::add_dependencies(dependencies, module_path, false);
+        update_progress(3);
+
+        // Step 4: Add dev dependencies
         Self::add_dependencies(dev_dependencies, module_path, true);
+        update_progress(4);
+
+        // Step 5: Add default files
         Self::add_default_files(module_path);
+        update_progress(5);
+
+        // Clear the progress bar line
+        print!("\r{}\r", " ".repeat(BAR_LENGTH + 50)); // Clear the current line
+        println!(
+            "{}",
+            format!("Module {} created successfully!", module_name).green()
+        );
     }
 
     fn add_default_files(module_path: &str) {
@@ -231,7 +275,30 @@ impl CreateModuleProjectFlutter {
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,
     ) {
+        const BAR_LENGTH: usize = 50;
+        let steps = vec![
+            "Reading app's pubspec.yaml",
+            "Updating local dependencies",
+            "Writing updated pubspec.yaml",
+            "Adding dependencies",
+            "Adding dev dependencies",
+        ];
+        let total_steps = steps.len();
+        let mut progress = 0.0;
+
+        let mut update_progress = |step: usize| {
+            progress = step as f32 / total_steps as f32;
+            let filled_length = (progress * BAR_LENGTH as f32).round() as usize;
+            let bar = "=".repeat(filled_length) + &" ".repeat(BAR_LENGTH - filled_length);
+            let step_text = steps.get(step - 1).unwrap_or(&"Finalizing");
+
+            print!("\r[{}] {:.0}% - {}", bar, progress * 100.0, step_text);
+            io::stdout().flush().unwrap();
+        };
+
         let app_pubspec_path = "./packages/app/pubspec.yaml";
+        update_progress(1); // Step 1: Reading app's pubspec.yaml
+
         let mut pubspec_content =
             fs::read_to_string(app_pubspec_path).expect("Failed to read app's pubspec.yaml");
 
@@ -258,14 +325,24 @@ impl CreateModuleProjectFlutter {
                 before_flutter, local_dependencies_content, after_flutter
             );
         }
+        update_progress(2); // Step 2: Updating local dependencies
 
         fs::write(app_pubspec_path, pubspec_content)
             .expect("Failed to write updated app's pubspec.yaml");
+        update_progress(3); // Step 3: Writing updated pubspec.yaml
 
         Self::add_dependencies(dependencies, "./packages/app", false);
-        Self::add_dependencies(dev_dependencies, "./packages/app", true);
+        update_progress(4); // Step 4: Adding dependencies
 
-        println!("Updated pubspec.yaml for app with new dependencies.");
+        Self::add_dependencies(dev_dependencies, "./packages/app", true);
+        update_progress(5); // Step 5: Adding dev dependencies
+
+        // Clear the progress bar line
+        print!("\r{}\r", " ".repeat(BAR_LENGTH + 50)); // Clear the current line
+        println!(
+            "{}",
+            "Updated pubspec.yaml for app with new dependencies.".green()
+        );
     }
 
     fn add_dependencies(dependencies: Vec<&str>, path: &str, is_dev: bool) {
