@@ -363,7 +363,7 @@ impl CreateModuleProjectFlutter {
         update_progress(5); // Step 5: Adding dev dependencies
 
         // Clear the progress bar line
-        print!("\r{}\r", " ".repeat(BAR_LENGTH + 50)); // Clear the current line
+        print!("\r{}\r", " ".repeat(BAR_LENGTH + 100)); // Clear the current line
         println!(
             "{}",
             "Updated pubspec.yaml for app with new dependencies.".green()
