@@ -11,13 +11,13 @@ impl CreateModuleProjectFlutter {
     pub fn build() {
         println!("{}", "Configuring other modules...".yellow());
         // Library
-        // Self::create_module(
-        //     "core",
-        //     "./packages/library/core",
-        //     vec![],
-        //     vec!["injectable_generator", "build_runner", "lint"],
-        //     vec![],
-        // );
+        Self::create_module(
+            "core",
+            "./packages/library/core",
+            vec![],
+            vec!["injectable_generator", "build_runner", "lint"],
+            vec![],
+        );
         Self::create_module(
             "resource",
             "./packages/library/resource",
@@ -27,6 +27,7 @@ impl CreateModuleProjectFlutter {
                 "easy_localization",
                 "flutter_svg",
                 "lottie",
+                "json_annotation",
             ],
             vec![
                 "json_serializable",
@@ -39,112 +40,112 @@ impl CreateModuleProjectFlutter {
             vec![],
         );
 
-        // // Domain
-        // Self::create_module(
-        //     "domain_auth",
-        //     "./packages/domain/domain_auth",
-        //     vec![],
-        //     vec![],
-        //     vec![("core", "../../library/core")],
-        // );
-        // Self::create_module(
-        //     "domain_common",
-        //     "./packages/domain/domain_common",
-        //     vec![],
-        //     vec![],
-        //     vec![("core", "../../library/core")],
-        // );
-        //
-        // // Data
-        // Self::create_module(
-        //     "data_auth",
-        //     "./packages/data/data_auth",
-        //     vec![],
-        //     vec![],
-        //     vec![
-        //         ("core", "../../library/core"),
-        //         ("domain_auth", "../../domain/domain_auth"),
-        //     ],
-        // );
-        // Self::create_module(
-        //     "data_common",
-        //     "./packages/data/data_common",
-        //     vec![],
-        //     vec![],
-        //     vec![
-        //         ("core", "../../library/core"),
-        //         ("domain_common", "../../domain/domain_common"),
-        //     ],
-        // );
-        //
-        // // Presentation
-        // Self::create_module(
-        //     "feature_common",
-        //     "./packages/presentation/feature_common",
-        //     vec![
-        //         "flutter_screenutil",
-        //         "freezed_annotation",
-        //         "flutter_bloc",
-        //         "get_it",
-        //         "injectable",
-        //         "rxdart",
-        //         "auto_route",
-        //     ],
-        //     vec![
-        //         "auto_route_generator",
-        //         "injectable_generator",
-        //         "build_runner",
-        //         "freezed",
-        //         "lint",
-        //     ],
-        //     vec![
-        //         ("resource", "../../library/resource"),
-        //         ("core", "../../library/core"),
-        //     ],
-        // );
-        // Self::create_module(
-        //     "feature_login",
-        //     "./packages/presentation/feature_login",
-        //     vec![
-        //         "flutter_screenutil",
-        //         "freezed_annotation",
-        //         "flutter_bloc",
-        //         "get_it",
-        //         "injectable",
-        //         "auto_route",
-        //     ],
-        //     vec![
-        //         "auto_route_generator",
-        //         "injectable_generator",
-        //         "build_runner",
-        //         "freezed",
-        //         "lint",
-        //     ],
-        //     vec![
-        //         ("resource", "../../library/resource"),
-        //         ("core", "../../library/core"),
-        //     ],
-        // );
+        // Domain
+        Self::create_module(
+            "domain_auth",
+            "./packages/domain/domain_auth",
+            vec![],
+            vec!["lint"],
+            vec![("core", "../../library/core")],
+        );
+        Self::create_module(
+            "domain_common",
+            "./packages/domain/domain_common",
+            vec![],
+            vec!["lint"],
+            vec![("core", "../../library/core")],
+        );
 
-        // Self::update_app_pubspec_dependencies(
-        //     vec!["get_it", "injectable", "auto_route"],
-        //     vec![
-        //         "auto_route_generator",
-        //         "injectable_generator",
-        //         "build_runner",
-        //         "lint",
-        //     ],
-        //     vec![
-        //         ("resource", "../library/resource"),
-        //         ("core", "../library/core"),
-        //         ("domain_common", "../domain/domain_common"),
-        //         ("domain_auth", "../domain/domain_auth"),
-        //         ("data_common", "../data/data_common"),
-        //         ("data_auth", "../data/data_auth"),
-        //         ("feature_common", "../presentation/feature_common"),
-        //         ("feature_login", "../presentation/feature_login"),
-        //     ],
-        // );
+        // Data
+        Self::create_module(
+            "data_auth",
+            "./packages/data/data_auth",
+            vec![],
+            vec!["lint"],
+            vec![
+                ("core", "../../library/core"),
+                ("domain_auth", "../../domain/domain_auth"),
+            ],
+        );
+        Self::create_module(
+            "data_common",
+            "./packages/data/data_common",
+            vec![],
+            vec!["lint"],
+            vec![
+                ("core", "../../library/core"),
+                ("domain_common", "../../domain/domain_common"),
+            ],
+        );
+
+        // Presentation
+        Self::create_module(
+            "feature_common",
+            "./packages/presentation/feature_common",
+            vec![
+                "flutter_screenutil",
+                "freezed_annotation",
+                "flutter_bloc",
+                "get_it",
+                "injectable",
+                "rxdart",
+                "auto_route",
+            ],
+            vec![
+                "auto_route_generator",
+                "injectable_generator",
+                "build_runner",
+                "freezed",
+                "lint",
+            ],
+            vec![
+                ("resource", "../../library/resource"),
+                ("core", "../../library/core"),
+            ],
+        );
+        Self::create_module(
+            "feature_login",
+            "./packages/presentation/feature_login",
+            vec![
+                "flutter_screenutil",
+                "freezed_annotation",
+                "flutter_bloc",
+                "get_it",
+                "injectable",
+                "auto_route",
+            ],
+            vec![
+                "auto_route_generator",
+                "injectable_generator",
+                "build_runner",
+                "freezed",
+                "lint",
+            ],
+            vec![
+                ("resource", "../../library/resource"),
+                ("core", "../../library/core"),
+            ],
+        );
+
+        Self::update_app_pubspec_dependencies(
+            vec!["get_it", "injectable", "auto_route"],
+            vec![
+                "auto_route_generator",
+                "injectable_generator",
+                "build_runner",
+                "lint",
+            ],
+            vec![
+                ("resource", "../library/resource"),
+                ("core", "../library/core"),
+                ("domain_common", "../domain/domain_common"),
+                ("domain_auth", "../domain/domain_auth"),
+                ("data_common", "../data/data_common"),
+                ("data_auth", "../data/data_auth"),
+                ("feature_common", "../presentation/feature_common"),
+                ("feature_login", "../presentation/feature_login"),
+            ],
+        );
     }
 
     fn create_module(
@@ -245,6 +246,7 @@ impl CreateModuleProjectFlutter {
 
         // Step 5: Add default files
         Self::add_default_files(module_path);
+        Self::add_analysis_options(module_path);
         update_progress(5);
 
         // Clear the progress bar line
@@ -259,6 +261,12 @@ impl CreateModuleProjectFlutter {
         let gitignore_path = format!("{}/.gitignore", module_path);
         let gitignore_content = include_str!("../../assets/.gitignore");
         Command::write_file(&gitignore_path, gitignore_content);
+    }
+
+    pub fn add_analysis_options(module_path: &str) {
+        let analysis_options_path = format!("{}/analysis_options.yaml", module_path);
+        let analysis_options_content = include_str!("../../assets/analysis_options.yaml");
+        Command::write_file(&analysis_options_path, analysis_options_content);
     }
 
     pub fn read_environment_from_main_project() -> String {

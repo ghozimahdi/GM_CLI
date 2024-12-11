@@ -10,11 +10,11 @@ pub struct CreateFileProjectFlutter;
 
 impl CreateFileProjectFlutter {
     pub fn build(project_name: &str) {
-        // Self::create_app_main_files();
-        // Self::create_feature_login_page_files();
-        // Self::create_gitignore_in_app();
-        // Self::create_editorconfig_in_root();
-        // Self::create_flutter_run_config_in_root(project_name);
+        Self::create_app_main_files();
+        Self::create_feature_login_page_files();
+        Self::create_gitignore_in_app();
+        Self::create_editorconfig_in_root();
+        Self::create_flutter_run_config_in_root(project_name);
         Self::generate_resource_files();
     }
 

@@ -96,6 +96,7 @@ impl CreateProjectFlutter {
             SetupFVMProjectFlutter::build();
 
             CreateModuleProjectFlutter::build();
+            CreateModuleProjectFlutter::add_analysis_options(app_path);
             CreateFileProjectFlutter::build(&project_name);
 
             println!("{}", "Running `flutter pub get`...".yellow());
