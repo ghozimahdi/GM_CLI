@@ -10,11 +10,11 @@ pub struct CreateFileProjectFlutter;
 
 impl CreateFileProjectFlutter {
     pub fn build(project_name: &str) {
-        Self::create_app_main_files();
-        Self::create_feature_login_page_files();
-        Self::create_gitignore_in_app();
-        Self::create_editorconfig_in_root();
-        Self::create_flutter_run_config_in_root(project_name);
+        // Self::create_app_main_files();
+        // Self::create_feature_login_page_files();
+        // Self::create_gitignore_in_app();
+        // Self::create_editorconfig_in_root();
+        // Self::create_flutter_run_config_in_root(project_name);
         Self::generate_resource_files();
     }
 
@@ -138,12 +138,17 @@ impl CreateFileProjectFlutter {
             .get_dir(source_dir)
             .expect("Failed to find resource directory");
 
-        if let Some(flutter_gen_file) = root_dir.get_file("flutter_gen.yaml") {
+        if let Some(flutter_gen_file) = root_dir
+            .files()
+            .find(|f| f.path().file_name().unwrap() == "flutter_gen.yaml")
+        {
             println!("Appending flutter_gen.yaml content to pubspec.yaml");
 
             let mut existing_pubspec_content = String::new();
-            if let Ok(content) = fs::read_to_string(dest_pubspec_path) {
-                existing_pubspec_content = content;
+            if Path::new(dest_pubspec_path).exists() {
+                if let Ok(content) = fs::read_to_string(dest_pubspec_path) {
+                    existing_pubspec_content = content;
+                }
             }
 
             let updated_content = format!(
