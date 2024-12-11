@@ -1,6 +1,10 @@
 use crate::command::Command;
+use include_dir::{include_dir, Dir};
 use indoc::indoc;
 use std::fs;
+use std::path::Path;
+
+static ASSETS: Dir = include_dir!("assets");
 
 pub struct CreateFileProjectFlutter;
 
@@ -11,6 +15,7 @@ impl CreateFileProjectFlutter {
         Self::create_gitignore_in_app();
         Self::create_editorconfig_in_root();
         Self::create_flutter_run_config_in_root(project_name);
+        Self::move_design_system_files();
     }
 
     fn create_app_main_files() {
@@ -18,56 +23,62 @@ impl CreateFileProjectFlutter {
         fs::create_dir_all(app_lib_path).expect("Failed to create app lib directory");
 
         let files = [
-            ("main_dev.dart", include_str!("../../assets/main_dev.dart")),
-            (
-                "main_prod.dart",
-                include_str!("../../assets/main_prod.dart"),
-            ),
-            (
-                "main_staging.dart",
-                include_str!("../../assets/main_staging.dart"),
-            ),
-            (
-                "main_common.dart",
-                include_str!("../../assets/main_common.dart"),
-            ),
+            ("main_dev.dart", "main_dev.dart"),
+            ("main_prod.dart", "main_prod.dart"),
+            ("main_staging.dart", "main_staging.dart"),
+            ("main_common.dart", "main_common.dart"),
         ];
 
-        for (file_name, content) in files.iter() {
+        for (file_name, asset_path) in files.iter() {
+            let file = ASSETS
+                .get_file(asset_path)
+                .expect(&format!("Failed to find {} in assets", asset_path));
+
             let file_path = format!("{}/{}", app_lib_path, file_name);
+
             println!("Writing to: {}", file_path);
-            Command::write_file(&file_path, content);
+            fs::write(&file_path, file.contents())
+                .expect(&format!("Failed to write {}", file_name));
         }
     }
 
     fn create_feature_login_page_files() {
         let feature_login_path = "packages/presentation/feature_login/lib";
-        fs::create_dir_all(feature_login_path).expect("Failed to create feature login directory");
-
         let file_path = format!("{}/login_page.dart", feature_login_path);
 
-        let dart_file_content = include_str!("../../assets/login_page.dart");
+        let file = ASSETS
+            .get_file("login_page.dart")
+            .expect("Failed to find login_page.dart in assets");
+
+        fs::create_dir_all(feature_login_path).expect("Failed to create feature login directory");
 
         println!("Writing to: {}", file_path);
-        Command::write_file(&file_path, dart_file_content);
+        fs::write(&file_path, file.contents()).expect("Failed to write login_page.dart file");
     }
 
     fn create_gitignore_in_app() {
         let app_path = "packages/app";
         let gitignore_path = format!("{}/.gitignore", app_path);
-        let gitignore_content = include_str!("../../assets/.gitignore");
+
+        let file = ASSETS
+            .get_file(".gitignore")
+            .expect("Failed to find .gitignore in assets");
+
         fs::create_dir_all(app_path).expect("Failed to create app directory");
 
         println!("Create a .gitignore in: {}", gitignore_path);
-        Command::write_file(&gitignore_path, gitignore_content);
+        fs::write(&gitignore_path, file.contents()).expect("Failed to write .gitignore file");
     }
 
     fn create_editorconfig_in_root() {
         let editorconfig_path = ".editorconfig";
-        let editorconfig_content = include_str!("../../assets/.editorconfig");
+
+        let file = ASSETS
+            .get_file(".editorconfig")
+            .expect("Failed to find .editorconfig in assets");
 
         println!("Creating a .editorconfig in: {}", editorconfig_path);
-        Command::write_file(editorconfig_path, editorconfig_content);
+        fs::write(editorconfig_path, file.contents()).expect("Failed to write .editorconfig file");
     }
 
     fn create_flutter_run_config_in_root(project_name: &str) {
@@ -101,6 +112,53 @@ impl CreateFileProjectFlutter {
                 env, run_file_path
             );
             Command::write_file(&run_file_path, &run_file_content);
+        }
+    }
+
+    fn move_design_system_files() {
+        let source_dir = "designsystem";
+        let dest_assets_dir = "packages/library/design_system/assets";
+        let dest_lib_dir = "packages/library/design_system/lib";
+
+        fs::create_dir_all(dest_assets_dir).expect("Failed to create assets directory");
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let assets_dir = ASSETS
+            .get_dir(format!("{}/assets", source_dir))
+            .expect("Failed to find assets directory in designsystem");
+        Self::copy_contents_only(assets_dir, Path::new(dest_assets_dir));
+
+        let lib_dir = ASSETS
+            .get_dir(format!("{}/lib", source_dir))
+            .expect("Failed to find lib directory in designsystem");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        let root_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find designsystem directory");
+
+        for file in root_dir.files() {
+            let file_dest_path =
+                Path::new("packages/library/design_system").join(file.path().file_name().unwrap());
+            fs::write(&file_dest_path, file.contents()).expect("Failed to write file");
+            println!("Generating file: {}", file_dest_path.display());
+        }
+
+        println!("All files and folders from designsystem successfully moved.");
+    }
+
+    fn copy_contents_only(dir: &Dir, dest_path: &Path) {
+        for file in dir.files() {
+            let file_dest_path = dest_path.join(file.path().file_name().unwrap());
+            println!("Generating file: {}", file_dest_path.display());
+            fs::write(&file_dest_path, file.contents()).expect("Failed to write file");
+        }
+
+        for subdir in dir.dirs() {
+            let subdir_dest_path = dest_path.join(subdir.path().file_name().unwrap());
+            println!("Creating directory: {}", subdir_dest_path.display());
+            fs::create_dir_all(&subdir_dest_path).expect("Failed to create subdirectory");
+            Self::copy_contents_only(subdir, &subdir_dest_path);
         }
     }
 }

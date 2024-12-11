@@ -14,3 +14,4 @@ qrcode = "0.14.1"
 serde = { version = "1.0.215", features = ["derive"] }
 regex = "1.11.1"
 indoc = "2.0.5"
+include_dir = "0.7"
