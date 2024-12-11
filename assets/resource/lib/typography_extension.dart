@@ -1,5 +1,5 @@
-import 'package:component/design_system/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:resource/resource.dart';
 
 extension HeadlineTextThemeExt on TextTheme {
   TextStyle? get headlineSmallSemiBold => headlineSmall?.copyWith(

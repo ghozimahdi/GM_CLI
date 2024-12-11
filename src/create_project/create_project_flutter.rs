@@ -103,6 +103,8 @@ impl CreateProjectFlutter {
 
             println!("{}", "Bootstrapping with Melos...".yellow());
             Command::run(&["melos", "bootstrap"]);
+            Command::run(&["melos", "locale"]);
+            Command::run(&["melos", "build"]);
 
             println!(
                 "{}",

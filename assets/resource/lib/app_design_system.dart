@@ -1,9 +1,8 @@
-import 'package:component/component.dart';
-import 'package:component/design_system/app_colors.dart';
-import 'package:component/design_system/dtos/colors_token_dto.dart';
-import 'package:component/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:resource/dtos/colors_token_dto.dart';
+import 'package:resource/resource.dart';
 
 final dsystem = AppDesignSystem();
 
@@ -61,55 +60,55 @@ class AppDesignSystem {
         // Calculate from spacing (figma) / fontSize
         letterSpacing: -(36.sp * 0.022),
         // Calculate from height (figma) / fontSize
-        height: (44.sp / 36.sp),
+        height: 44.sp / 36.sp,
       ),
       headlineMedium: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 32.sp,
         letterSpacing: -(32.sp * 0.03),
-        height: (40.sp / 32.sp),
+        height: 40.sp / 32.sp,
       ),
       headlineSmall: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 24.sp,
         letterSpacing: -(24.sp * 0.03),
-        height: (32.sp / 24.sp),
+        height: 32.sp / 24.sp,
       ),
       titleLarge: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 20.sp,
         letterSpacing: -(20.sp * 0.02),
-        height: (28.sp / 20.sp),
+        height: 28.sp / 20.sp,
       ),
       titleMedium: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 18.sp,
         letterSpacing: -(18.sp * 0.02),
-        height: (28.sp / 18.sp),
+        height: 28.sp / 18.sp,
       ),
       titleSmall: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 16.sp,
         letterSpacing: -(16.sp * 0.02),
-        height: (26.sp / 16.sp),
+        height: 26.sp / 16.sp,
       ),
       bodyLarge: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 14.sp,
         letterSpacing: -(14.sp * 0.02),
-        height: (22.sp / 14.sp),
+        height: 22.sp / 14.sp,
       ),
       bodySmall: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 12.sp,
         letterSpacing: 0,
-        height: (16.sp / 12.sp),
+        height: 16.sp / 12.sp,
       ),
       labelSmall: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 11.sp,
         letterSpacing: 0,
-        height: (14.sp / 10.sp),
+        height: 14.sp / 10.sp,
       ),
     ).apply(
       fontFamily: 'Inter',

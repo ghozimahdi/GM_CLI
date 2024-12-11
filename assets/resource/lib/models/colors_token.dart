@@ -1,8 +1,8 @@
-import 'package:component/design_system/app_material_color.dart';
-import 'package:component/design_system/models/add_on_shades.dart';
-import 'package:component/design_system/models/outline_shades.dart';
-import 'package:component/design_system/models/surface_shades.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:resource/models/add_on_shades.dart';
+import 'package:resource/models/outline_shades.dart';
+import 'package:resource/models/surface_shades.dart';
+import 'package:resource/resource.dart';
 
 // part directive needed for freezed code generation.
 part 'colors_token.freezed.dart';
@@ -43,4 +43,3 @@ class ColorsToken with _$ColorsToken {
         addOn: AddOnShades.defaults(),
       );
 }
-

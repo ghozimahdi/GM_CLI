@@ -1,8 +1,8 @@
-import 'package:design_system/app_material_color.dart';
-import 'package:design_system/models/add_on_shades.dart';
-import 'package:design_system/models/colors_token.dart';
-import 'package:design_system/models/outline_shades.dart';
-import 'package:design_system/models/surface_shades.dart';
+import 'package:resource/app_material_color.dart';
+import 'package:resource/models/add_on_shades.dart';
+import 'package:resource/models/colors_token.dart';
+import 'package:resource/models/outline_shades.dart';
+import 'package:resource/models/surface_shades.dart';
 
 /// Global instance of AppColors for easy access throughout the application.
 final colors = AppColors();

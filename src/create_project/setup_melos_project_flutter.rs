@@ -14,13 +14,42 @@ impl SetupMelosProjectFlutter {
             name: {project_name}
             packages:
               - packages/library/core
-              - packages/library/design_system
+              - packages/library/resource
               - packages/domain/domain_auth
               - packages/domain/domain_common
               - packages/data/data_auth
               - packages/data/data_common
               - packages/presentation/feature_common
               - packages/presentation/feature_login
+
+            command:
+              bootstrap:
+                usePubspecOverrides: true
+
+            scripts:
+              build:
+                run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build -d"
+                description: "Run build runner with depends-on"
+
+              locale:
+                run: melos exec --depends-on="easy_localization" -- "flutter pub run easy_localization:generate -f keys -S assets/translations"
+                description: "Run easy_localization with depends-on"
+
+              assets:
+                run: melos exec --depends-on="flutter_gen_runner" -- "dart run build_runner build -d"
+                description: "Run flutter_gen with depends-on"
+
+              env:
+                run: melos exec --depends-on="envied" -- "dart run build_runner build -d"
+                description: "Run envied with depends-on"
+
+              upgrade:
+                run: melos exec --fail-fast -- flutter pub upgrade --major-versions
+                description: "Run envied with depends-on"
+
+              flavors:
+                run: melos exec --depends-on="flutter_flavorizr" -- "flutter pub run flutter_flavorizr"
+                description: "Run flutter_flavorizr with depends-on"
         "#}
         .replace("{project_name}", project_name);
 

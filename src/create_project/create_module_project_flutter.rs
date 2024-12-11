@@ -19,12 +19,14 @@ impl CreateModuleProjectFlutter {
             vec![],
         );
         Self::create_module(
-            "design_system",
-            "./packages/library/design_system",
+            "resource",
+            "./packages/library/resource",
             vec![
                 "flutter_screenutil",
                 "freezed_annotation",
                 "easy_localization",
+                "flutter_svg",
+                "lottie",
             ],
             vec![
                 "json_serializable",
@@ -96,7 +98,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("design_system", "../../library/design_system"),
+                ("resource", "../../library/resource"),
                 ("core", "../../library/core"),
             ],
         );
@@ -119,7 +121,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("design_system", "../../library/design_system"),
+                ("resource", "../../library/resource"),
                 ("core", "../../library/core"),
             ],
         );
@@ -133,7 +135,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("design_system", "../library/design_system"),
+                ("resource", "../library/resource"),
                 ("core", "../library/core"),
                 ("domain_common", "../domain/domain_common"),
                 ("domain_auth", "../domain/domain_auth"),
@@ -197,8 +199,9 @@ impl CreateModuleProjectFlutter {
         let mut pubspec_content = format!(
             indoc! {r#"
             name: {}
-            description: Modular project for {}
+            description: "Modular project for {}"
             version: 1.0.0
+            publish_to: 'none'
 
             environment:
               {}

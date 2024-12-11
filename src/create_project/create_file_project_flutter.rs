@@ -15,7 +15,7 @@ impl CreateFileProjectFlutter {
         Self::create_gitignore_in_app();
         Self::create_editorconfig_in_root();
         Self::create_flutter_run_config_in_root(project_name);
-        Self::move_design_system_files();
+        Self::generate_resource_files();
     }
 
     fn create_app_main_files() {
@@ -36,7 +36,7 @@ impl CreateFileProjectFlutter {
 
             let file_path = format!("{}/{}", app_lib_path, file_name);
 
-            println!("Writing to: {}", file_path);
+            println!("Generating file: {}", file_path);
             fs::write(&file_path, file.contents())
                 .expect(&format!("Failed to write {}", file_name));
         }
@@ -52,7 +52,7 @@ impl CreateFileProjectFlutter {
 
         fs::create_dir_all(feature_login_path).expect("Failed to create feature login directory");
 
-        println!("Writing to: {}", file_path);
+        println!("Generating file: {}", file_path);
         fs::write(&file_path, file.contents()).expect("Failed to write login_page.dart file");
     }
 
@@ -115,36 +115,49 @@ impl CreateFileProjectFlutter {
         }
     }
 
-    fn move_design_system_files() {
-        let source_dir = "designsystem";
-        let dest_assets_dir = "packages/library/design_system/assets";
-        let dest_lib_dir = "packages/library/design_system/lib";
+    fn generate_resource_files() {
+        let source_dir = "resource";
+        let dest_assets_dir = "packages/library/resource/assets";
+        let dest_lib_dir = "packages/library/resource/lib";
+        let dest_pubspec_path = "packages/library/resource/pubspec.yaml";
 
         fs::create_dir_all(dest_assets_dir).expect("Failed to create assets directory");
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
         let assets_dir = ASSETS
             .get_dir(format!("{}/assets", source_dir))
-            .expect("Failed to find assets directory in designsystem");
+            .expect("Failed to find assets directory in resource");
         Self::copy_contents_only(assets_dir, Path::new(dest_assets_dir));
 
         let lib_dir = ASSETS
             .get_dir(format!("{}/lib", source_dir))
-            .expect("Failed to find lib directory in designsystem");
+            .expect("Failed to find lib directory in resource");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
         let root_dir = ASSETS
             .get_dir(source_dir)
-            .expect("Failed to find designsystem directory");
+            .expect("Failed to find resource directory");
 
-        for file in root_dir.files() {
-            let file_dest_path =
-                Path::new("packages/library/design_system").join(file.path().file_name().unwrap());
-            fs::write(&file_dest_path, file.contents()).expect("Failed to write file");
-            println!("Generating file: {}", file_dest_path.display());
+        if let Some(flutter_gen_file) = root_dir.get_file("flutter_gen.yaml") {
+            println!("Appending flutter_gen.yaml content to pubspec.yaml");
+
+            let mut existing_pubspec_content = String::new();
+            if let Ok(content) = fs::read_to_string(dest_pubspec_path) {
+                existing_pubspec_content = content;
+            }
+
+            let updated_content = format!(
+                "{}\n\n# Auto-generated flutter_gen configuration\n{}",
+                existing_pubspec_content,
+                String::from_utf8_lossy(flutter_gen_file.contents())
+            );
+
+            fs::write(dest_pubspec_path, updated_content).expect("Failed to update pubspec.yaml");
+        } else {
+            eprintln!("flutter_gen.yaml not found in resource directory!");
         }
 
-        println!("All files and folders from designsystem successfully moved.");
+        println!("All files and folders from resource successfully moved.");
     }
 
     fn copy_contents_only(dir: &Dir, dest_path: &Path) {

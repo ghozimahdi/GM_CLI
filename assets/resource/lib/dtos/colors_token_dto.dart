@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:component/design_system/app_material_color.dart';
-import 'package:component/design_system/dtos/shades_dto.dart';
-import 'package:component/design_system/models/add_on_shades.dart';
-import 'package:component/design_system/models/colors_token.dart';
-import 'package:component/design_system/models/outline_shades.dart';
-import 'package:component/design_system/models/surface_shades.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:resource/app_material_color.dart';
+import 'package:resource/dtos/shades_dto.dart';
+import 'package:resource/models/add_on_shades.dart';
+import 'package:resource/models/colors_token.dart';
+import 'package:resource/models/outline_shades.dart';
+import 'package:resource/models/surface_shades.dart';
 
 part 'colors_token_dto.freezed.dart';
 part 'colors_token_dto.g.dart';
@@ -29,7 +29,7 @@ class ColorsTokenDTO with _$ColorsTokenDTO {
       _$ColorsTokenDTOFromJson(json);
 
   factory ColorsTokenDTO.fromJsonString(String str) =>
-      ColorsTokenDTO.fromJson(json.decode(str));
+      ColorsTokenDTO.fromJson(json.decode(str) as Map<String, dynamic>);
 
   ColorsToken toColorsToken() => ColorsToken(
         primary: primary?.toMaterialColor() ?? AppMaterialColor.empty(),
@@ -40,11 +40,16 @@ class ColorsTokenDTO with _$ColorsTokenDTO {
           black: surface?.black?.color ?? Colors.black,
           background: surface?.background?.color ?? Colors.white,
         ),
-        semanticPurple: semantic?.purple?.toMaterialColor() ?? AppMaterialColor.empty(),
-        semanticError: semantic?.error?.toMaterialColor() ?? AppMaterialColor.empty(),
-        semanticWarning: semantic?.warning?.toMaterialColor() ?? AppMaterialColor.empty(),
-        semanticSuccess: semantic?.success?.toMaterialColor() ?? AppMaterialColor.empty(),
-        semanticInfo: semantic?.info?.toMaterialColor() ?? AppMaterialColor.empty(),
+        semanticPurple:
+            semantic?.purple?.toMaterialColor() ?? AppMaterialColor.empty(),
+        semanticError:
+            semantic?.error?.toMaterialColor() ?? AppMaterialColor.empty(),
+        semanticWarning:
+            semantic?.warning?.toMaterialColor() ?? AppMaterialColor.empty(),
+        semanticSuccess:
+            semantic?.success?.toMaterialColor() ?? AppMaterialColor.empty(),
+        semanticInfo:
+            semantic?.info?.toMaterialColor() ?? AppMaterialColor.empty(),
         addOn: AddOnShades(
           info: addOn?.info?.color ?? Colors.white,
           success: addOn?.success?.color ?? Colors.white,

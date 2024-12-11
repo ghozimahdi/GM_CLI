@@ -1,9 +1,6 @@
-import 'package:component/component.dart';
-import 'package:component/design_system/app_colors.dart';
-import 'package:component/design_system/app_design_system.dart';
-import 'package:component/design_system/color_extension.dart';
-import 'package:component/design_system/typography_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:resource/resource.dart';
 
 extension AppThemesExt on AppDesignSystem {
   ThemeData get themeData {
