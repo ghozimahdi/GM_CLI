@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:resource/dtos/colors_token_dto.dart';
 import 'package:resource/resource.dart';
+import 'package:resource/src/dtos/colors_token_dto.dart';
 
 typedef ShadesDTO = Map<String, ColorShadeValueDTO>;
 

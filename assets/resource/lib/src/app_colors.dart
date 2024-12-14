@@ -1,8 +1,8 @@
-import 'package:resource/app_material_color.dart';
-import 'package:resource/models/add_on_shades.dart';
-import 'package:resource/models/colors_token.dart';
-import 'package:resource/models/outline_shades.dart';
-import 'package:resource/models/surface_shades.dart';
+import 'package:resource/src/app_material_color.dart';
+import 'package:resource/src/models/add_on_shades.dart';
+import 'package:resource/src/models/colors_token.dart';
+import 'package:resource/src/models/outline_shades.dart';
+import 'package:resource/src/models/surface_shades.dart';
 
 /// Global instance of AppColors for easy access throughout the application.
 final colors = AppColors();
@@ -28,14 +28,22 @@ class AppColors {
   }
 
   AppMaterialColor get primary => _colorsToken.primary;
+
   AppMaterialColor get neural => _colorsToken.neural;
+
   AppMaterialColor get semanticInfo => _colorsToken.semanticInfo;
+
   AppMaterialColor get semanticPurple => _colorsToken.semanticPurple;
+
   AppMaterialColor get semanticWarning => _colorsToken.semanticWarning;
+
   AppMaterialColor get semanticSuccess => _colorsToken.semanticSuccess;
+
   AppMaterialColor get semanticError => _colorsToken.semanticError;
+
   AddOnShades get addOn => _colorsToken.addOn;
+
   OutlineShades get outline => _colorsToken.outline;
+
   SurfaceShades get surface => _colorsToken.surface;
 }
-

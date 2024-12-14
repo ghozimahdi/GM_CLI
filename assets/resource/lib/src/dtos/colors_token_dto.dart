@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:resource/app_material_color.dart';
-import 'package:resource/dtos/shades_dto.dart';
-import 'package:resource/models/add_on_shades.dart';
-import 'package:resource/models/colors_token.dart';
-import 'package:resource/models/outline_shades.dart';
-import 'package:resource/models/surface_shades.dart';
+import 'package:resource/src/app_material_color.dart';
+import 'package:resource/src/dtos/shades_dto.dart';
+import 'package:resource/src/models/add_on_shades.dart';
+import 'package:resource/src/models/colors_token.dart';
+import 'package:resource/src/models/outline_shades.dart';
+import 'package:resource/src/models/surface_shades.dart';
 
 part 'colors_token_dto.freezed.dart';
 part 'colors_token_dto.g.dart';

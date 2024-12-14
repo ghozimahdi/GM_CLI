@@ -16,34 +16,39 @@ impl CreateFileProjectFlutter {
         Self::create_editorconfig_in_root();
         Self::create_flutter_run_config_in_root(project_name);
         Self::generate_resource_files();
+        Self::generate_core_files();
+        Self::generate_feature_common_files();
+        Self::generate_domain_common_files();
+        Self::generate_data_common_files();
+        Self::generate_icon_logo_files();
     }
 
     fn create_app_main_files() {
-        let app_lib_path = "packages/app/lib";
-        fs::create_dir_all(app_lib_path).expect("Failed to create app lib directory");
+        let source_dir = "app";
+        let dest_lib_dir = "packages/app";
 
-        let files = [
-            ("main_dev.dart", "main_dev.dart"),
-            ("main_prod.dart", "main_prod.dart"),
-            ("main_staging.dart", "main_staging.dart"),
-            ("main_common.dart", "main_common.dart"),
-        ];
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create app lib directory");
 
-        for (file_name, asset_path) in files.iter() {
-            let file = ASSETS
-                .get_file(asset_path)
-                .expect(&format!("Failed to find {} in assets", asset_path));
+        let root_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find resource directory");
+        Self::copy_contents_only(root_dir, Path::new(dest_lib_dir));
 
-            let file_path = format!("{}/{}", app_lib_path, file_name);
+        let main_file_path = "packages/app/lib/main.dart";
+        if fs::metadata(main_file_path).is_ok() {
+            println!("Removing file: {}", main_file_path);
+            fs::remove_file(main_file_path).expect("Failed to remove main.dart");
+        }
 
-            println!("Generating file: {}", file_path);
-            fs::write(&file_path, file.contents())
-                .expect(&format!("Failed to write {}", file_name));
+        let widget_test_file_path = "packages/app/test/widget_test.dart";
+        if fs::metadata(widget_test_file_path).is_ok() {
+            println!("Removing file: {}", widget_test_file_path);
+            fs::remove_file(widget_test_file_path).expect("Failed to remove widget_test.dart");
         }
     }
 
     fn create_feature_login_page_files() {
-        let feature_login_path = "packages/presentation/feature_login/lib";
+        let feature_login_path = "packages/presentation/feature_login/lib/src";
         let file_path = format!("{}/login_page.dart", feature_login_path);
 
         let file = ASSETS
@@ -54,6 +59,21 @@ impl CreateFileProjectFlutter {
 
         println!("Generating file: {}", file_path);
         fs::write(&file_path, file.contents()).expect("Failed to write login_page.dart file");
+    }
+
+    fn generate_icon_logo_files() {
+        let icon_logo = "ic_logo.png";
+        let drawable_path = "packages/app/android/app/src/main/res/drawable";
+        let file_path = format!("{}/{}", drawable_path, icon_logo);
+
+        let file = ASSETS
+            .get_file(icon_logo)
+            .expect("Failed to find ic_logo.png in assets");
+
+        fs::create_dir_all(drawable_path).expect("Failed to generate icon_logo directory");
+
+        println!("Generating file: {}", file_path);
+        fs::write(&file_path, file.contents()).expect("Failed to generate icon_logo file");
     }
 
     fn create_gitignore_in_app() {
@@ -117,26 +137,15 @@ impl CreateFileProjectFlutter {
 
     fn generate_resource_files() {
         let source_dir = "resource";
-        let dest_assets_dir = "packages/library/resource/assets";
-        let dest_lib_dir = "packages/library/resource/lib";
+        let dest_lib_dir = "packages/library/resource";
         let dest_pubspec_path = "packages/library/resource/pubspec.yaml";
 
-        fs::create_dir_all(dest_assets_dir).expect("Failed to create assets directory");
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
-
-        let assets_dir = ASSETS
-            .get_dir(format!("{}/assets", source_dir))
-            .expect("Failed to find assets directory in resource");
-        Self::copy_contents_only(assets_dir, Path::new(dest_assets_dir));
-
-        let lib_dir = ASSETS
-            .get_dir(format!("{}/lib", source_dir))
-            .expect("Failed to find lib directory in resource");
-        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
         let root_dir = ASSETS
             .get_dir(source_dir)
             .expect("Failed to find resource directory");
+        Self::copy_contents_only(root_dir, Path::new(dest_lib_dir));
 
         if let Some(flutter_gen_file) = root_dir
             .files()
@@ -162,7 +171,94 @@ impl CreateFileProjectFlutter {
             eprintln!("flutter_gen.yaml not found in resource directory!");
         }
 
-        println!("All files and folders from resource successfully moved.");
+        println!("All files and folders from resource successfully generated.");
+    }
+
+    fn generate_core_files() {
+        let source_dir = "core";
+        let dest_lib_dir = "packages/library/core/lib";
+        let dest_env_dir = "packages/library/core";
+        let dest_pubspec_path = "packages/library/core/pubspec.yaml";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(format!("{}/lib", source_dir))
+            .expect("Failed to find lib directory in core");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        let root_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find core directory");
+        Self::copy_contents_only(root_dir, Path::new(dest_env_dir));
+
+        if let Some(flutter_gen_file) = root_dir
+            .files()
+            .find(|f| f.path().file_name().unwrap() == "flutter_env.yaml")
+        {
+            println!("Appending flutter_env.yaml content to pubspec.yaml");
+
+            let mut existing_pubspec_content = String::new();
+            if Path::new(dest_pubspec_path).exists() {
+                if let Ok(content) = fs::read_to_string(dest_pubspec_path) {
+                    existing_pubspec_content = content;
+                }
+            }
+
+            let updated_content = format!(
+                "{}\n\n# Auto-generated flutter_env configuration\n{}",
+                existing_pubspec_content,
+                String::from_utf8_lossy(flutter_gen_file.contents())
+            );
+
+            fs::write(dest_pubspec_path, updated_content).expect("Failed to update pubspec.yaml");
+        } else {
+            eprintln!("flutter_env.yaml not found in resource directory!");
+        }
+
+        println!("All files and folders from resource successfully generated.");
+    }
+
+    fn generate_feature_common_files() {
+        let source_dir = "feature_common";
+        let dest_lib_dir = "packages/presentation/feature_common/lib";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(format!("{}/lib", source_dir))
+            .expect("Failed to find lib directory in feature_common");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from feature_common successfully generated.");
+    }
+
+    fn generate_domain_common_files() {
+        let source_dir = "domain_common";
+        let dest_lib_dir = "packages/domain/domain_common/lib";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(format!("{}/lib", source_dir))
+            .expect("Failed to find lib directory in domain_common");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from domain_common successfully generated.");
+    }
+
+    fn generate_data_common_files() {
+        let source_dir = "data_common";
+        let dest_lib_dir = "packages/data/data_common/lib";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(format!("{}/lib", source_dir))
+            .expect("Failed to find lib directory in data_common");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from data_common successfully generated.");
     }
 
     fn copy_contents_only(dir: &Dir, dest_path: &Path) {

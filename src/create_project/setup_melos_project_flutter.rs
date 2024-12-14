@@ -13,6 +13,7 @@ impl SetupMelosProjectFlutter {
         let melos_config = indoc! {r#"
             name: {project_name}
             packages:
+              - packages/app
               - packages/library/core
               - packages/library/resource
               - packages/domain/domain_auth

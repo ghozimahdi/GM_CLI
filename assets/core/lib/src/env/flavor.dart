@@ -19,7 +19,6 @@ extension FlavorExt on Flavor {
   }
 
   bool get isDevelopment {
-    return this == Flavor.dev ||
-        this == Flavor.staging;
+    return this == Flavor.dev || this == Flavor.staging;
   }
 }

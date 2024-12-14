@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:resource/dtos/colors_token_dto.dart';
 import 'package:resource/resource.dart';
+import 'package:resource/src/dtos/colors_token_dto.dart';
 
-final dsystem = AppDesignSystem();
+final res = AppDesignSystem();
 
 /// Represents the application's overall design system, including color schemes, text styles, and more.
 ///

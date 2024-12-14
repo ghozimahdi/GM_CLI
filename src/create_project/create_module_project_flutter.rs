@@ -14,8 +14,13 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "core",
             "./packages/library/core",
-            vec![],
-            vec!["injectable_generator", "build_runner", "lint"],
+            vec!["envied", "easy_localization", "injectable"],
+            vec![
+                "injectable_generator",
+                "build_runner",
+                "lint",
+                "envied_generator",
+            ],
             vec![],
         );
         Self::create_module(
@@ -31,10 +36,10 @@ impl CreateModuleProjectFlutter {
             ],
             vec![
                 "json_serializable",
+                "injectable_generator",
                 "build_runner",
                 "lint",
                 "freezed",
-                "injectable_generator",
                 "flutter_gen_runner",
             ],
             vec![],
@@ -44,15 +49,15 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "domain_auth",
             "./packages/domain/domain_auth",
-            vec![],
-            vec!["lint"],
+            vec!["injectable", "get_it", "freezed_annotation"],
+            vec!["lint", "injectable_generator", "build_runner", "freezed"],
             vec![("core", "../../library/core")],
         );
         Self::create_module(
             "domain_common",
             "./packages/domain/domain_common",
-            vec![],
-            vec!["lint"],
+            vec!["injectable", "get_it", "freezed_annotation"],
+            vec!["lint", "injectable_generator", "build_runner", "freezed"],
             vec![("core", "../../library/core")],
         );
 
@@ -60,8 +65,13 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "data_auth",
             "./packages/data/data_auth",
-            vec![],
-            vec!["lint"],
+            vec!["injectable", "get_it"],
+            vec![
+                "lint",
+                "json_serializable",
+                "injectable_generator",
+                "build_runner",
+            ],
             vec![
                 ("core", "../../library/core"),
                 ("domain_auth", "../../domain/domain_auth"),
@@ -70,8 +80,13 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "data_common",
             "./packages/data/data_common",
-            vec![],
-            vec!["lint"],
+            vec!["dio", "chucker_flutter", "injectable", "get_it"],
+            vec![
+                "lint",
+                "json_serializable",
+                "injectable_generator",
+                "build_runner",
+            ],
             vec![
                 ("core", "../../library/core"),
                 ("domain_common", "../../domain/domain_common"),
@@ -90,6 +105,10 @@ impl CreateModuleProjectFlutter {
                 "injectable",
                 "rxdart",
                 "auto_route",
+                "fluttertoast",
+                "shimmer",
+                "permission_handler",
+                "flutter_svg",
             ],
             vec![
                 "auto_route_generator",
@@ -128,7 +147,16 @@ impl CreateModuleProjectFlutter {
         );
 
         Self::update_app_pubspec_dependencies(
-            vec!["get_it", "injectable", "auto_route"],
+            vec![
+                "get_it",
+                "injectable",
+                "auto_route",
+                "firebase_crashlytics",
+                "firebase_core",
+                "firebase_messaging",
+                "flutter_local_notifications",
+                "easy_localization",
+            ],
             vec![
                 "auto_route_generator",
                 "injectable_generator",
@@ -190,7 +218,8 @@ impl CreateModuleProjectFlutter {
 
         // Step 1: Create directories
         fs::create_dir_all(module_path).expect("Failed to create module directory");
-        fs::create_dir_all(format!("{}/lib", module_path)).expect("Failed to create lib directory");
+        fs::create_dir_all(format!("{}/lib/src", module_path))
+            .expect("Failed to create lib directory");
         fs::create_dir_all(format!("{}/test", module_path))
             .expect("Failed to create test directory");
         update_progress(1);

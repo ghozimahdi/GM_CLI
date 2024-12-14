@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:resource/models/add_on_shades.dart';
-import 'package:resource/models/outline_shades.dart';
-import 'package:resource/models/surface_shades.dart';
 import 'package:resource/resource.dart';
+import 'package:resource/src/models/add_on_shades.dart';
+import 'package:resource/src/models/outline_shades.dart';
+import 'package:resource/src/models/surface_shades.dart';
 
 // part directive needed for freezed code generation.
 part 'colors_token.freezed.dart';
