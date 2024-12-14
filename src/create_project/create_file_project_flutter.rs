@@ -344,14 +344,35 @@ impl CreateFileProjectFlutter {
                   bundleId: "{package_name}"
 
             ide: idea
+
             instructions:
-              flavors:
-                dart:
-                  enabled: false
-                android:
-                  enabled: true
-                ios:
-                  enabled: true
+              - assets:download
+              - assets:extract
+              - android:androidManifest
+              - android:buildGradle
+              - android:dummyAssets
+              - android:icons
+              - ios:podfile
+              - ios:xcconfig
+              - ios:buildTargets
+              - ios:schema
+              - ios:dummyAssets
+              - ios:icons
+              - ios:plist
+              - ios:launchScreen
+              - macos:podfile
+              - macos:xcconfig
+              - macos:configs
+              - macos:buildTargets
+              - macos:schema
+              - macos:dummyAssets
+              - macos:icons
+              - macos:plist
+              - google:firebase
+              - huawei:agconnect
+              - assets:clean
+              - ide:config
+
         "#}
         .replace("{project_name}", project_name)
         .replace("{package_name}", package_name);
