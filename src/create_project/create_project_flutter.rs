@@ -97,7 +97,7 @@ impl CreateProjectFlutter {
 
             CreateModuleProjectFlutter::build();
             CreateModuleProjectFlutter::add_analysis_options(app_path);
-            CreateFileProjectFlutter::build(&project_name);
+            CreateFileProjectFlutter::build(&project_name, &package_name);
 
             println!("{}", "Running `flutter pub get`...".yellow());
             Command::run(&["fvm", "flutter", "pub", "get"]);
@@ -106,6 +106,7 @@ impl CreateProjectFlutter {
             Command::run(&["melos", "bootstrap"]);
             Command::run(&["melos", "locale"]);
             Command::run(&["melos", "build"]);
+            Command::run(&["melos", "flavors"]);
 
             println!(
                 "{}",

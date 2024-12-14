@@ -156,6 +156,7 @@ impl CreateModuleProjectFlutter {
                 "firebase_messaging",
                 "flutter_local_notifications",
                 "easy_localization",
+                "flutter_flavorizr",
             ],
             vec![
                 "auto_route_generator",

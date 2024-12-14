@@ -2,6 +2,7 @@ use crate::command::Command;
 use include_dir::{include_dir, Dir};
 use indoc::indoc;
 use std::fs;
+use std::io::{Read, Write};
 use std::path::Path;
 
 static ASSETS: Dir = include_dir!("assets");
@@ -9,7 +10,7 @@ static ASSETS: Dir = include_dir!("assets");
 pub struct CreateFileProjectFlutter;
 
 impl CreateFileProjectFlutter {
-    pub fn build(project_name: &str) {
+    pub fn build(project_name: &str, package_name: &str) {
         Self::create_app_main_files();
         Self::create_feature_login_page_files();
         Self::create_gitignore_in_app();
@@ -21,6 +22,7 @@ impl CreateFileProjectFlutter {
         Self::generate_domain_common_files();
         Self::generate_data_common_files();
         Self::generate_icon_logo_files();
+        Self::generate_flavorizr_yaml(project_name, package_name);
     }
 
     fn create_app_main_files() {
@@ -44,6 +46,39 @@ impl CreateFileProjectFlutter {
         if fs::metadata(widget_test_file_path).is_ok() {
             println!("Removing file: {}", widget_test_file_path);
             fs::remove_file(widget_test_file_path).expect("Failed to remove widget_test.dart");
+        }
+
+        let pubspec_path = "packages/app/pubspec.yaml";
+        if Path::new(pubspec_path).exists() {
+            println!("Updating pubspec.yaml at {}", pubspec_path);
+
+            let mut existing_content = String::new();
+
+            {
+                let mut file = fs::File::open(pubspec_path).expect("Failed to open pubspec.yaml");
+                file.read_to_string(&mut existing_content)
+                    .expect("Failed to read pubspec.yaml");
+            }
+
+            if !existing_content.contains("assets:\n    - assets/icons/") {
+                let updated_content = existing_content.replace(
+                    "uses-material-design: true",
+                    "uses-material-design: true\n\n  assets:\n    - assets/icons/",
+                );
+
+                {
+                    let mut file =
+                        fs::File::create(pubspec_path).expect("Failed to write pubspec.yaml");
+                    file.write_all(updated_content.as_bytes())
+                        .expect("Failed to update pubspec.yaml");
+                }
+
+                println!("Updated pubspec.yaml with assets section.");
+            } else {
+                println!("Assets section already exists in pubspec.yaml.");
+            }
+        } else {
+            println!("pubspec.yaml not found at {}", pubspec_path);
         }
     }
 
@@ -259,6 +294,76 @@ impl CreateFileProjectFlutter {
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
         println!("All files and folders from data_common successfully generated.");
+    }
+
+    fn generate_flavorizr_yaml(project_name: &str, package_name: &str) {
+        let module_dir = "packages/app";
+        let file_path = format!("{}/flavorizr.yaml", module_dir);
+
+        if !Path::new(module_dir).exists() {
+            fs::create_dir_all(module_dir).expect("Failed to create the module directory");
+        }
+
+        let flavorizr_content = indoc! {r#"
+            app:
+              android:
+                flavorDimensions: "flavor-type"
+
+            flavors:
+              dev:
+                app:
+                  name: "{project_name} Dev"
+
+                android:
+                  icon: "assets/icons/android_mengantar_dev.png"
+                  applicationId: "{package_name}.dev"
+                ios:
+                  icon: "assets/icons/ios_mengantar_dev.png"
+                  bundleId: "{package_name}.dev"
+
+              staging:
+                app:
+                  name: "{project_name} Stg"
+
+                android:
+                  icon: "assets/icons/android_mengantar_stg.png"
+                  applicationId: "{package_name}.staging"
+                ios:
+                  icon: "assets/icons/ios_mengantar_stg.png"
+                  bundleId: "{package_name}.staging"
+
+              prod:
+                app:
+                  name: "{project_name}"
+
+                android:
+                  icon: "assets/icons/android_mengantar_prod.png"
+                  applicationId: "{package_name}"
+                ios:
+                  icon: "assets/icons/ios_mengantar_prod.png"
+                  bundleId: "{package_name}"
+
+            ide: idea
+            instructions:
+              flavors:
+                dart:
+                  enabled: false
+                android:
+                  enabled: true
+                ios:
+                  enabled: true
+        "#}
+        .replace("{project_name}", project_name)
+        .replace("{package_name}", package_name);
+
+        let mut file = fs::File::create(&file_path).expect("Failed to create flavorizr.yaml");
+        file.write_all(flavorizr_content.as_bytes())
+            .expect("Failed to write to flavorizr.yaml");
+
+        println!(
+            "flavorizr.yaml has been successfully generated at {}",
+            file_path
+        );
     }
 
     fn copy_contents_only(dir: &Dir, dest_path: &Path) {
