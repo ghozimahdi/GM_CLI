@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:app/firebase/firebase_helper.dart';
 import 'package:app/injector.dart';
 import 'package:app/run_app.dart';
 import 'package:core/core.dart';
@@ -20,7 +19,9 @@ Future<void> mainCommon(Flavor flavor) async {
 
   var appEnv = await AppEnv.initialize(flavor);
 
-  await FirebaseHelper.initialize();
+  // Uncomment the following code to enable Firebase functionality.
+  // For detailed documentation, refer to the .firebase folder in the packages/app directory.
+  // await FirebaseHelper.initialize();
 
   await EasyLocalization.ensureInitialized();
 
@@ -78,7 +79,6 @@ class MyApp extends StatelessWidget {
         statusBarIconBrightness: Brightness.light,
       ),
       child: ScreenUtilInit(
-        designSize: const Size(375, 812),
         builder: (context, child) {
           return MaterialApp(
             title: AppEnv.title,
