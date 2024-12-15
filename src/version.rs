@@ -20,6 +20,38 @@ pub fn show_info() {
     );
 }
 
+pub fn show_donate() {
+    let ko_fi_link = "https://ko-fi.com/ghozimahdi";
+    let trakteer_link = "https://teer.id/ghozimahdi";
+    let github_sponsor_link = "https://github.com/sponsors/mbahgojol";
+    let saweria_link = "https://saweria.co/ghozimahdi";
+
+    println!("{}", "❤️ Support My Work! ❤️".bold().yellow());
+    println!(
+        "{}",
+        "If you enjoy using this CLI, consider buying me a coffee or helping me stay motivated!"
+            .italic()
+    );
+    println!("{}", "Here are some ways to show your love:".green());
+    println!();
+
+    println!("{}: {}", "☕ Ko-fi".cyan(), ko_fi_link);
+    println!("{}: {}", "🍵 Trakteer".cyan(), trakteer_link);
+    println!("{}: {}", "⭐ Github Sponsor".cyan(), github_sponsor_link);
+    println!("{}: {}", "🎉 Saweria".cyan(), saweria_link);
+
+    println!();
+    println!(
+        "{}",
+        "Even the smallest contribution means the world to me. Thank you for being amazing!"
+            .italic()
+            .bold()
+            .yellow()
+    );
+
+    generate_saweria_qr_code();
+}
+
 pub fn generate_saweria_qr_code() {
     let saweria_link = "https://saweria.co/ghozimahdi";
     let saweria_qr = generate_qr_code(saweria_link);

@@ -3,9 +3,11 @@ extern crate core;
 use crate::create_project::create_project_flutter::CreateProjectFlutter;
 use crate::flutter_build_app::FlutterBuildApp;
 use crate::flutter_commands::FlutterCommandHandler;
-use crate::version::{generate_saweria_qr_code, show_info};
-use clap::{Arg, ArgAction, Command};
+use crate::version::{generate_saweria_qr_code, show_donate, show_info};
+use clap::{Arg, ArgAction, ArgMatches, Command};
 use colored::Colorize;
+use dialoguer::theme::ColorfulTheme;
+use dialoguer::Select;
 
 pub mod command;
 mod flutter_build_app;
@@ -28,7 +30,6 @@ mod create_project {
 
 fn main() {
     let handler = FlutterCommandHandler;
-    header::print_header();
 
     let matches = Command::new("gm")
         .version(env!("CARGO_PKG_VERSION"))
@@ -39,9 +40,18 @@ fn main() {
                 .about("Run flutter_clean & remove pubspec.lock for selected modules"),
         )
         .subcommand(Command::new("app").about("Build APK or IPA interactively"))
-        .subcommand(Command::new("create").about("Create a Flutter project with modular support"))
+        .subcommand(
+            Command::new("create")
+                .about("Create a Flutter project or module")
+                .subcommand(Command::new("project").about("Create a Flutter project"))
+                .subcommand(Command::new("module").about("Create a Flutter module")),
+        )
         .subcommand(Command::new("build").about("Run build_runner after module selection"))
         .subcommand(Command::new("get").about("Run `flutter pub get` after selecting a module"))
+        .subcommand(
+            Command::new("donate")
+                .about("Show gratitude and support the development of this CLI tool"),
+        )
         .subcommand(
             Command::new("info")
                 .about("Displays prerequisites and usage instructions for the gm CLI"),
@@ -86,12 +96,17 @@ fn main() {
         ))
         .get_matches();
 
+    if matches.subcommand_name() != Some("donate") && matches.subcommand_name() != Some("info") {
+        header::print_header();
+    }
+
     match matches.subcommand() {
         Some(("clear", _)) => FlutterCommandHandler::flutter_clear(),
-        Some(("create", _)) => CreateProjectFlutter::build(),
+        Some(("create", sub)) => handle_create(Some(sub)),
         Some(("get", _)) => FlutterCommandHandler::flutter_get(),
         Some(("build", _)) => FlutterCommandHandler::flutter_build_runner(),
         Some(("app", _)) => FlutterBuildApp::build_app(),
+        Some(("donate", _)) => show_donate(),
         Some(("info", _)) => show_info(),
         _ => {
             if matches.get_flag("flutter_get") {
@@ -113,6 +128,37 @@ fn main() {
         }
     }
 }
+
+fn handle_create(sub_matches: Option<&ArgMatches>) {
+    match sub_matches.and_then(|m| m.subcommand()) {
+        Some(("project", _)) => CreateProjectFlutter::build(),
+        Some(("module", _)) => {
+            println!("{}", "Coming soon! Thank you for your support ❤️".yellow())
+        }
+        None => prompt_create_choice(),
+        _ => println!(
+            "{}",
+            "Invalid subcommand! Use `gm create --help` for usage.".red()
+        ),
+    }
+}
+
+fn prompt_create_choice() {
+    let choices = &["Create a project", "Create a module"];
+    let selection = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("Do you want to create a project or a module?")
+        .default(0)
+        .items(choices)
+        .interact()
+        .unwrap();
+
+    match selection {
+        0 => CreateProjectFlutter::build(),
+        1 => println!("{}", "Coming soon! Thank you for your support ❤️".yellow()),
+        _ => println!("{}", "Invalid choice. Please try again.".red()),
+    }
+}
+
 fn show_help() {
     println!("{}", "Usage: gm --help".yellow());
     println!(
