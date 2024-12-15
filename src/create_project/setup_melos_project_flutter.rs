@@ -12,6 +12,8 @@ impl SetupMelosProjectFlutter {
 
         let melos_config = indoc! {r#"
             name: {project_name}
+            sdkPath: .fvm/flutter_sdk
+
             packages:
               - packages/app
               - packages/library/core
@@ -29,19 +31,19 @@ impl SetupMelosProjectFlutter {
 
             scripts:
               build:
-                run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build -d"
+                run: melos exec -c 1 --depends-on="build_runner" -- "fvm dart run build_runner build -d"
                 description: "Run build runner with depends-on"
 
               locale:
-                run: melos exec --depends-on="easy_localization" -- "flutter pub run easy_localization:generate -f keys -S assets/translations"
+                run: melos exec --depends-on="easy_localization" -- "fvm flutter pub run easy_localization:generate -f keys -S assets/translations"
                 description: "Run easy_localization with depends-on"
 
               assets:
-                run: melos exec --depends-on="flutter_gen_runner" -- "dart run build_runner build -d"
+                run: melos exec --depends-on="flutter_gen_runner" -- "fvm dart run build_runner build -d"
                 description: "Run flutter_gen with depends-on"
 
               env:
-                run: melos exec --depends-on="envied" -- "dart run build_runner build -d"
+                run: melos exec --depends-on="envied" -- "fvm dart run build_runner build -d"
                 description: "Run envied with depends-on"
 
               upgrade:
@@ -49,7 +51,7 @@ impl SetupMelosProjectFlutter {
                 description: "Run envied with depends-on"
 
               flavors:
-                run: melos exec --depends-on="flutter_flavorizr" -- "flutter pub run flutter_flavorizr"
+                run: melos exec --depends-on="flutter_flavorizr" -- "fvm flutter pub run flutter_flavorizr"
                 description: "Run flutter_flavorizr with depends-on"
         "#}
         .replace("{project_name}", project_name);

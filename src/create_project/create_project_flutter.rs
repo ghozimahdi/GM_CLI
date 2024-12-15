@@ -1,6 +1,7 @@
 use crate::command::Command;
 use crate::create_project::create_file_project_flutter::CreateFileProjectFlutter;
 use crate::create_project::create_module_project_flutter::CreateModuleProjectFlutter;
+use crate::create_project::ios_analyzing_project_flutter::IOSAnalyzingProjectFlutter;
 use crate::create_project::setup_fvm_project_flutter::SetupFVMProjectFlutter;
 use crate::create_project::setup_melos_project_flutter::SetupMelosProjectFlutter;
 use colored::Colorize;
@@ -97,6 +98,12 @@ impl CreateProjectFlutter {
 
             CreateModuleProjectFlutter::build();
             CreateModuleProjectFlutter::add_analysis_options(app_path);
+            std::process::Command::new("fvm")
+                .args(["dart", "run", "change_app_package_name:main", &package_name])
+                .current_dir(app_path)
+                .output()
+                .expect("Failed to execute command");
+
             CreateFileProjectFlutter::build(&project_name, &package_name);
 
             println!("{}", "Running `flutter pub get`...".yellow());
@@ -107,6 +114,7 @@ impl CreateProjectFlutter {
             Command::run(&["melos", "locale"]);
             Command::run(&["melos", "build"]);
             Command::run(&["melos", "flavors"]);
+            IOSAnalyzingProjectFlutter::build(&app_path);
 
             println!(
                 "{}",

@@ -157,6 +157,7 @@ impl CreateModuleProjectFlutter {
                 "flutter_local_notifications",
                 "easy_localization",
                 "flutter_flavorizr",
+                "change_app_package_name",
             ],
             vec![
                 "auto_route_generator",
