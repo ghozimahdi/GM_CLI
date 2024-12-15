@@ -22,46 +22,94 @@ impl IOSAnalyzingProjectFlutter {
         }
 
         println!("{}", "Running `pod install`...".yellow());
-        let mut output = Self::run_in_dir(&["pod", "install"], &podfile_dir);
+        let output = Self::run_in_dir(&["pod", "install"], &podfile_dir);
 
         if !output.status.success() {
-            println!("{}", "Retrying `pod install` with repo update...".yellow());
-            output = Self::run_in_dir(&["pod", "install", "--repo-update"], &podfile_dir);
+            println!(
+                "{}",
+                "Initial `pod install` failed. Checking logs for issues...".red()
+            );
 
-            if !output.status.success() {
-                println!(
-                    "{}",
-                    "Final `pod install` failed. Checking logs for issues...".red()
-                );
+            let output_str = String::from_utf8_lossy(&output.stderr);
 
-                let output_str = String::from_utf8_lossy(&output.stderr);
+            let max_ios_version = Self::detect_latest_ios_version().unwrap_or(20.0);
+            println!(
+                "{} {}",
+                "Detected maximum iOS version for the system:".cyan(),
+                max_ios_version
+            );
 
-                if let Some(required_ios_version) = Self::extract_required_ios_version(&output_str)
-                {
+            let mut current_ios_version =
+                if let Some(initial_version) = Self::extract_initial_ios_version(&output_str) {
                     println!(
                         "{} {}",
-                        "Detected iOS deployment target requirement:".cyan(),
-                        required_ios_version
+                        "Detected assigned iOS deployment target:".cyan(),
+                        initial_version
                     );
+                    initial_version
+                } else {
+                    println!("{}", "Defaulting to iOS 12.0".yellow());
+                    12.0
+                };
 
-                    Self::update_ios_deployment_target(&required_ios_version, &podfile_dir);
+            while current_ios_version <= max_ios_version {
+                println!(
+                    "{} {}",
+                    "Trying `pod install` with iOS deployment target:".yellow(),
+                    current_ios_version
+                );
 
-                    println!(
-                        "{}",
-                        "Retrying `pod install` after updating deployment target...".yellow()
-                    );
+                Self::update_ios_deployment_target(&current_ios_version.to_string(), &podfile_dir);
 
-                    Self::run_in_dir(&["pod", "install"], &podfile_dir);
+                let retry_output = Self::run_in_dir(&["pod", "install"], &podfile_dir);
+
+                if retry_output.status.success() {
+                    println!("{}", "Pod install completed successfully.".green());
+                    break;
                 } else {
                     println!(
                         "{}",
-                        "No additional iOS deployment issues detected from logs.".green()
+                        "Pod install failed. Incrementing iOS deployment target and retrying..."
+                            .red()
                     );
+                    current_ios_version += 1.0;
                 }
-            } else {
-                println!("{}", "Pod install completed successfully.".green());
+            }
+
+            if current_ios_version > max_ios_version {
+                println!(
+                    "{}",
+                    "Exceeded maximum iOS deployment target. Please check the logs.".red()
+                );
+            }
+        } else {
+            println!("{}", "Pod install completed successfully.".green());
+        }
+    }
+
+    fn detect_latest_ios_version() -> Option<f32> {
+        let output = Command::new("xcrun")
+            .args(["--sdk", "iphoneos", "--show-sdk-version"])
+            .output()
+            .ok()?;
+
+        let sdk_version = String::from_utf8_lossy(&output.stdout);
+        sdk_version.trim().parse::<f32>().ok()
+    }
+
+    fn extract_initial_ios_version(output: &str) -> Option<f32> {
+        let re = Regex::new(r"Automatically assigning platform `iOS` with version `(\d+\.\d+)`")
+            .unwrap();
+
+        for line in output.lines() {
+            if let Some(captures) = re.captures(line) {
+                if let Some(version) = captures.get(1).map(|m| m.as_str().parse::<f32>().ok()) {
+                    return version;
+                }
             }
         }
+
+        None
     }
 
     fn run_in_dir(args: &[&str], dir: &str) -> std::process::Output {
@@ -101,41 +149,6 @@ impl IOSAnalyzingProjectFlutter {
         }
     }
 
-    fn extract_required_ios_version(output: &str) -> Option<String> {
-        // Regex untuk mencocokkan log seperti: "platform `iOS` with version `12.0`"
-        let re = Regex::new(r"platform `iOS` with version `(\d+\.\d+)`").unwrap();
-
-        for line in output.lines() {
-            println!("Checking line: {}", line); // Debug setiap baris
-            if let Some(captures) = re.captures(line) {
-                if let Some(version) = captures.get(1).map(|m| m.as_str().to_string()) {
-                    println!("Extracted iOS version: {}", version); // Debug versi
-                    return Some(version);
-                }
-            }
-        }
-
-        // Fallback parsing manual untuk log umum
-        Self::manual_fallback_version_search(output)
-    }
-
-    fn manual_fallback_version_search(output: &str) -> Option<String> {
-        for line in output.lines() {
-            if line.contains("iOS") && line.contains("version") {
-                let words: Vec<&str> = line.split_whitespace().collect();
-                for word in words {
-                    if word.chars().all(|c| c.is_digit(10) || c == '.') {
-                        if word.parse::<f32>().unwrap_or(0.0) >= 8.0 {
-                            println!("Manual fallback found iOS version: {}", word); // Debug fallback
-                            return Some(word.to_string());
-                        }
-                    }
-                }
-            }
-        }
-        None
-    }
-
     fn update_ios_deployment_target(new_version: &str, podfile_dir: &str) {
         let podfile_path = format!("{}/Podfile", podfile_dir);
 
@@ -153,21 +166,19 @@ impl IOSAnalyzingProjectFlutter {
             return;
         }
 
-        let re_active = Regex::new(r"^platform :ios, '\d+\.\d+'").unwrap();
-        let re_commented = Regex::new(r"^#\s*platform :ios, '\d+\.\d+'").unwrap();
+        #[cfg(debug_assertions)]
+        println!("Original Podfile content:\n{}", file_content);
 
-        let updated_content = if re_active.is_match(&file_content) {
-            re_active
-                .replace(&file_content, format!("platform :ios, '{}'", new_version))
-                .to_string()
-        } else if re_commented.is_match(&file_content) {
-            re_commented
-                .replace(&file_content, format!("platform :ios, '{}'", new_version))
-                .to_string()
-        } else {
-            format!("platform :ios, '{}'\n{}", new_version, file_content)
-        };
+        let filtered_content: String = file_content
+            .lines()
+            .filter(|line| !line.trim_start().starts_with("platform :ios"))
+            .filter(|line| !line.trim_start().starts_with("# platform :ios, "))
+            .collect::<Vec<_>>()
+            .join("\n");
 
+        let updated_content = format!("platform :ios, '{}'\n{}", new_version, filtered_content);
+
+        #[cfg(debug_assertions)]
         println!("Updated Podfile content:\n{}", updated_content);
 
         if let Err(e) = fs::write(&podfile_path, updated_content) {
