@@ -53,6 +53,110 @@ impl SetupMelosProjectFlutter {
               flavors:
                 run: melos exec --depends-on="flutter_flavorizr" -- "fvm flutter pub run flutter_flavorizr"
                 description: "Run flutter_flavorizr with depends-on"
+
+              flavors::assets:
+                run: melos exec --depends-on="flutter_flavorizr" -- "fvm flutter pub run flutter_flavorizr -p assets:download,assets:extract"
+                description: "Run flutter_flavorizr for downloading and extracting assets"
+
+              generate_debug_dev_apk:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build apk --debug --flavor dev -t lib/main_dev.dart --no-pub"
+                description: Build a Debug Development for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_dev_apk:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build apk --flavor dev -t lib/main_dev.dart --no-pub"
+                description: Build a Release Development for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_staging_apk:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build apk --flavor staging -t lib/main_staging.dart --no-pub"
+                description: Build a Release Staging for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_prod_apk:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build apk --flavor prod -t lib/main_prod.dart --no-pub"
+                description: Build a Release Production for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_dev_aab:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build appbundle --flavor dev -t lib/main_dev.dart --no-pub"
+                description: Build a Release Development for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_staging_aab:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build appbundle --flavor staging -t lib/main_staging.dart --no-pub"
+                description: Build a Release Staging for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_prod_aab:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build appbundle --flavor prod -t lib/main_prod.dart --no-pub"
+                description: Build a Release Production for Android.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - android
+
+              generate_release_dev_ipa:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build ipa --flavor dev -t lib/main_dev.dart"
+                description: Build a Release Development for iOS.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - ios
+
+              generate_release_staging_ipa:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build ipa --flavor staging -t lib/main_staging.dart"
+                description: Build a Release Staging for iOS.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - ios
+
+              generate_release_prod_ipa:
+                run: |
+                  melos exec -c 6 --fail-fast -- \
+                    "flutter build ipa --flavor prod -t lib/main_prod.dart --no-pub"
+                description: Build a Release Production for iOS.
+                packageFilters:
+                  scope: 'app'
+                  dirExists:
+                    - ios
         "#}
         .replace("{project_name}", project_name);
 
