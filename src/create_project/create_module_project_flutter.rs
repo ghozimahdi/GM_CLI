@@ -224,23 +224,47 @@ impl CreateModuleProjectFlutter {
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,
     ) {
-        let steps: Vec<(&str, Box<dyn FnOnce()>)> = vec![
+        let module_name = module_name.to_string();
+        let module_path = module_path.to_string();
+        let dependencies = dependencies
+            .iter()
+            .map(|&s| s.to_string())
+            .collect::<Vec<_>>();
+        let dev_dependencies = dev_dependencies
+            .iter()
+            .map(|&s| s.to_string())
+            .collect::<Vec<_>>();
+        let local_dependencies = local_dependencies
+            .iter()
+            .map(|&(k, v)| (k.to_string(), v.to_string()))
+            .collect::<Vec<_>>();
+
+        let steps: Vec<(&str, Box<dyn FnOnce() + Send>)> = vec![
             (
                 "Creating directories",
-                Box::new(|| {
-                    fs::create_dir_all(module_path).expect("Failed to create module directory");
-                    fs::create_dir_all(format!("{}/lib/src", module_path))
-                        .expect("Failed to create lib directory");
-                    fs::create_dir_all(format!("{}/test", module_path))
-                        .expect("Failed to create test directory");
+                Box::new({
+                    let module_path = module_path.clone();
+                    move || {
+                        fs::create_dir_all(&module_path)
+                            .expect("Failed to create module directory");
+                        fs::create_dir_all(format!("{}/lib/src", module_path))
+                            .expect("Failed to create lib directory");
+                        fs::create_dir_all(format!("{}/test", module_path))
+                            .expect("Failed to create test directory");
+                    }
                 }),
             ),
             (
                 "Generating pubspec.yaml",
-                Box::new(|| {
-                    let sdk_version = Self::read_environment_from_main_project();
-                    let mut pubspec_content = format!(
-                        indoc! {r#"
+                Box::new({
+                    let module_name = module_name.clone();
+                    let module_path = module_path.clone();
+                    let dev_dependencies = dev_dependencies.clone();
+                    let local_dependencies = local_dependencies.clone();
+                    move || {
+                        let sdk_version = Self::read_environment_from_main_project();
+                        let mut pubspec_content = format!(
+                            indoc! {r#"
                         name: {}
                         description: "Modular project for {}"
                         version: 1.0.0
@@ -253,49 +277,61 @@ impl CreateModuleProjectFlutter {
                           flutter:
                             sdk: flutter
                         "#},
-                        module_name, module_name, sdk_version
-                    );
+                            module_name, module_name, sdk_version
+                        );
 
-                    for (dependency_name, dependency_path) in &local_dependencies {
-                        pubspec_content.push_str(&format!(
-                            "  {}:\n    path: {}\n",
-                            dependency_name, dependency_path
-                        ));
-                    }
-
-                    if !dev_dependencies.is_empty() {
-                        pubspec_content.push_str("dev_dependencies:\n");
-                        for dev_dependency in &dev_dependencies {
-                            pubspec_content.push_str(&format!("  {}: any\n", dev_dependency));
+                        for (dependency_name, dependency_path) in &local_dependencies {
+                            pubspec_content.push_str(&format!(
+                                "  {}:\n    path: {}\n",
+                                dependency_name, dependency_path
+                            ));
                         }
-                        pubspec_content.push_str("  flutter_test:\n    sdk: flutter\n");
-                    }
 
-                    let pubspec_path = format!("{}/pubspec.yaml", module_path);
-                    let mut pubspec_file =
-                        File::create(&pubspec_path).expect("Failed to create pubspec.yaml");
-                    pubspec_file
-                        .write_all(pubspec_content.as_bytes())
-                        .expect("Failed to write pubspec.yaml");
+                        if !dev_dependencies.is_empty() {
+                            pubspec_content.push_str("dev_dependencies:\n");
+                            for dev_dependency in &dev_dependencies {
+                                pubspec_content.push_str(&format!("  {}: any\n", dev_dependency));
+                            }
+                            pubspec_content.push_str("  flutter_test:\n    sdk: flutter\n");
+                        }
+
+                        let pubspec_path = format!("{}/pubspec.yaml", module_path);
+                        let mut pubspec_file =
+                            File::create(&pubspec_path).expect("Failed to create pubspec.yaml");
+                        pubspec_file
+                            .write_all(pubspec_content.as_bytes())
+                            .expect("Failed to write pubspec.yaml");
+                    }
                 }),
             ),
             (
                 "Adding dependencies",
-                Box::new(|| {
-                    Self::add_dependencies(dependencies.clone(), module_path, false);
+                Box::new({
+                    let dependencies = dependencies.clone();
+                    let module_path = module_path.clone();
+                    move || {
+                        Self::add_dependencies(dependencies, &module_path, false);
+                    }
                 }),
             ),
             (
                 "Adding dev dependencies",
-                Box::new(|| {
-                    Self::add_dependencies(dev_dependencies.clone(), module_path, true);
+                Box::new({
+                    let dev_dependencies = dev_dependencies.clone();
+                    let module_path = module_path.clone();
+                    move || {
+                        Self::add_dependencies(dev_dependencies, &module_path, true);
+                    }
                 }),
             ),
             (
                 "Adding default files",
-                Box::new(|| {
-                    Self::add_default_files(module_path);
-                    Self::add_analysis_options(module_path);
+                Box::new({
+                    let module_path = module_path.clone();
+                    move || {
+                        Self::add_default_files(&module_path);
+                        Self::add_analysis_options(&module_path);
+                    }
                 }),
             ),
         ];
@@ -340,67 +376,91 @@ impl CreateModuleProjectFlutter {
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,
     ) {
-        let steps: Vec<(&str, Box<dyn FnOnce()>)> = vec![
+        let dependencies = dependencies
+            .iter()
+            .map(|&s| s.to_string())
+            .collect::<Vec<_>>();
+        let dev_dependencies = dev_dependencies
+            .iter()
+            .map(|&s| s.to_string())
+            .collect::<Vec<_>>();
+        let local_dependencies = local_dependencies
+            .iter()
+            .map(|&(k, v)| (k.to_string(), v.to_string()))
+            .collect::<Vec<_>>();
+
+        let steps: Vec<(&str, Box<dyn FnOnce() + Send>)> = vec![
             (
                 "Reading app's pubspec.yaml",
-                Box::new(|| {
+                Box::new(move || {
                     thread::sleep(Duration::from_millis(300));
                 }),
             ),
             (
                 "Updating local dependencies",
-                Box::new(|| {
-                    let app_pubspec_path = "./packages/app/pubspec.yaml";
-                    let mut pubspec_content = fs::read_to_string(app_pubspec_path)
-                        .expect("Failed to read app's pubspec.yaml");
+                Box::new({
+                    let local_dependencies = local_dependencies.clone();
+                    move || {
+                        let app_pubspec_path = "./packages/app/pubspec.yaml";
+                        let mut pubspec_content = fs::read_to_string(app_pubspec_path)
+                            .expect("Failed to read app's pubspec.yaml");
 
-                    if !pubspec_content.contains("dependencies:") {
-                        pubspec_content.push_str("\ndependencies:\n");
-                    }
-
-                    let flutter_sdk_entry = "  flutter:\n    sdk: flutter";
-                    if let Some(flutter_index) = pubspec_content.find(flutter_sdk_entry) {
-                        let before_flutter =
-                            &pubspec_content[..flutter_index + flutter_sdk_entry.len()];
-                        let after_flutter =
-                            &pubspec_content[flutter_index + flutter_sdk_entry.len()..];
-
-                        let mut local_dependencies_content = String::new();
-                        for (dependency_name, dependency_path) in &local_dependencies {
-                            let dependency_entry =
-                                format!("  {}:\n    path: {}", dependency_name, dependency_path);
-                            if !pubspec_content.contains(&dependency_entry) {
-                                local_dependencies_content
-                                    .push_str(&format!("\n{}", dependency_entry));
-                            }
+                        if !pubspec_content.contains("dependencies:") {
+                            pubspec_content.push_str("\ndependencies:\n");
                         }
 
-                        pubspec_content = format!(
-                            "{}\n{}\n{}",
-                            before_flutter, local_dependencies_content, after_flutter
-                        );
-                    }
+                        let flutter_sdk_entry = "  flutter:\n    sdk: flutter";
+                        if let Some(flutter_index) = pubspec_content.find(flutter_sdk_entry) {
+                            let before_flutter =
+                                &pubspec_content[..flutter_index + flutter_sdk_entry.len()];
+                            let after_flutter =
+                                &pubspec_content[flutter_index + flutter_sdk_entry.len()..];
 
-                    fs::write(app_pubspec_path, pubspec_content)
-                        .expect("Failed to write updated app's pubspec.yaml");
+                            let mut local_dependencies_content = String::new();
+                            for (dependency_name, dependency_path) in &local_dependencies {
+                                let dependency_entry = format!(
+                                    "  {}:\n    path: {}",
+                                    dependency_name, dependency_path
+                                );
+                                if !pubspec_content.contains(&dependency_entry) {
+                                    local_dependencies_content
+                                        .push_str(&format!("\n{}", dependency_entry));
+                                }
+                            }
+
+                            pubspec_content = format!(
+                                "{}\n{}\n{}",
+                                before_flutter, local_dependencies_content, after_flutter
+                            );
+                        }
+
+                        fs::write(app_pubspec_path, pubspec_content)
+                            .expect("Failed to write updated app's pubspec.yaml");
+                    }
                 }),
             ),
             (
                 "Writing updated pubspec.yaml",
-                Box::new(|| {
-                    thread::sleep(Duration::from_millis(300));
+                Box::new(move || {
+                    thread::sleep(Duration::from_millis(300)); // Simulasi menulis file
                 }),
             ),
             (
                 "Adding dependencies",
-                Box::new(|| {
-                    Self::add_dependencies(dependencies.clone(), "./packages/app", false);
+                Box::new({
+                    let dependencies = dependencies.clone();
+                    move || {
+                        Self::add_dependencies(dependencies, "./packages/app", false);
+                    }
                 }),
             ),
             (
                 "Adding dev dependencies",
-                Box::new(|| {
-                    Self::add_dependencies(dev_dependencies.clone(), "./packages/app", true);
+                Box::new({
+                    let dev_dependencies = dev_dependencies.clone();
+                    move || {
+                        Self::add_dependencies(dev_dependencies, "./packages/app", true);
+                    }
                 }),
             ),
         ];
@@ -413,13 +473,13 @@ impl CreateModuleProjectFlutter {
         );
     }
 
-    fn run_steps_with_loading(steps: Vec<(&str, Box<dyn FnOnce()>)>) {
+    fn run_steps_with_loading(steps: Vec<(&str, Box<dyn FnOnce() + Send>)>) {
         for (step_text, step_action) in steps {
             Self::run_with_loading(step_text, step_action);
         }
     }
 
-    fn run_with_loading(step_text: &str, step_action: Box<dyn FnOnce()>) {
+    fn run_with_loading(step_text: &str, step_action: Box<dyn FnOnce() + Send>) {
         let loading_frames = ["⠏", "⠛", "⠹", "⠼", "⠧", "⠇"];
         let is_loading = Arc::new(AtomicBool::new(true));
         let is_loading_clone = Arc::clone(&is_loading);
@@ -441,7 +501,6 @@ impl CreateModuleProjectFlutter {
         });
 
         step_action();
-
         is_loading.store(false, Ordering::Relaxed);
         handle.join().unwrap();
 
@@ -449,10 +508,10 @@ impl CreateModuleProjectFlutter {
         println!();
     }
 
-    fn add_dependencies(dependencies: Vec<&str>, path: &str, is_dev: bool) {
+    fn add_dependencies(dependencies: Vec<String>, path: &str, is_dev: bool) {
         for dependency in dependencies {
             let mut command = std::process::Command::new("flutter");
-            command.arg("pub").arg("add").arg(dependency);
+            command.arg("pub").arg("add").arg(&dependency);
 
             if is_dev {
                 command.arg("--dev");
