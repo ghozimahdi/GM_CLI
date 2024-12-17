@@ -47,21 +47,45 @@ impl CreateModuleProjectFlutter {
 
         // Domain
         Self::create_module(
-            "domain_auth",
-            "./packages/domain/domain_auth",
-            vec!["injectable", "get_it", "freezed_annotation"],
-            vec!["lint", "injectable_generator", "build_runner", "freezed"],
-            vec![("core", "../../library/core")],
-        );
-        Self::create_module(
             "domain_common",
             "./packages/domain/domain_common",
             vec!["injectable", "get_it", "freezed_annotation"],
             vec!["lint", "injectable_generator", "build_runner", "freezed"],
             vec![("core", "../../library/core")],
         );
+        Self::create_module(
+            "domain_auth",
+            "./packages/domain/domain_auth",
+            vec!["injectable", "get_it", "freezed_annotation"],
+            vec!["lint", "injectable_generator", "build_runner", "freezed"],
+            vec![
+                ("core", "../../library/core"),
+                ("domain_common", "../../domain/domain_common"),
+            ],
+        );
 
         // Data
+        Self::create_module(
+            "data_common",
+            "./packages/data/data_common",
+            vec![
+                "dio",
+                "chucker_flutter",
+                "injectable",
+                "get_it",
+                "shared_preferences",
+            ],
+            vec![
+                "lint",
+                "json_serializable",
+                "injectable_generator",
+                "build_runner",
+            ],
+            vec![
+                ("core", "../../library/core"),
+                ("domain_common", "../../domain/domain_common"),
+            ],
+        );
         Self::create_module(
             "data_auth",
             "./packages/data/data_auth",
@@ -74,22 +98,8 @@ impl CreateModuleProjectFlutter {
             ],
             vec![
                 ("core", "../../library/core"),
+                ("data_common", "../../data/data_common"),
                 ("domain_auth", "../../domain/domain_auth"),
-            ],
-        );
-        Self::create_module(
-            "data_common",
-            "./packages/data/data_common",
-            vec!["dio", "chucker_flutter", "injectable", "get_it"],
-            vec![
-                "lint",
-                "json_serializable",
-                "injectable_generator",
-                "build_runner",
-            ],
-            vec![
-                ("core", "../../library/core"),
-                ("domain_common", "../../domain/domain_common"),
             ],
         );
 
@@ -141,8 +151,33 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("resource", "../../library/resource"),
                 ("core", "../../library/core"),
+                ("feature_common", "../../presentation/feature_common"),
+                ("resource", "../../library/resource"),
+            ],
+        );
+        Self::create_module(
+            "feature_dashboard",
+            "./packages/presentation/feature_dashboard",
+            vec![
+                "flutter_screenutil",
+                "freezed_annotation",
+                "flutter_bloc",
+                "get_it",
+                "injectable",
+                "auto_route",
+            ],
+            vec![
+                "auto_route_generator",
+                "injectable_generator",
+                "build_runner",
+                "freezed",
+                "lint",
+            ],
+            vec![
+                ("core", "../../library/core"),
+                ("feature_common", "../../presentation/feature_common"),
+                ("resource", "../../library/resource"),
             ],
         );
 
@@ -174,6 +209,7 @@ impl CreateModuleProjectFlutter {
                 ("data_auth", "../data/data_auth"),
                 ("feature_common", "../presentation/feature_common"),
                 ("feature_login", "../presentation/feature_login"),
+                ("feature_dashboard", "../presentation/feature_dashboard"),
             ],
         );
     }
@@ -253,11 +289,12 @@ impl CreateModuleProjectFlutter {
             ));
         }
 
-        if !dev_dependencies.is_empty() {
+        if !dev_dependencies.is_empty() || true {
             pubspec_content.push_str("dev_dependencies:\n");
             for dev_dependency in &dev_dependencies {
                 pubspec_content.push_str(&format!("  {}: any\n", dev_dependency));
             }
+            pubspec_content.push_str("  flutter_test:\n    sdk: flutter\n");
         }
 
         let pubspec_path = format!("{}/pubspec.yaml", module_path);

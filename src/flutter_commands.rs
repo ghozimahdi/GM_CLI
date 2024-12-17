@@ -119,7 +119,7 @@ impl FlutterCommandHandler {
             let choices = &["Yes", "No"];
             let pub_get_selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Do you want to run flutter pub get after the clean process?")
-                .default(1)
+                .default(0)
                 .items(choices)
                 .interact()
                 .unwrap();
@@ -128,7 +128,7 @@ impl FlutterCommandHandler {
 
             let build_runner_selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Do you want to run build_runner after the clean process?")
-                .default(1)
+                .default(0)
                 .items(choices)
                 .interact()
                 .unwrap();

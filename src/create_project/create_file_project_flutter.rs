@@ -11,16 +11,20 @@ pub struct CreateFileProjectFlutter;
 
 impl CreateFileProjectFlutter {
     pub fn build(project_name: &str, package_name: &str) {
-        Self::create_app_main_files();
-        Self::create_feature_login_page_files();
+        Self::create_docs_in_root();
         Self::create_gitignore_in_app();
         Self::create_editorconfig_in_root();
-        Self::create_flutter_run_config_in_root(project_name);
         Self::generate_resource_files();
         Self::generate_core_files();
+        Self::create_app_main_files();
+        Self::create_flutter_run_config_in_root(project_name);
         Self::generate_feature_common_files();
+        Self::create_feature_login_files();
+        Self::create_feature_dashboard_files();
         Self::generate_domain_common_files();
+        Self::generate_domain_auth_files();
         Self::generate_data_common_files();
+        Self::generate_data_auth_files();
         Self::generate_icon_logo_files();
         Self::generate_flavorizr_yaml(project_name, package_name);
     }
@@ -82,18 +86,32 @@ impl CreateFileProjectFlutter {
         }
     }
 
-    fn create_feature_login_page_files() {
-        let feature_login_path = "packages/presentation/feature_login/lib/src";
-        let file_path = format!("{}/login_page.dart", feature_login_path);
+    fn create_feature_login_files() {
+        let source_dir = "feature_login";
+        let dest_lib_dir = "packages/presentation/feature_login";
 
-        let file = ASSETS
-            .get_file("login_page.dart")
-            .expect("Failed to find login_page.dart in assets");
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
-        fs::create_dir_all(feature_login_path).expect("Failed to create feature login directory");
+        let lib_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find lib directory in feature_login");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
-        println!("Generating file: {}", file_path);
-        fs::write(&file_path, file.contents()).expect("Failed to write login_page.dart file");
+        println!("All files and folders from feature_login successfully generated.");
+    }
+
+    fn create_feature_dashboard_files() {
+        let source_dir = "feature_dashboard";
+        let dest_lib_dir = "packages/presentation/feature_dashboard";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find lib directory in feature_dashboard");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from feature_dashboard successfully generated.");
     }
 
     fn generate_icon_logo_files() {
@@ -134,6 +152,20 @@ impl CreateFileProjectFlutter {
 
         println!("Creating a .editorconfig in: {}", editorconfig_path);
         fs::write(editorconfig_path, file.contents()).expect("Failed to write .editorconfig file");
+    }
+
+    fn create_docs_in_root() {
+        let source_dir = "docs";
+        let dest_lib_dir = "";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find lib directory in feature_common");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from feature_common successfully generated.");
     }
 
     fn create_flutter_run_config_in_root(project_name: &str) {
@@ -256,12 +288,12 @@ impl CreateFileProjectFlutter {
 
     fn generate_feature_common_files() {
         let source_dir = "feature_common";
-        let dest_lib_dir = "packages/presentation/feature_common/lib";
+        let dest_lib_dir = "packages/presentation/feature_common";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
         let lib_dir = ASSETS
-            .get_dir(format!("{}/lib", source_dir))
+            .get_dir(source_dir)
             .expect("Failed to find lib directory in feature_common");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
@@ -270,30 +302,58 @@ impl CreateFileProjectFlutter {
 
     fn generate_domain_common_files() {
         let source_dir = "domain_common";
-        let dest_lib_dir = "packages/domain/domain_common/lib";
+        let dest_lib_dir = "packages/domain/domain_common";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
         let lib_dir = ASSETS
-            .get_dir(format!("{}/lib", source_dir))
+            .get_dir(source_dir)
             .expect("Failed to find lib directory in domain_common");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
         println!("All files and folders from domain_common successfully generated.");
     }
 
-    fn generate_data_common_files() {
-        let source_dir = "data_common";
-        let dest_lib_dir = "packages/data/data_common/lib";
+    fn generate_domain_auth_files() {
+        let source_dir = "domain_auth";
+        let dest_lib_dir = "packages/domain/domain_auth";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
         let lib_dir = ASSETS
-            .get_dir(format!("{}/lib", source_dir))
+            .get_dir(source_dir)
+            .expect("Failed to find lib directory in domain_auth");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from domain_auth successfully generated.");
+    }
+
+    fn generate_data_common_files() {
+        let source_dir = "data_common";
+        let dest_lib_dir = "packages/data/data_common";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(source_dir)
             .expect("Failed to find lib directory in data_common");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
         println!("All files and folders from data_common successfully generated.");
+    }
+
+    fn generate_data_auth_files() {
+        let source_dir = "data_auth";
+        let dest_lib_dir = "packages/data/data_auth";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+
+        let lib_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find lib directory in data_auth");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("All files and folders from data_auth successfully generated.");
     }
 
     fn generate_flavorizr_yaml(project_name: &str, package_name: &str) {

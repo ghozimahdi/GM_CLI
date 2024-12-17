@@ -53,6 +53,7 @@ impl IOSAnalyzingProjectFlutter {
                 };
 
             while current_ios_version <= max_ios_version {
+                current_ios_version += 1.0;
                 println!(
                     "{} {}",
                     "Trying `pod install` with iOS deployment target:".yellow(),
