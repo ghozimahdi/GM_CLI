@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Hello Welcome, Ghozi Mahdi CLI is Flutter project tools management',
+                'Hello and welcome! Ghozi Mahdi CLI is a tool to manage your Flutter projects efficiently.',
                 style: res.textTheme.titleSmall,
                 textAlign: TextAlign.center,
               ),

@@ -31,7 +31,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          'Hello There, Are You $name?',
+          'Hello $name! I thought you’d never show up! 😅',
           style: res.textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
