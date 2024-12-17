@@ -375,10 +375,10 @@ impl CreateFileProjectFlutter {
                   name: "{project_name} Dev"
 
                 android:
-                  icon: "assets/icons/android_mengantar_dev.png"
+                  icon: "assets/icons/android_app_dev.png"
                   applicationId: "{package_name}.dev"
                 ios:
-                  icon: "assets/icons/ios_mengantar_dev.png"
+                  icon: "assets/icons/ios_app_dev.png"
                   bundleId: "{package_name}.dev"
 
               staging:
@@ -386,10 +386,10 @@ impl CreateFileProjectFlutter {
                   name: "{project_name} Stg"
 
                 android:
-                  icon: "assets/icons/android_mengantar_stg.png"
+                  icon: "assets/icons/android_app_stg.png"
                   applicationId: "{package_name}.staging"
                 ios:
-                  icon: "assets/icons/ios_mengantar_stg.png"
+                  icon: "assets/icons/ios_app_stg.png"
                   bundleId: "{package_name}.staging"
 
               prod:
@@ -397,10 +397,10 @@ impl CreateFileProjectFlutter {
                   name: "{project_name}"
 
                 android:
-                  icon: "assets/icons/android_mengantar_prod.png"
+                  icon: "assets/icons/android_app_prod.png"
                   applicationId: "{package_name}"
                 ios:
-                  icon: "assets/icons/ios_mengantar_prod.png"
+                  icon: "assets/icons/ios_app_prod.png"
                   bundleId: "{package_name}"
 
             ide: idea
