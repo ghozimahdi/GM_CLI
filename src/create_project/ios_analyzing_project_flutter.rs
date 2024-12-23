@@ -1,9 +1,9 @@
+use crate::command::Command;
 use colored::Colorize;
 use regex::Regex;
 use std::fs::{self};
 use std::io::Read;
 use std::path::Path;
-use std::process::Command;
 
 pub struct IOSAnalyzingProjectFlutter;
 
@@ -22,7 +22,7 @@ impl IOSAnalyzingProjectFlutter {
         }
 
         println!("{}", "Running `pod install`...".yellow());
-        let output = Self::run_in_dir(&["pod", "install"], &podfile_dir);
+        let output = Command::run_in_dir(&["pod", "install"], &podfile_dir);
 
         if !output.status.success() {
             println!(
@@ -62,7 +62,7 @@ impl IOSAnalyzingProjectFlutter {
 
                 Self::update_ios_deployment_target(&current_ios_version.to_string(), &podfile_dir);
 
-                let retry_output = Self::run_in_dir(&["pod", "install"], &podfile_dir);
+                let retry_output = Command::run_in_dir(&["pod", "install"], &podfile_dir);
 
                 if retry_output.status.success() {
                     println!("{}", "Pod install completed successfully.".green());
@@ -89,7 +89,7 @@ impl IOSAnalyzingProjectFlutter {
     }
 
     fn detect_latest_ios_version() -> Option<f32> {
-        let output = Command::new("xcrun")
+        let output = std::process::Command::new("xcrun")
             .args(["--sdk", "iphoneos", "--show-sdk-version"])
             .output()
             .ok()?;
@@ -111,31 +111,6 @@ impl IOSAnalyzingProjectFlutter {
         }
 
         None
-    }
-
-    fn run_in_dir(args: &[&str], dir: &str) -> std::process::Output {
-        let command = args[0];
-        let command_args = &args[1..];
-
-        println!("Running command '{}' in directory: {}", command, dir);
-
-        let output = Command::new(command)
-            .args(command_args)
-            .current_dir(dir)
-            .output()
-            .expect("Failed to execute command");
-
-        if !output.status.success() {
-            eprintln!(
-                "Error: Command '{}' failed with status {}",
-                command, output.status
-            );
-            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
-        } else {
-            println!("Command '{}' succeeded.", command);
-        }
-
-        output
     }
 
     fn validate_podfile_path(podfile_path: &str) -> bool {

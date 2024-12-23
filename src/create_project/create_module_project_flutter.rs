@@ -473,7 +473,7 @@ impl CreateModuleProjectFlutter {
         );
     }
 
-    fn run_steps_with_loading(steps: Vec<(&str, Box<dyn FnOnce() + Send>)>) {
+    pub fn run_steps_with_loading(steps: Vec<(&str, Box<dyn FnOnce() + Send>)>) {
         for (step_text, step_action) in steps {
             Self::run_with_loading(step_text, step_action);
         }

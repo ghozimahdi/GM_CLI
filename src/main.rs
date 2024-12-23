@@ -1,6 +1,7 @@
 extern crate core;
 
 use crate::create_project::create_project_flutter::CreateProjectFlutter;
+use crate::create_project::create_single_module_project_flutter::CreateSingleModuleProjectFlutter;
 use crate::flutter_build_app::FlutterBuildApp;
 use crate::flutter_commands::FlutterCommandHandler;
 use crate::version::{generate_saweria_qr_code, show_donate, show_info};
@@ -133,9 +134,7 @@ fn main() {
 fn handle_create(sub_matches: Option<&ArgMatches>) {
     match sub_matches.and_then(|m| m.subcommand()) {
         Some(("project", _)) => CreateProjectFlutter::build(),
-        Some(("module", _)) => {
-            println!("{}", "Coming soon! Thank you for your support ❤️".yellow())
-        }
+        Some(("module", _)) => CreateSingleModuleProjectFlutter::build(),
         None => prompt_create_choice(),
         _ => println!(
             "{}",
@@ -155,7 +154,7 @@ fn prompt_create_choice() {
 
     match selection {
         0 => CreateProjectFlutter::build(),
-        1 => println!("{}", "Coming soon! Thank you for your support ❤️".yellow()),
+        1 => CreateSingleModuleProjectFlutter::build(),
         _ => println!("{}", "Invalid choice. Please try again.".red()),
     }
 }
