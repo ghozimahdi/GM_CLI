@@ -397,14 +397,14 @@ impl CreateSingleModuleProjectFlutter {
     }
 
     fn generated_feature_route(module_dir: &str, module_name: &str) {
-        let split_name = module_name.replace("feature_", "");
-        let file_name = format!("{}_route_provider.dart", split_name);
+        let file_name = format!("{}_route.dart", module_name);
         let file_path = format!("{}/{}", module_dir, file_name);
 
         if !Path::new(&module_dir).exists() {
             fs::create_dir_all(&module_dir).expect("Failed to create the module directory");
         }
 
+        let split_name = module_name.replace("feature_", "");
         let pascal_case_name = split_name
             .split('_')
             .map(|word| {
@@ -419,12 +419,26 @@ impl CreateSingleModuleProjectFlutter {
 
         let route_name = format!("{}Route", pascal_case_name);
 
+        let pascal_case_class_name = module_name
+            .split('_')
+            .map(|word| {
+                let mut chars = word.chars();
+                chars
+                    .next()
+                    .map(|c| c.to_uppercase().to_string())
+                    .unwrap_or_default()
+                    + chars.as_str()
+            })
+            .collect::<String>();
+
+        let class_name = format!("{}Route", pascal_case_class_name);
+
         let file_content = indoc! {r#"
             import 'package:auto_route/auto_route.dart';
             import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
 
             @AutoRouterConfig()
-            class Feature{route_name} extends RootStackRouter {
+            class {class_name} extends RootStackRouter {
               @override
               List<AutoRoute> get routes => [
                     AutoRoute(page: {route_name}.page),
@@ -433,6 +447,7 @@ impl CreateSingleModuleProjectFlutter {
 
         "#}
         .replace("{module_name}", module_name)
+        .replace("{class_name}", &class_name)
         .replace("{route_name}", &route_name);
 
         let mut file =
@@ -475,7 +490,7 @@ impl CreateSingleModuleProjectFlutter {
             import 'package:auto_route/auto_route.dart';
             import 'package:feature_common/feature_common.dart';
             import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
-            import 'package:{module_name}/src/config/{module_name}_route_provider.dart';
+            import 'package:{module_name}/src/config/{split_name}_route_provider.dart';
             import 'package:flutter/material.dart';
             import 'package:injectable/injectable.dart';
             import 'package:resource/resource.dart';
@@ -518,6 +533,7 @@ impl CreateSingleModuleProjectFlutter {
         "#}
         .replace("{module_name}", module_name)
         .replace("{class_name}", &class_name)
+        .replace("{split_name}", &split_name)
         .replace("{route_name}", &route_name);
 
         let mut file =

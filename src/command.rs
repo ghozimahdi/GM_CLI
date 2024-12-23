@@ -40,6 +40,7 @@ impl Command {
             );
             eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
         } else {
+            #[cfg(debug_assertions)]
             println!("Command '{}' succeeded.", command);
         }
 
