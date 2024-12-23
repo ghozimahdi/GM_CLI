@@ -1,3 +1,3 @@
-library data_common;
+library data_auth;
 
-export 'package:chucker_flutter/chucker_flutter.dart';
+export 'package:data_auth/src/config/data_auth_config.dart';
