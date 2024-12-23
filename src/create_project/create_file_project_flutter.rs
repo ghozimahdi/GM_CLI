@@ -356,6 +356,20 @@ impl CreateFileProjectFlutter {
         println!("All files and folders from data_auth successfully generated.");
     }
 
+    fn format_project_name(project_name: &str) -> String {
+        project_name
+            .split('_')
+            .map(|word| {
+                let mut chars = word.chars();
+                match chars.next() {
+                    Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+                    None => String::new(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
     fn generate_flavorizr_yaml(project_name: &str, package_name: &str) {
         let module_dir = "packages/app";
         let file_path = format!("{}/flavorizr.yaml", module_dir);
@@ -363,6 +377,8 @@ impl CreateFileProjectFlutter {
         if !Path::new(module_dir).exists() {
             fs::create_dir_all(module_dir).expect("Failed to create the module directory");
         }
+
+        let formatted_project_name = Self::format_project_name(project_name);
 
         let flavorizr_content = indoc! {r#"
             app:
@@ -434,7 +450,7 @@ impl CreateFileProjectFlutter {
               - ide:config
 
         "#}
-        .replace("{project_name}", project_name)
+        .replace("{project_name}", &formatted_project_name)
         .replace("{package_name}", package_name);
 
         let mut file = fs::File::create(&file_path).expect("Failed to create flavorizr.yaml");
