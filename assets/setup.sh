@@ -9,10 +9,8 @@
 # YouTube: https://www.youtube.com/@mbahgojol
 
 # before running this please read root-project/release/doc.md
-chmod +x release/decrypt-secrets.sh
-chmod +x release/decrypt-env.sh
-release/decrypt-secrets.sh
-release/decrypt-env.sh
+chmod +x cryptify
+./cryptify decrypt
 
 # make sure you have melos in your system
 #melos clean
@@ -33,8 +31,7 @@ source ~/.zshrc
 echo "Running pre-push script..."
 
 # Run encryption scripts
-./release/encrypt-env.sh
-./release/encrypt-secrets.sh
+./cryptify encrypt
 
 # Check if there are any uncommitted .gpg files in release/ and release/config/
 UNSTAGED_GPG_FILES=\$(git ls-files -m release/*.gpg release/config/**/*.gpg)
