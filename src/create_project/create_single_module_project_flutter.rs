@@ -471,7 +471,7 @@ impl CreateSingleModuleProjectFlutter {
             fs::create_dir_all(&module_dir).expect("Failed to create the module directory");
         }
 
-        let pascal_case_name = split_name
+        let pascal_case_name = &split_name
             .split('_')
             .map(|word| {
                 let mut chars = word.chars();
