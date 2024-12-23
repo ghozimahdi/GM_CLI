@@ -217,7 +217,7 @@ impl CreateModuleProjectFlutter {
         );
     }
 
-    fn create_module(
+    pub fn create_module(
         module_name: &str,
         module_path: &str,
         dependencies: Vec<&str>,
@@ -371,7 +371,7 @@ impl CreateModuleProjectFlutter {
         panic!("No `sdk` environment found in the app module's pubspec.yaml");
     }
 
-    fn update_app_pubspec_dependencies(
+    pub fn update_app_pubspec_dependencies(
         dependencies: Vec<&str>,
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,

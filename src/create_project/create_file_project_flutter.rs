@@ -447,7 +447,7 @@ impl CreateFileProjectFlutter {
         );
     }
 
-    fn copy_contents_only(dir: &Dir, dest_path: &Path) {
+    pub fn copy_contents_only(dir: &Dir, dest_path: &Path) {
         for file in dir.files() {
             let file_dest_path = dest_path.join(file.path().file_name().unwrap());
             println!("Generating file: {}", file_dest_path.display());
