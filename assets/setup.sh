@@ -11,6 +11,7 @@
 # before running this please read root-project/release/doc.md
 chmod +x cryptify
 ./cryptify decrypt
+./cryptify sync
 
 # make sure you have melos in your system
 #melos clean
