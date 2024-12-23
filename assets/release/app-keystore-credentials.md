@@ -4,7 +4,7 @@ These credentials are used in conjunction with your Android keystore file to sig
 
 ## Credential Values
 
-- Android keystore password: ----
-- Android key alias: ----
-- Android key password: ----
+- Android keystore password: 123123
+- Android key alias: 123123
+- Android key password: 123123
       
