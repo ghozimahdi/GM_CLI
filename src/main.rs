@@ -9,6 +9,8 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 use colored::Colorize;
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Select;
+use std::process::exit;
+use std::process::Command as StdCommand;
 
 pub mod command;
 mod flutter_build_app;
@@ -31,6 +33,27 @@ mod create_project {
 }
 
 fn main() {
+    if !is_flutter_installed() {
+        println!(
+            "{}",
+            "Flutter is not installed. Please install Flutter and ensure it's in your PATH.".red()
+        );
+        exit(1);
+    }
+
+    if !is_melos_installed() {
+        println!(
+            "{}",
+            "Melos is not installed. Installing Melos globally...".yellow()
+        );
+        if !install_melos() {
+            println!(
+                "{}",
+                "Failed to install Melos. Please install it manually.".red()
+            );
+        }
+    }
+
     let handler = FlutterCommandHandler;
 
     let matches = Command::new("gm")
@@ -128,6 +151,30 @@ fn main() {
                 show_help()
             }
         }
+    }
+}
+
+fn is_flutter_installed() -> bool {
+    match StdCommand::new("flutter").arg("--version").output() {
+        Ok(output) => output.status.success(),
+        Err(_) => false,
+    }
+}
+
+fn is_melos_installed() -> bool {
+    match StdCommand::new("melos").arg("--version").output() {
+        Ok(output) => output.status.success(),
+        Err(_) => false,
+    }
+}
+
+fn install_melos() -> bool {
+    match StdCommand::new("dart")
+        .args(&["pub", "global", "activate", "melos"])
+        .status()
+    {
+        Ok(status) => status.success(),
+        Err(_) => false,
     }
 }
 
