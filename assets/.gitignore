@@ -103,3 +103,4 @@ shared/core/.env_*
 
 # FVM Version Cache
 .fvm/
+.cryptify-key
