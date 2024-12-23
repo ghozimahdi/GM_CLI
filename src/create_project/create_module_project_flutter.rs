@@ -429,8 +429,10 @@ impl CreateModuleProjectFlutter {
                             }
 
                             pubspec_content = format!(
-                                "{}\n{}\n{}",
-                                before_flutter, local_dependencies_content, after_flutter
+                                "{}{}{}",
+                                before_flutter.trim_end(),
+                                local_dependencies_content.trim_end(),
+                                after_flutter
                             );
                         }
 
