@@ -12,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 mixin FirebaseHelper {
   static Future<void> initialize() async {
     await Firebase.initializeApp(
-      name: "App-Firebase",
       options: DefaultFirebaseOptions.currentPlatform,
     );
 

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 Future<void> customRunApp({
   required Widget child,
-  required String path,
+  String? path,
   AssetLoader? assetLoader,
 }) async {
   runApp(
@@ -12,7 +12,7 @@ Future<void> customRunApp({
       supportedLocales: AppLocale.values.map((e) => e.toLocale).toList(),
       startLocale: AppLocale.indonesian.toLocale,
       fallbackLocale: AppLocale.indonesian.toLocale,
-      path: path,
+      path: path ?? AppLocale.path,
       assetLoader: assetLoader ?? const RootBundleAssetLoader(),
       child: child,
     ),

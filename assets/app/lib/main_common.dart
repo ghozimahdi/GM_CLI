@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:app/app_router.dart';
+import 'package:app/firebase/firebase_helper.dart';
 import 'package:app/injector.dart';
 import 'package:app/run_app.dart';
 import 'package:core/core.dart';
@@ -17,7 +18,6 @@ Future<void> mainCommon(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await configureDependencies(environment: flavor.environment);
-
   var appEnv = await AppEnv.initialize(flavor);
 
   // Uncomment the following code to enable Firebase functionality.
@@ -25,7 +25,6 @@ Future<void> mainCommon(Flavor flavor) async {
   // await FirebaseHelper.initialize();
 
   await EasyLocalization.ensureInitialized();
-
   await res.initialize(useDarkTheme: false);
 
   await SystemChrome.setPreferredOrientations([
@@ -33,40 +32,26 @@ Future<void> mainCommon(Flavor flavor) async {
     DeviceOrientation.portraitDown,
   ]);
 
-  switch (flavor) {
-    case Flavor.prod:
-    case Flavor.staging:
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  if (flavor == Flavor.prod || flavor == Flavor.staging) {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
-      PlatformDispatcher.instance.onError = (exception, stackTrace) {
-        FirebaseCrashlytics.instance.recordError(
-          exception,
-          stackTrace,
-          fatal: true,
-        );
-        return true;
-      };
-
-      FlutterError.onError = (details) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError(details);
-      };
-
-      runZonedGuarded(() async {
-        customRunApp(
-          path: 'IgnoreThisPath',
-          child: MyApp(),
-        );
-      }, (error, stack) async {
-        await FirebaseCrashlytics.instance.recordError(error, stack);
-      });
-      return;
-    default:
-      customRunApp(
-        path: AppLocale.path,
-        child: MyApp(),
+    PlatformDispatcher.instance.onError = (exception, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(
+        exception,
+        stackTrace,
+        fatal: true,
       );
-      return;
+      return true;
+    };
+
+    FlutterError.onError = (details) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    };
   }
+
+  customRunApp(
+    child: MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
