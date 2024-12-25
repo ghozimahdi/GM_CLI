@@ -5,6 +5,7 @@ use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
 use include_dir::{include_dir, Dir};
 use indoc::indoc;
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::{fs, io};
@@ -81,6 +82,9 @@ impl CreateSingleModuleProjectFlutter {
                 );
                 Self::create_default_feature_files(&module_name);
                 Self::refresh_module(&format!("./packages/presentation/{}", module_name));
+
+                let packages = &format!("packages/presentation/{}", module_name);
+                Self::update_melos(packages);
             }
             // Data
             1 => {
@@ -104,6 +108,9 @@ impl CreateSingleModuleProjectFlutter {
                 );
                 Self::create_default_data_files(&module_name);
                 Self::refresh_module(&format!("./packages/data/{}", module_name));
+
+                let packages = &format!("packages/data/{}", module_name);
+                Self::update_melos(packages);
             }
             // Domain
             2 => {
@@ -121,6 +128,9 @@ impl CreateSingleModuleProjectFlutter {
                 );
                 Self::create_default_domain_files(&module_name);
                 Self::refresh_module(&format!("./packages/domain/{}", module_name));
+
+                let packages = &format!("packages/domain/{}", module_name);
+                Self::update_melos(packages);
             }
             // Library
             3 => {
@@ -133,6 +143,9 @@ impl CreateSingleModuleProjectFlutter {
                     vec!["build_runner", "lint"],
                     vec![],
                 );
+
+                let packages = &format!("packages/library/{}", module_name);
+                Self::update_melos(packages);
             }
             // In this path
             _ => {
@@ -154,6 +167,46 @@ impl CreateSingleModuleProjectFlutter {
             vec![(&*local_module.0, &*local_module.1)],
         );
         Self::refresh_module("./packages/app");
+    }
+
+    fn update_melos(new_package: &str) {
+        let melos_path = "melos.yaml";
+
+        if !Path::new(melos_path).exists() {
+            println!("Melos configuration file not found. Please ensure melos.yaml exists in the root directory.");
+            return;
+        }
+
+        let melos_content = fs::read_to_string(melos_path).expect("Failed to read melos.yaml");
+        let mut lines: Vec<String> = melos_content.lines().map(String::from).collect();
+
+        if let Some(start_index) = lines
+            .iter()
+            .position(|line| line.trim_start().starts_with("packages:"))
+        {
+            let package_already_exists = lines
+                .iter()
+                .skip(start_index + 1)
+                .any(|line| line.trim() == format!("- {}", new_package));
+
+            if !package_already_exists {
+                lines.insert(start_index + 1, format!("  - {}", new_package));
+            }
+        } else {
+            lines.push(String::from("packages:"));
+            lines.push(format!("  - {}", new_package));
+        }
+
+        let updated_melos_content = lines.join("\n");
+        let mut melos_file = File::create(melos_path).expect("Failed to create melos.yaml");
+        melos_file
+            .write_all(updated_melos_content.as_bytes())
+            .expect("Failed to write melos.yaml");
+
+        println!(
+            "Package '{}' added to Melos configuration successfully.",
+            new_package
+        );
     }
 
     pub fn refresh_module(dir: &str) {
@@ -303,8 +356,7 @@ impl CreateSingleModuleProjectFlutter {
         .replace("{module_name}", module_name)
         .replace("{class_name}", &class_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generate to {}", file_name));
@@ -336,8 +388,7 @@ impl CreateSingleModuleProjectFlutter {
         "#}
         .replace("{module_name}", module_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generated to {}", file_name));
@@ -382,10 +433,9 @@ impl CreateSingleModuleProjectFlutter {
               });
             }
         "#}
-        .replace("{route_name}", &route_name);
+            .replace("{route_name}", &route_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generate {}", file_name));
@@ -450,8 +500,7 @@ impl CreateSingleModuleProjectFlutter {
         .replace("{class_name}", &class_name)
         .replace("{route_name}", &route_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generate {}", file_name));
@@ -536,8 +585,7 @@ impl CreateSingleModuleProjectFlutter {
         .replace("{split_name}", &split_name)
         .replace("{route_name}", &route_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generate {}", file_name));
@@ -562,8 +610,7 @@ impl CreateSingleModuleProjectFlutter {
         "#}
         .replace("{module_name}", module_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generated to {}", file_name));
@@ -587,8 +634,7 @@ impl CreateSingleModuleProjectFlutter {
         "#}
         .replace("{module_name}", module_name);
 
-        let mut file =
-            fs::File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
         file.write_all(file_content.as_bytes())
             .expect(&format!("Failed to generated to {}", file_name));
