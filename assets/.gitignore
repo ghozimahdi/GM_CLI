@@ -88,7 +88,7 @@ doc/api/
 *.assets.dart
 
 # .env files
-shared/core/.env_*
+packages/library/core/.env_*
 
 # Firebase configuration files
 **/**/google-services.json
