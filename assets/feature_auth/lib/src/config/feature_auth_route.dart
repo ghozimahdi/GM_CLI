@@ -5,6 +5,6 @@ import 'package:feature_auth/src/config/feature_auth_route.gr.dart';
 class FeatureAuthRoute extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(page: AuthRoute.page),
+        AutoRoute(page: LoginRoute.page),
       ];
 }
