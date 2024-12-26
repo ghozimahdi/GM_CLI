@@ -19,7 +19,7 @@ impl CreateFileProjectFlutter {
         Self::create_app_main_files();
         Self::create_flutter_run_config_in_root(project_name);
         Self::generate_feature_common_files();
-        Self::create_feature_login_files();
+        Self::create_feature_auth_files();
         Self::create_feature_dashboard_files();
         Self::generate_domain_common_files();
         Self::generate_domain_auth_files();
@@ -86,18 +86,18 @@ impl CreateFileProjectFlutter {
         }
     }
 
-    fn create_feature_login_files() {
-        let source_dir = "feature_login";
-        let dest_lib_dir = "packages/presentation/feature_login";
+    fn create_feature_auth_files() {
+        let source_dir = "feature_auth";
+        let dest_lib_dir = "packages/presentation/feature_auth";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
         let lib_dir = ASSETS
             .get_dir(source_dir)
-            .expect("Failed to find lib directory in feature_login");
+            .expect("Failed to find lib directory in feature_auth");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
-        println!("All files and folders from feature_login successfully generated.");
+        println!("All files and folders from feature_auth successfully generated.");
     }
 
     fn create_feature_dashboard_files() {

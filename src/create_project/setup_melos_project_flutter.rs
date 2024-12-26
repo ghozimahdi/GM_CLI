@@ -23,7 +23,7 @@ impl SetupMelosProjectFlutter {
               - packages/data/data_auth
               - packages/data/data_common
               - packages/presentation/feature_common
-              - packages/presentation/feature_login
+              - packages/presentation/feature_auth
               - packages/presentation/feature_dashboard
 
             command:

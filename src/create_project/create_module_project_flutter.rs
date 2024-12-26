@@ -136,8 +136,8 @@ impl CreateModuleProjectFlutter {
             ],
         );
         Self::create_module(
-            "feature_login",
-            "./packages/presentation/feature_login",
+            "feature_auth",
+            "./packages/presentation/feature_auth",
             vec![
                 "flutter_screenutil",
                 "freezed_annotation",
@@ -214,7 +214,7 @@ impl CreateModuleProjectFlutter {
                 ("data_common", "../data/data_common"),
                 ("data_auth", "../data/data_auth"),
                 ("feature_common", "../presentation/feature_common"),
-                ("feature_login", "../presentation/feature_login"),
+                ("feature_auth", "../presentation/feature_auth"),
                 ("feature_dashboard", "../presentation/feature_dashboard"),
             ],
         );

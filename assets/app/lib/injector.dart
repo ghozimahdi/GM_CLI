@@ -6,7 +6,7 @@ import 'package:domain_auth/domain_auth.dart';
 import 'package:domain_common/domain_common.dart';
 import 'package:feature_common/feature_common.dart';
 import 'package:feature_dashboard/feature_dashboard.dart';
-import 'package:feature_login/feature_login.dart';
+import 'package:feature_auth/feature_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -25,7 +25,7 @@ Future<void> configureDependencies({required String environment}) async {
 
   FeatureCommonConfig.getInstance().config(env: environment);
   FeatureDashboardConfig.getInstance().config(env: environment);
-  FeatureLoginConfig.getInstance().config(env: environment);
+  FeatureAuthConfig.getInstance().config(env: environment);
 
   getIt.init(environment: environment);
 }

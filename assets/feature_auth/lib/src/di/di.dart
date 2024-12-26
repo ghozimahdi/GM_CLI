@@ -1,4 +1,4 @@
-import 'package:feature_login/src/di/di.config.dart';
+import 'package:feature_auth/src/di/di.config.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
