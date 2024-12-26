@@ -300,7 +300,7 @@ impl CreateModuleProjectFlutter {
                         }
 
                         if !dev_dependencies.is_empty() {
-                            pubspec_content.push_str("dev_dependencies:\n");
+                            pubspec_content.push_str("\ndev_dependencies:\n");
                             for dev_dependency in &dev_dependencies {
                                 pubspec_content.push_str(&format!("  {}: any\n", dev_dependency));
                             }
