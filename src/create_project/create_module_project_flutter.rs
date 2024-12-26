@@ -202,6 +202,7 @@ impl CreateModuleProjectFlutter {
                 "auto_route_generator",
                 "injectable_generator",
                 "build_runner",
+                "freezed",
                 "lint",
             ],
             vec![
