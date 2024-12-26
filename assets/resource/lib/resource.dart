@@ -1,12 +1,12 @@
-library resource;
 
 export 'package:flutter_screenutil/flutter_screenutil.dart';
-export 'package:resource/generated/assets.gen.dart';
-export 'package:resource/generated/codegen_loader.g.dart';
-export 'package:resource/src/app_colors.dart';
-export 'package:resource/src/app_design_system.dart';
-export 'package:resource/src/app_material_color.dart';
-export 'package:resource/src/color_extension.dart';
-export 'package:resource/src/localization.dart';
-export 'package:resource/src/themes_extension.dart';
-export 'package:resource/src/typography_extension.dart';
+
+export 'generated/assets.gen.dart';
+export 'generated/codegen_loader.g.dart';
+export 'src/app_colors.dart';
+export 'src/app_design_system.dart';
+export 'src/app_material_color.dart';
+export 'src/color_extension.dart';
+export 'src/localization.dart';
+export 'src/themes_extension.dart';
+export 'src/typography_extension.dart';
