@@ -74,6 +74,8 @@ impl CreateModuleProjectFlutter {
             vec![
                 "dio",
                 "chucker_flutter",
+                "freezed_annotation",
+                "json_annotation",
                 "injectable",
                 "get_it",
                 "shared_preferences",
@@ -82,6 +84,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
                 "json_serializable",
                 "injectable_generator",
+                "freezed",
                 "build_runner",
             ],
             vec![
@@ -92,11 +95,17 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "data_auth",
             "./packages/data/data_auth",
-            vec!["injectable", "get_it"],
+            vec![
+                "injectable",
+                "get_it",
+                "freezed_annotation",
+                "json_serializable",
+            ],
             vec![
                 "lint",
                 "json_serializable",
                 "injectable_generator",
+                "freezed",
                 "build_runner",
             ],
             vec![
