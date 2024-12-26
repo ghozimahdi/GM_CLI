@@ -193,6 +193,7 @@ impl CreateModuleProjectFlutter {
                 "firebase_core",
                 "firebase_messaging",
                 "flutter_local_notifications",
+                "freezed_annotation",
                 "easy_localization",
                 "flutter_flavorizr",
                 "change_app_package_name",
