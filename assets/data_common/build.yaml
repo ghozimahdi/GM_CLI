@@ -5,11 +5,11 @@ targets:
         generate_for:
           include:
             - lib/src/data_source/**.dart
-            - lib/src/data_source/model/**
+            - lib/src/model/**
       json_serializable:
         generate_for:
           include:
-            - lib/src/data_source/model/**
+            - lib/src/model/**
       retrofit_generator:
         generate_for:
           include:
