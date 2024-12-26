@@ -196,6 +196,7 @@ impl CreateModuleProjectFlutter {
                 "easy_localization",
                 "flutter_flavorizr",
                 "change_app_package_name",
+                "flutter_bloc",
             ],
             vec![
                 "auto_route_generator",
