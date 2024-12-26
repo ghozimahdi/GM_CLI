@@ -93,11 +93,17 @@ impl CreateSingleModuleProjectFlutter {
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
                     &format!("./packages/data/{}", module_name),
-                    vec!["injectable", "get_it"],
+                    vec![
+                        "injectable",
+                        "get_it",
+                        "freezed_annotation",
+                        "json_annotation",
+                    ],
                     vec![
                         "lint",
                         "json_serializable",
                         "injectable_generator",
+                        "freezed",
                         "build_runner",
                     ],
                     vec![

@@ -99,7 +99,7 @@ impl CreateModuleProjectFlutter {
                 "injectable",
                 "get_it",
                 "freezed_annotation",
-                "json_serializable",
+                "json_annotation",
             ],
             vec![
                 "lint",
