@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 extension ColorSchemeExt on ColorScheme {
-  Color get appDivider => secondary.withOpacity(0.3);
+  Color get appDivider => secondary.withAlpha(30);
 
   Color get primaryText => secondary;
 

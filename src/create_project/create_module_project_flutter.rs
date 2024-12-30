@@ -17,7 +17,7 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "core",
             "./packages/library/core",
-            vec!["envied", "easy_localization", "injectable", "async"],
+            vec!["envied", "easy_localization", "injectable", "async:^2.11.0"],
             vec![
                 "injectable_generator",
                 "build_runner",

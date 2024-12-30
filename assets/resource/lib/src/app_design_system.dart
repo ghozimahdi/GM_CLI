@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:resource/resource.dart';
 import 'package:resource/src/dtos/colors_token_dto.dart';
 
@@ -26,9 +25,9 @@ class AppDesignSystem {
         ColorsTokenDTO.fromJsonString(lightColorTokenJson).toColorsToken();
 
     if (useDarkTheme) {
-      colors.initialize(darkColorToken);
+      colors.colorsToken = darkColorToken;
     } else {
-      colors.initialize(lightColorToken);
+      colors.colorsToken = lightColorToken;
     }
   }
 

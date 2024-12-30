@@ -14,36 +14,25 @@ final colors = AppColors();
 /// GitHub: github.com/mbahgojol
 /// YouTube: https://www.youtube.com/@mbahgojol
 class AppColors {
-  // Holds the color tokens loaded from a design token source, like a JSON file from Figma.
-  ColorsToken _colorsToken = ColorsToken.defaults();
+  ColorsToken colorsToken = ColorsToken.defaults();
 
-  /// Initializes the color manager with a set of color tokens.
-  ///
-  /// This method sets up the color scheme based on the provided [colorsToken],
-  /// which contains definitions for various colors used throughout the app.
-  ///
-  /// [colorsToken] - The color definitions conforming to the `ColorsToken` structure.
-  void initialize(ColorsToken colorsToken) {
-    _colorsToken = colorsToken;
-  }
+  AppMaterialColor get primary => colorsToken.primary;
 
-  AppMaterialColor get primary => _colorsToken.primary;
+  AppMaterialColor get neural => colorsToken.neural;
 
-  AppMaterialColor get neural => _colorsToken.neural;
+  AppMaterialColor get semanticInfo => colorsToken.semanticInfo;
 
-  AppMaterialColor get semanticInfo => _colorsToken.semanticInfo;
+  AppMaterialColor get semanticPurple => colorsToken.semanticPurple;
 
-  AppMaterialColor get semanticPurple => _colorsToken.semanticPurple;
+  AppMaterialColor get semanticWarning => colorsToken.semanticWarning;
 
-  AppMaterialColor get semanticWarning => _colorsToken.semanticWarning;
+  AppMaterialColor get semanticSuccess => colorsToken.semanticSuccess;
 
-  AppMaterialColor get semanticSuccess => _colorsToken.semanticSuccess;
+  AppMaterialColor get semanticError => colorsToken.semanticError;
 
-  AppMaterialColor get semanticError => _colorsToken.semanticError;
+  AddOnShades get addOn => colorsToken.addOn;
 
-  AddOnShades get addOn => _colorsToken.addOn;
+  OutlineShades get outline => colorsToken.outline;
 
-  OutlineShades get outline => _colorsToken.outline;
-
-  SurfaceShades get surface => _colorsToken.surface;
+  SurfaceShades get surface => colorsToken.surface;
 }
