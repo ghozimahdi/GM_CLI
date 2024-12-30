@@ -114,6 +114,49 @@ impl FlutterCommandHandler {
         }
     }
 
+    pub fn flutter_pub(pub_command: &str) {
+        if let Some(selected_modules) = ModuleManager::select_modules() {
+            for (index, module) in selected_modules {
+                println!(
+                    "{}: Running `flutter {}` in module `{}`...",
+                    format!("[{}]", index).cyan(),
+                    pub_command.green(),
+                    module.yellow()
+                );
+
+                let mut command = StdCommand::new("melos");
+                command
+                    .arg("exec")
+                    .arg("--scope")
+                    .arg(&module)
+                    .arg("--")
+                    .arg("flutter")
+                    .arg(pub_command);
+
+                let status = command.status().expect("Failed to execute melos command");
+
+                if status.success() {
+                    println!(
+                        "{}",
+                        format!("Command executed successfully in `{}`.", module).green()
+                    );
+                } else {
+                    eprintln!(
+                        "{}",
+                        format!("Error executing command in `{}`.", module).red()
+                    );
+                }
+
+                thread::sleep(Duration::from_secs(1));
+            }
+        }
+
+        println!(
+            "{}",
+            "Flutter pub process completed for all selected modules.".cyan()
+        );
+    }
+
     pub fn flutter_clear() {
         if let Some(selected_modules) = ModuleManager::select_modules() {
             let choices = &["Yes", "No"];

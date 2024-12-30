@@ -13,7 +13,7 @@ impl CreateFileProjectFlutter {
     pub fn build(project_name: &str, package_name: &str) {
         Self::create_docs_in_root();
         Self::create_gitignore_in_app();
-        Self::create_editorconfig_in_root();
+        Self::create_files_in_root();
         Self::generate_resource_files();
         Self::generate_core_files();
         Self::create_app_main_files();
@@ -143,29 +143,62 @@ impl CreateFileProjectFlutter {
         fs::write(&gitignore_path, file.contents()).expect("Failed to write .gitignore file");
     }
 
-    fn create_editorconfig_in_root() {
+    fn create_files_in_root() {
         let editorconfig_path = ".editorconfig";
+        let license_path = "LICENSE";
+        let readme_path = "README.md";
+        let cryptify_path = "cryptify";
 
-        let file = ASSETS
+        let editorconfig_file = ASSETS
             .get_file(".editorconfig")
             .expect("Failed to find .editorconfig in assets");
-
         println!("Creating a .editorconfig in: {}", editorconfig_path);
-        fs::write(editorconfig_path, file.contents()).expect("Failed to write .editorconfig file");
+        fs::write(editorconfig_path, editorconfig_file.contents())
+            .expect("Failed to write .editorconfig file");
+
+        let license_file = ASSETS
+            .get_file("LICENSE")
+            .expect("Failed to find LICENSE in assets");
+        println!("Creating a LICENSE file in: {}", license_path);
+        fs::write(license_path, license_file.contents()).expect("Failed to write LICENSE file");
+
+        let readme_file = ASSETS
+            .get_file("README.md")
+            .expect("Failed to find README.md in assets");
+        println!("Creating a README.md file in: {}", readme_path);
+        fs::write(readme_path, readme_file.contents()).expect("Failed to write README.md file");
+
+        let cryptify_file = ASSETS
+            .get_file("cryptify")
+            .expect("Failed to find cryptify in assets");
+        println!("Creating a cryptify file in: {}", cryptify_path);
+        fs::write(cryptify_path, cryptify_file.contents()).expect("Failed to write cryptify file");
     }
 
     fn create_docs_in_root() {
         let source_dir = "docs";
-        let dest_lib_dir = "";
+        let dest_lib_dir = "docs";
 
-        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create docs directory");
 
         let lib_dir = ASSETS
             .get_dir(source_dir)
-            .expect("Failed to find lib directory in feature_common");
+            .expect("Failed to find docs directory in assets");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
-        println!("All files and folders from feature_common successfully generated.");
+        println!("📚 Documentation is ready and available in the project! 🚀");
+
+        let source_dir = "release";
+        let dest_lib_dir = "release";
+
+        fs::create_dir_all(dest_lib_dir).expect("Failed to create release directory");
+
+        let lib_dir = ASSETS
+            .get_dir(source_dir)
+            .expect("Failed to find release directory in assets");
+        Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        println!("📦 Release assets are prepared and ready for deployment! 🎉");
     }
 
     fn create_flutter_run_config_in_root(project_name: &str) {
