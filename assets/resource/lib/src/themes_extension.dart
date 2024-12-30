@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:resource/resource.dart';
 
 extension AppThemesExt on AppDesignSystem {
@@ -9,7 +8,7 @@ extension AppThemesExt on AppDesignSystem {
       scaffoldBackgroundColor: colorScheme.onSurfaceVariant,
       dividerColor: Colors.transparent,
       listTileTheme: const ListTileThemeData(
-        contentPadding: EdgeInsets.all(0),
+        contentPadding: EdgeInsets.zero,
       ),
       iconTheme: IconThemeData(
         color: colors.neural.shade500,
@@ -92,7 +91,7 @@ extension AppThemesExt on AppDesignSystem {
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(
-            color: colorScheme.secondary.withOpacity(0.2),
+            color: colorScheme.secondary.withAlpha(20),
           ),
         ),
       ),
@@ -110,14 +109,16 @@ extension AppThemesExt on AppDesignSystem {
           foregroundColor: colorScheme.primary,
           disabledBackgroundColor: colors.neural.shade100,
           disabledForegroundColor: colorScheme.tertiary,
-        ).copyWith(side: WidgetStateProperty.resolveWith(
-          (states) {
-            if (states.contains(WidgetState.disabled)) {
-              return BorderSide(color: colors.neural.shade100);
-            }
-            return BorderSide(color: colorScheme.primary);
-          },
-        )),
+        ).copyWith(
+          side: WidgetStateProperty.resolveWith(
+            (states) {
+              if (states.contains(WidgetState.disabled)) {
+                return BorderSide(color: colors.neural.shade100);
+              }
+              return BorderSide(color: colorScheme.primary);
+            },
+          ),
+        ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(

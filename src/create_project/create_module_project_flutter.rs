@@ -17,7 +17,7 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "core",
             "./packages/library/core",
-            vec!["envied", "easy_localization", "injectable"],
+            vec!["envied", "easy_localization", "injectable", "async"],
             vec![
                 "injectable_generator",
                 "build_runner",
@@ -96,6 +96,7 @@ impl CreateModuleProjectFlutter {
             "data_auth",
             "./packages/data/data_auth",
             vec![
+                "dio",
                 "injectable",
                 "get_it",
                 "freezed_annotation",

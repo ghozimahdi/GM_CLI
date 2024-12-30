@@ -1,5 +1,4 @@
-import 'package:core/src/env/app_env.dart';
-import 'package:core/src/env/flavor.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 class FlavorBanner extends StatelessWidget {
