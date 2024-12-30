@@ -23,7 +23,6 @@ mod table;
 mod version;
 
 mod create_project {
-    pub mod add_lib_project_flutter;
     pub mod create_file_project_flutter;
     pub mod create_module_project_flutter;
     pub mod create_project_flutter;
@@ -67,13 +66,15 @@ fn main() {
         )
         .subcommand(Command::new("app").about("Build APK or IPA interactively"))
         .subcommand(
-            Command::new("pub").about("Run Flutter pub commands").arg(
-                Arg::new("CMD")
-                    .help("Command to run, e.g., 'flutter pub add flutter_native_splash'")
-                    .required(true)
-                    .num_args(1..)
-                    .value_name("CMD"),
-            ),
+            Command::new("flutter")
+                .about("Run Flutter commands like 'pub add <package>' or 'pub run <command>'")
+                .arg(
+                    Arg::new("CMD")
+                        .help("Command to run, e.g., 'pub add flutter_native_splash'")
+                        .required(true)
+                        .num_args(1..)
+                        .value_name("CMD"),
+                ),
         )
         .subcommand(
             Command::new("create")
@@ -143,15 +144,19 @@ fn main() {
         Some(("app", _)) => FlutterBuildApp::build_app(),
         Some(("donate", _)) => show_donate(),
         Some(("info", _)) => show_info(),
-        Some(("pub", sub)) => {
+        Some(("flutter", sub)) => {
             let cmd_parts: Vec<&str> = sub
                 .get_many::<String>("CMD")
                 .unwrap()
                 .map(String::as_str)
                 .collect();
 
-            let pub_command = cmd_parts.join(" ");
-            println!("Running command: {}", pub_command);
+            let flutter_command = cmd_parts.join(" ");
+
+            #[cfg(debug_assertions)]
+            println!("Running command: flutter {}", flutter_command);
+
+            FlutterCommandHandler::flutter_pub(&flutter_command);
         }
         _ => {
             if matches.get_flag("flutter_get") {
