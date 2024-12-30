@@ -246,6 +246,7 @@ impl CreateFileProjectFlutter {
         let dest_lib_dir = "packages/library/core/lib";
         let dest_env_dir = "packages/library/core";
         let dest_pubspec_path = "packages/library/core/pubspec.yaml";
+        let dest_pubspec_overrides_path = "packages/library/core/pubspec_overrides.yaml";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
@@ -281,6 +282,29 @@ impl CreateFileProjectFlutter {
             fs::write(dest_pubspec_path, updated_content).expect("Failed to update pubspec.yaml");
         } else {
             eprintln!("flutter_env.yaml not found in resource directory!");
+        }
+
+        if let Ok(pubspec_content) = fs::read_to_string(dest_pubspec_path) {
+            if let Some(async_version_line) = pubspec_content
+                .lines()
+                .find(|line| line.trim_start().starts_with("async:"))
+            {
+                let async_version = async_version_line.trim();
+
+                let overrides_content = format!("dependency_overrides:\n  {}", async_version);
+
+                fs::write(dest_pubspec_overrides_path, overrides_content)
+                    .expect("Failed to create pubspec_overrides.yaml");
+
+                println!(
+                    "Created pubspec_overrides.yaml with async version: {}",
+                    async_version
+                );
+            } else {
+                eprintln!("async dependency not found in pubspec.yaml!");
+            }
+        } else {
+            eprintln!("Failed to read pubspec.yaml to extract async version!");
         }
 
         println!("All files and folders from resource successfully generated.");

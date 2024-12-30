@@ -40,7 +40,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 child: const Text('Login'),
-              )
+              ),
             ],
           ),
         ),

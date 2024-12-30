@@ -22,6 +22,7 @@ analyzer:
     public_member_api_docs: error
     unawaited_futures: error
     prefer_expression_function_bodies: error
+    require_trailing_commas: error
 
   exclude:
     - lib/**.freezed.dart
