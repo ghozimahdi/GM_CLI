@@ -40,4 +40,3 @@ class AppMaterialColor extends ColorSwatch<int> {
         1000: Colors.white,
       });
 }
-

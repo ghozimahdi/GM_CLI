@@ -32,45 +32,65 @@ extension ShadesDTOExt on ShadesDTO {
 
   Color get shade1000 => this['1000']?.color ?? Colors.white;
 
+  int get _primaryColorValue => this['500']?.intColor ?? 0xFFFFFFFF;
+
   /// Converts the ShadesDTO to an AppMaterialColor, utilizing shade500 as the primary color.
-  AppMaterialColor toMaterialColor() => AppMaterialColor(
-        shade500.value,
-        <int, Color>{
-          100: shade100,
-          200: shade200,
-          300: shade300,
-          400: shade400,
-          500: shade500,
-          600: shade600,
-          700: shade700,
-          800: shade800,
-          900: shade900,
-          1000: shade1000,
-        },
-      );
+  AppMaterialColor toMaterialColor() {
+    return AppMaterialColor(
+      _primaryColorValue,
+      <int, Color>{
+        100: shade100,
+        200: shade200,
+        300: shade300,
+        400: shade400,
+        500: shade500,
+        600: shade600,
+        700: shade700,
+        800: shade800,
+        900: shade900,
+        1000: shade1000,
+      },
+    );
+  }
 }
 
-/// Extension on ColorShadeValueDTO to provide a method for converting hexadecimal color values to Color objects.
-///
-/// Author: Ghozi Mahdi
-/// Website: www.mbahgojol.com
-/// GitHub: github.com/mbahgojol
-/// YouTube: https://www.youtube.com/@mbahgojol
+/// Extension on ColorShadeValueDTO to provide additional functionality
 extension ColorShadeValueExt on ColorShadeValueDTO {
   /// Converts a hexadecimal color value to a Color object.
   Color get color => _getColorFromHex(value);
 
-  /// Helper method to convert a hex color string to a Color object.
-  Color _getColorFromHex(String? hexColor) {
-    try {
-      if (hexColor == null) return Colors.white;
-      hexColor = hexColor.toUpperCase().replaceAll("#", "");
-      if (hexColor.length == 6) {
-        hexColor = "FF$hexColor";
-      }
-      return Color(int.parse(hexColor, radix: 16));
-    } catch (e) {
-      rethrow;
+  /// Returns the integer representation of the color.
+  int get intColor => _getIntColorFromHex(value);
+}
+
+/// Helper method to convert a hex color string to a Color object
+Color _getColorFromHex(String? hexColor) {
+  try {
+    if (hexColor == null) return Colors.white;
+    String localHexColor = hexColor.toUpperCase().replaceAll('#', '');
+
+    if (localHexColor.length == 6) {
+      localHexColor = "FF$localHexColor";
     }
+
+    return Color(int.parse(localHexColor, radix: 16));
+  } catch (e) {
+    rethrow;
+  }
+}
+
+/// Helper method to convert a hex color string to an integer
+int _getIntColorFromHex(String? hexColor) {
+  try {
+    if (hexColor == null) return 0xFFFFFFFF; // Default to white
+    String localHexColor = hexColor.toUpperCase().replaceAll('#', '');
+
+    if (localHexColor.length == 6) {
+      localHexColor = "FF$localHexColor";
+    }
+
+    return int.parse(localHexColor, radix: 16);
+  } catch (e) {
+    rethrow;
   }
 }

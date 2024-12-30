@@ -25,7 +25,6 @@ flutter:
     - assets/translations/
     - assets/images/
     - assets/themes/
-    - assets/js/script_to_download_blob.js
 
   fonts:
     - family: Inter

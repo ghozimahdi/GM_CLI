@@ -23,12 +23,14 @@ analyzer:
     unawaited_futures: error
     prefer_expression_function_bodies: error
     require_trailing_commas: error
+    sort_pub_dependencies: ignore
 
   exclude:
     - lib/**.freezed.dart
     - lib/**.g.dart
     - lib/**.gr.dart
     - lib/**.config.dart
+    - lib/**.gen.dart
 
 linter:
   rules:
