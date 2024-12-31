@@ -4,9 +4,9 @@ import 'package:data_auth/data_auth.dart';
 import 'package:data_common/data_common.dart';
 import 'package:domain_auth/domain_auth.dart';
 import 'package:domain_common/domain_common.dart';
+import 'package:feature_auth/feature_auth.dart';
 import 'package:feature_common/feature_common.dart';
 import 'package:feature_dashboard/feature_dashboard.dart';
-import 'package:feature_auth/feature_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 

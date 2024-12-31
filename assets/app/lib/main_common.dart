@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:app/app_router.dart';
-import 'package:app/firebase/firebase_helper.dart';
 import 'package:app/injector.dart';
 import 'package:app/run_app.dart';
 import 'package:core/core.dart';
