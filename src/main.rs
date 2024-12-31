@@ -67,7 +67,18 @@ fn main() {
         .subcommand(Command::new("app").about("Build APK or IPA interactively"))
         .subcommand(
             Command::new("flutter")
-                .about("Run Flutter commands like 'pub add <package>' or 'pub run <command>'")
+                .about("Run Flutter commands like 'pub add <package>'")
+                .arg(
+                    Arg::new("CMD")
+                        .help("Command to run, e.g., 'pub add flutter_native_splash'")
+                        .required(true)
+                        .num_args(1..)
+                        .value_name("CMD"),
+                ),
+        )
+        .subcommand(
+            Command::new("dart")
+                .about("Run Dart commands like 'pub add <package>'")
                 .arg(
                     Arg::new("CMD")
                         .help("Command to run, e.g., 'pub add flutter_native_splash'")
@@ -144,7 +155,7 @@ fn main() {
         Some(("app", _)) => FlutterBuildApp::build_app(),
         Some(("donate", _)) => show_donate(),
         Some(("info", _)) => show_info(),
-        Some(("flutter", sub)) => {
+        Some(("flutter", sub)) | Some(("dart", sub)) => {
             let cmd_parts: Vec<&str> = sub
                 .get_many::<String>("CMD")
                 .unwrap()
