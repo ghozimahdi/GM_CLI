@@ -20,5 +20,7 @@ targets:
             - lib/src/config/data_source_config.dart
             - lib/src/data_source/**.dart
             - lib/src/repository/**
-            - lib/src/service/**
+            - lib/src/network/**
+            - lib/src/local/**
+            - lib/src/mapper/**
             - lib/src/di/di.dart
