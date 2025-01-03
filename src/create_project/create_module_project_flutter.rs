@@ -142,6 +142,7 @@ impl CreateModuleProjectFlutter {
             ],
             vec![
                 ("resource", "../../library/resource"),
+                ("domain_common", "../../domain/domain_common"),
                 ("core", "../../library/core"),
             ],
         );
@@ -166,6 +167,7 @@ impl CreateModuleProjectFlutter {
             vec![
                 ("core", "../../library/core"),
                 ("feature_common", "../../presentation/feature_common"),
+                ("domain_common", "../../domain/domain_common"),
                 ("resource", "../../library/resource"),
             ],
         );
@@ -190,6 +192,7 @@ impl CreateModuleProjectFlutter {
             vec![
                 ("core", "../../library/core"),
                 ("feature_common", "../../presentation/feature_common"),
+                ("domain_common", "../../domain/domain_common"),
                 ("resource", "../../library/resource"),
             ],
         );
