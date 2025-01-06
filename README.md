@@ -49,6 +49,7 @@ Pastikan Anda memiliki prasyarat berikut sebelum menggunakan CLI ini:
 3. Build aplikasi CLI untuk digunakan:
    ```bash
    cargo build --release
+   cargo build --release --target x86_64-pc-windows-gnu
    tar -czvf gm-v106.tar.gz gm
    shasum -a 256 gm-v107.tar.gz
    ```
