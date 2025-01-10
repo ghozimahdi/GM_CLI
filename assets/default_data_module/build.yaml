@@ -1,0 +1,24 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        generate_for:
+          include:
+            - lib/src/data_source/**.dart
+            - lib/src/model/**
+      json_serializable:
+        generate_for:
+          include:
+            - lib/src/model/**
+      retrofit_generator:
+        generate_for:
+          include:
+            - lib/src/data_source/**.dart
+      injectable_generator:injectable_builder:
+        generate_for:
+          include:
+            - lib/src/config/data_source_config.dart
+            - lib/src/data_source/**.dart
+            - lib/src/repository/**
+            - lib/src/service/**
+            - lib/src/di/di.dart

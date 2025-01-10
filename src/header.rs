@@ -1,31 +1,31 @@
 use colored::*;
 
 pub fn print_header() {
-    println!(
-        "{}",
-        r"
- _____ _              _  ___  ___      _         _ _ 
-|  __ \ |            (_) |  \/  |     | |       | (_)
-| |  \/ |__   ___ _____  | .  . | __ _| |__   __| |_ 
-| | __| '_ \ / _ \_  / | | |\/| |/ _` | '_ \ / _` | |
-| |_\ \ | | | (_) / /| | | |  | | (_| | | | | (_| | |
- \____/_| |_|\___/___|_| \_|  |_/\__,_|_| |_|\__,_|_|
-                            
-        "
-        .yellow()
-    );
+    let ko_fi_link = "https://ko-fi.com/ghozimahdi";
+    let trakteer_link = "https://teer.id/ghozimahdi";
+    let github_sponsor_link = "https://github.com/sponsors/mbahgojol";
+    let saweria_link = "https://saweria.co/ghozimahdi";
 
-    println!(
-        "{}",
-        "Dibuat oleh  : Ghozi Mahdi
-Profesi      : Mobile Software Engineer
+    let header = format!(
+        "\
+Ghozi Mahdi CLI tool for Flutter project management
+
+Created by   : Ghozi Mahdi
+Occupation   : Mobile Software Engineer
 LinkedIn     : https://id.linkedin.com/in/ghozimahdi
 YouTube      : https://www.youtube.com/@mbahgojol
 Github       : https://github.com/mbahgojol
 Email        : ghozimahdi@carpkingdom.com
 Website      : www.mbahgojol.com
-Number       : -
-"
-        .green()
+
+Support Me
+Ko-fi           : {}
+Trakteer        : {}
+Github Sponsor  : {}
+Saweria         : {}
+",
+        ko_fi_link, trakteer_link, github_sponsor_link, saweria_link
     );
+
+    println!("{}", header.green());
 }

@@ -1,0 +1,16 @@
+{
+  "feature_login": {
+    "title": {
+      "login": "Login"
+    },
+    "button": {
+      "login": "Login"
+    },
+    "label": {
+      "email": "Email"
+    },
+    "text": {
+      "forgot_password_desc": "Forgot Password"
+    }
+  }
+}

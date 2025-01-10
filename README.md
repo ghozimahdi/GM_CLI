@@ -49,6 +49,8 @@ Pastikan Anda memiliki prasyarat berikut sebelum menggunakan CLI ini:
 3. Build aplikasi CLI untuk digunakan:
    ```bash
    cargo build --release
+   tar -czvf gm-v106.tar.gz gm
+   shasum -a 256 gm-v107.tar.gz
    ```
 
 4. Copy file binary ke direktori global:

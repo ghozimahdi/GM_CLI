@@ -1,0 +1,37 @@
+# Top-most EditorConfig file
+root = true
+
+# Global settings (affect all files)
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+end_of_line = lf
+max_line_length = 100
+
+# Specific settings for Dart and Flutter files
+[*.{dart,yaml}]
+indent_size = 2
+max_line_length = 80
+
+# JSON files settings
+[*.json]
+indent_size = 2
+
+# Settings for Markdown files (documentation)
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Settings for YAML files (e.g., pubspec.yaml)
+[*.yaml]
+indent_size = 2
+
+# Settings for Kotlin and Swift (native platform development)
+[*.{kt,kts}]
+indent_size = 4
+
+[*.swift]
+indent_size = 4
