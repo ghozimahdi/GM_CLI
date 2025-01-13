@@ -78,6 +78,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("core", "../../library/core"),
                         ("feature_common", "../../presentation/feature_common"),
                         ("resource", "../../library/resource"),
+                        ("domain_common", "../../domain/domain_common"),
                     ],
                 );
                 Self::create_default_feature_files(&module_name);
@@ -109,7 +110,7 @@ impl CreateSingleModuleProjectFlutter {
                     vec![
                         ("core", "../../library/core"),
                         ("data_common", "../../data/data_common"),
-                        ("domain_auth", "../../domain/domain_auth"),
+                        ("domain_common", "../../domain/domain_common"),
                     ],
                 );
                 Self::create_default_data_files(&module_name);

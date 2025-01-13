@@ -113,6 +113,7 @@ impl CreateModuleProjectFlutter {
                 ("core", "../../library/core"),
                 ("data_common", "../../data/data_common"),
                 ("domain_auth", "../../domain/domain_auth"),
+                ("domain_common", "../../domain/domain_common"),
             ],
         );
 
