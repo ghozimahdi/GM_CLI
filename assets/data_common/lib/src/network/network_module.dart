@@ -1,5 +1,6 @@
 import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:core/core.dart';
+import 'package:data_common/src/network/dio_error_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
