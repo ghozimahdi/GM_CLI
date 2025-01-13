@@ -6,24 +6,18 @@ import 'package:dio/dio.dart';
 class DioErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    final customException = _mapDioExceptionToAppException(err);
-    handler.reject(
-      DioException(
-        requestOptions: err.requestOptions,
-        error: customException,
-      ),
-    );
+    return _mapDioExceptionToAppException(err);
   }
 
-  AppException _mapDioExceptionToAppException(DioException exception) {
+  void _mapDioExceptionToAppException(DioException exception) {
     switch (exception.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return TimeoutException();
+        throw TimeoutException();
 
       case DioExceptionType.connectionError:
-        return NoConnectionException();
+        throw NoConnectionException();
 
       case DioExceptionType.badResponse:
         final statusCode = exception.response?.statusCode ?? 0;
@@ -31,26 +25,30 @@ class DioErrorInterceptor extends Interceptor {
             'An unknown error occurred';
 
         if (statusCode == 401) {
-          return UnauthorizedException();
+          throw UnauthorizedException();
+        } else if (statusCode == 403) {
+          throw ForbiddenException();
         } else if (statusCode >= 400 && statusCode < 500) {
-          return ClientException(errorMessage);
+          throw ClientException(message: errorMessage, statusCode: statusCode);
         } else if (statusCode >= 500) {
-          return ServerException();
+          throw ServerException();
         }
 
-        return AppException(
-          errorMessage,
+        throw AppException(
+          message: errorMessage,
           statusCode: statusCode,
         );
 
       case DioExceptionType.badCertificate:
-        return AppException('SSL certificate validation failed');
+        throw AppException(message: 'SSL certificate validation failed');
 
       case DioExceptionType.cancel:
-        return AppException('Request was cancelled');
+        throw AppException(message: 'Request was cancelled');
 
       case DioExceptionType.unknown:
-        return AppException(exception.message ?? 'An unknown error occurred');
+        throw AppException(
+          message: exception.message ?? 'An unknown error occurred',
+        );
     }
   }
 

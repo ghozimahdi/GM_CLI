@@ -26,7 +26,9 @@ mixin FailureHandlerMixin {
       return const Failure.noConnection();
     }
 
-    return Failure.unexpectedError(message: exception.message);
+    return Failure.unexpectedError(
+      message: exception.message ?? exception.toString(),
+    );
   }
 
   Failure _mapDioExceptionToFailure(DioException exception) {
