@@ -18,6 +18,8 @@ abstract class NetworkModule {
       ),
     );
 
+    dio.interceptors.add(DioErrorInterceptor());
+
     if (kDebugMode) {
       dio.interceptors.addAll(
         [
@@ -49,6 +51,7 @@ abstract class NetworkModule {
         responseBody: true,
       ),
       ChuckerDioInterceptor(),
+      DioErrorInterceptor(),
     ]);
     return dio;
   }
