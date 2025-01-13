@@ -8,11 +8,26 @@ import 'package:resource/resource.dart';
 class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
-        ...FeatureDashboardRoute().routes,
-        ...FeatureAuthRoute().routes,
+        AutoRoute(
+          page: HomeRoute.page,
+          initial: true,
+        ),
+        AutoRoute(page: LoginRoute.page),
       ];
 }
 
+/// A custom route builder function for displaying a modal bottom sheet.
+///
+/// This function is designed to work with `CustomRoute` in AutoRoute to display
+/// a modal bottom sheet with specific styles and behavior.
+///
+/// Example Usage in AutoRoute:
+/// ```dart
+/// CustomRoute(
+///   page: SomePage.page,
+///   customRouteBuilder: modalSheetBuilder,
+/// ),
+/// ```
 Route<T> modalSheetBuilder<T>(
     BuildContext context,
     Widget child,
