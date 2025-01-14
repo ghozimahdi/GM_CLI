@@ -1,121 +1,187 @@
 
 # **Ghozi Mahdi CLI**
 
-CLI sederhana yang dibuat untuk mempermudah proses seleksi, pembuatan, dan pengelolaan modul dalam proyek **Flutter** yang menggunakan **Melos**. Aplikasi ini dirancang dengan tampilan yang user-friendly dan mendukung penggunaan kategori modul (Data, Domain, Feature, Other).
+A simple CLI tool designed to simplify the process of managing **Flutter** projects and modules. Built using **Rust**, this tool provides an intuitive interface to streamline project management tasks.
 
 ---
 
-## **Fitur**
-- Menampilkan daftar modul dari proyek Melos.
-- Memungkinkan pemilihan modul secara spesifik atau membangun semua modul.
-- Mendukung kategori modul:
-  - **Data Modules**
-  - **Domain Modules**
-  - **Feature Modules**
-  - **Other Modules**
-- Dibangun menggunakan **Rust** untuk performa tinggi dan efisiensi.
+## **Features**
+- **Clear**: Clean the Flutter project and remove `pubspec.lock` for selected modules.
+- **App**: Interactively build APK or IPA files.
+- **Create**:
+    - **Create Project**: Generate a new Flutter project with a well-organized Clean Architecture and modular structure.
+    - **Create Module**: Create a module for modularization to enhance scalability and maintainability.
+- **Build**: Run `build_runner` after selecting a module.
+- **Get**: Execute `flutter pub get` for selected modules.
+- **Donate**: Show gratitude and support the development of this CLI tool.
+- **Info**: Display prerequisites and usage instructions for the `gm CLI`.
+- Built-in support for running tasks such as localization and asset generation.
+- High performance and efficiency powered by **Rust**.
 
 ---
 
-## **Prasyarat**
-Pastikan Anda memiliki prasyarat berikut sebelum menggunakan CLI ini:
+## **Prerequisites**
+Ensure you have the following prerequisites installed before using this CLI:
 
-1. **Rust**:
-   - Rust harus terinstal di sistem Anda.
-   - Instal Rust: [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)
-
-2. **Melos**:
-   - Pastikan Melos sudah diinstal di proyek Flutter Anda.
-   - Instal Melos:
-     ```bash
-     dart pub global activate melos
-     ```
-
-3. **Flutter**:
-   - Pastikan Flutter sudah terinstal di sistem Anda.
-   - Instal Flutter: [https://flutter.dev/docs/get-started/install](https://flutter.dev/docs/get-started/install)
+1. **Flutter**:
+    - Ensure Flutter is installed on your system.
+    - Install Flutter: [https://flutter.dev/docs/get-started/install](https://flutter.dev/docs/get-started/install)
 
 ---
 
-## **Instalasi**
-1. Clone repository ini ke lokal Anda:
+## **Installation via Homebrew**
+1. **Add the Ghozi Mahdi CLI tap**:
    ```bash
-   git clone https://github.com/mbahgojol/ghozimahdi_CLI.git
-   ```
-2. Masuk ke folder proyek:
-   ```bash
-   cd ghozimahdi_CLI
-   ```
-3. Build aplikasi CLI untuk digunakan:
-   ```bash
-   cargo build --release
-   cargo build --release --target x86_64-pc-windows-gnu
-   tar -czvf gm-v106.tar.gz gm
-   shasum -a 256 gm-v107.tar.gz
+   brew tap ghozimahdi/homebrew-ghozimahdi-cli
    ```
 
-4. Copy file binary ke direktori global:
+2. **Install the Ghozi Mahdi CLI** via Homebrew:
    ```bash
-   cp target/release/gm /usr/local/bin/
+   brew install gm
    ```
 
-5. Jalankan aplikasi CLI dari proyek Flutter Anda:
+3. Once installed, you can run the CLI tool from your Flutter project directory:
    ```bash
-   gm
+   gm help
    ```
 
 ---
 
-## **Cara Penggunaan**
-1. Jalankan perintah berikut di dalam direktori proyek Flutter Anda:
-   ```bash
-   gm
-   ```
+## **Update via Homebrew**
 
-2. Pilih modul yang ingin dibangun:
-   - Untuk membangun semua modul, ketik `0`.
-   - Untuk membangun modul tertentu, masukkan nomor modul yang dipisahkan dengan koma (contoh: `3,5,8`).
-
-3. CLI akan otomatis menjalankan perintah **`melos`** sesuai dengan modul yang dipilih.
-
----
-
-## **Contoh Tampilan**
-```
- _____ _              _  ___  ___      _         _ _ 
-|  __ \ |            (_) |  \/  |     | |       | (_)
-| |  \/ |__   ___ _____  | .  . | __ _| |__   __| |_ 
-| | __| '_ \ / _ \_  / | | |\/| |/ _` | '_ \ / _` | |
-| |_\ \ | | | (_) / /| | | |  | | (_| | | | | (_| | |
- \____/_| |_|\___/___|_| \_|  |_/\__,_|_| |_|\__,_|_|
-                            
-Dibuat oleh  : Ghozi Mahdi
-Profesi      : Mobile Software Engineer
-LinkedIn     : https://id.linkedin.com/in/ghozimahdi
-YouTube      : https://www.youtube.com/@mbahgojol
-Github       : https://github.com/mbahgojol
-Email        : ghozimahdi@carpkingdom.com
-Website      : www.mbahgojol.com
-Number       : -
-
-+------------------------------+------------------------------+------------------------------+------------------------------+
-| Data Modules                 | Domain Modules               | Feature Modules              | Other Modules                |
-+------------------------------+------------------------------+------------------------------+------------------------------+
-| 3. data_analytic             | 18. domain_analytic          | 33. feature_booster          | 1. common                    |
-| 4. data_auth                 | 19. domain_auth              | 34. feature_common           | 2. croppy                    |
-| ...                          | ...                          | ...                          | ...                          |
-+------------------------------+------------------------------+------------------------------+------------------------------+
-Total modules available: 49, Pilih module (contoh: 1,2,3 atau 0 untuk semua):
+To update the Ghozi Mahdi CLI to the latest version, run:
+```bash
+brew update
+brew upgrade gm
 ```
 
 ---
 
-## **Kontribusi**
-Jika Anda ingin berkontribusi pada proyek ini, silakan fork repository ini dan buat pull request. Semua jenis kontribusi diterima dengan senang hati!
+## **Usage**
+Run the following command inside your Flutter project directory:
+```bash
+gm [OPTIONS] [COMMAND]
+```
+
+### Examples
+- `gm -b` : Run `build_runner` (shortcut for `gm build`).
+- `gm -g` : Run `flutter pub get` (shortcut for `gm get`).
+- `gm -c` : Run `flutter clean` (shortcut for `gm clear`).
+
+### **Commands**
+- `clear`: Run `flutter_clean` and remove `pubspec.lock` for selected modules.
+- `app`: Interactively build APK or IPA files.
+- `create project`: Generate a new Flutter project with a well-organized Clean Architecture and modular structure.
+- `create module`: Create a new module specifically for modularization to enhance scalability and maintainability.
+- `build`: Run `build_runner` after selecting a module.
+- `get`: Run `flutter pub get` after selecting a module.
+- `donate`: Show gratitude and support the development of this CLI tool.
+- `info`: Displays prerequisites and usage instructions for the gm CLI.
+- `help`: Print this message or the help of the given subcommand(s).
+
+### **Options**
+- `-b`, `--build`: Run `build_runner` after module selection.
+- `-l`, `--localize`: Generate `easy_localization` files.
+- `-a`, `--assets`: Generate assets with `flutter gen`.
+- `-c`, `--flutter_clean`: Flutter clear for a single module.
+- `-g`, `--flutter_get`: Run `flutter pub get` for a single module.
+- `--all`: Run `build_runner`, generate `easy_localization`, and assets after selecting a module.
+- `-h`, `--help`: Print help information.
+- `-V`, `--version`: Print version information.
+
+### Notes
+
+- You can use **commands** (e.g., `gm build`) or their corresponding **options** (e.g., `gm -b`) for faster access.
+- **Options** are designed to simplify frequently used commands.
 
 ---
 
-## **Lisensi**
-Proyek ini dilisensikan di bawah lisensi MIT. Silakan lihat file `LICENSE` untuk detailnya.
+## **Generated Project Structure**
 
----
+When you use the `gm create` command, the generated project follows the **Clean Architecture** principles with a modular structure. Below is an example of the generated structure:
+
+```
+packages/
+  ├── library/
+  │   ├── core/
+  │   └── resource/
+  ├── data/
+  │   ├── data_common/
+  │   ├── data_auth/
+  │   └── data_analytic/
+  │       ├── di/
+  │       ├── config/
+  │       ├── model/
+  │       ├── mapper/
+  │       └── repository/
+  ├── domain/
+  │   ├── domain_common/
+  │   ├── domain_auth/
+  │   └── domain_analytic/
+  │       ├── di/
+  │       ├── config/
+  │       ├── model/
+  │       ├── use_case/
+  │       └── repository/
+  └── presentation/
+      ├── feature_common/
+      ├── feature_dashboard/
+      └── feature_auth/
+          ├── bloc/
+          ├── config/
+          ├── di/
+          └── page/
+```
+
+### **Description of Main Directories**
+1. **Library**:
+    - Contains core utilities and shared resources that can be reused across modules.
+2. **Data**:
+    - Responsible for managing data sources, configurations, models, mappers, and repository implementations for different modules.
+3. **Domain**:
+    - Defines business logic, including use cases, repository interfaces, and domain-specific configurations for each module.
+4. **Presentation**:
+    - Manages the UI layer, which includes features, pages, state management (e.g., BLoC), and configurations for the presentation layer.
+
+### **Highlights**
+- **Modularity**: Each feature (e.g., `auth`, `dashboard`, `analytic`) is modularized to improve scalability and maintainability.
+- **Separation of Concerns**: Code is structured to clearly separate the responsibilities of each layer (Data, Domain, Presentation).
+- **Reusable Components**: Core utilities and shared resources in the `library` directory enable easy reuse across modules.
+
+## **Result of `build_runner`**
+
+The `gm build` command provides an interactive interface to select specific modules for code generation using the `build_runner`. This is designed for managing multi-module Flutter projects.
+
+### **Example Interface**:
+```dart
++----------------+------------------+----------------------+---------------+
+| Data Modules   | Domain Modules   | Feature Modules      | Other Modules |
++----------------+------------------+----------------------+---------------+
+| 3. data_auth   | 5. domain_auth   | 7. feature_auth      | 1. app        |
+| 4. data_common | 6. domain_common | 8. feature_common    | 2. core       |
+|                |                  | 9. feature_dashboard | 10. resource  |
+|                |                  |                      | 11. MSG       |
++----------------+------------------+----------------------+---------------+
+Total modules available: 11, Select modules (example: 1,2,3 or 0 for all): 
+```
+
+### **Key Features**:
+- **Module Selection**: Choose specific modules (e.g., `1,2,3`) or generate code for all modules (`0`).
+- **Multi-Module Support**: Easily handle code generation across multiple modules in your Flutter project.
+- **Flexibility**: Allows developers to focus on relevant modules during the code generation process.
+
+## **🎯 Special Thanks**
+
+I would like to express my heartfelt gratitude to **[Ferry](https://github.com/ferryyuwono)** for his invaluable insights on modular project architecture. His guidance has been instrumental in shaping the structure and scalability of this tool. Thank you for sharing your expertise and inspiring better practices in project management!
+
+## **🎯 Support Us**
+This project is maintained by an independent developer. Support further development through sponsorship!
+💖 Your donations help us to:
+- Add new features.
+- Fix bugs faster.
+- Improve documentation.
+
+[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-blue)](https://github.com/sponsors/mbahgojol)
+
+Ko-fi: [ghozimahdi-ko-fi](https://ko-fi.com/ghozimahdi)  
+Saweria: [ghozimahdi-saweria](https://saweria.co/ghozimahdi)
