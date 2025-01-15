@@ -133,7 +133,6 @@ impl CreateModuleProjectFlutter {
                 "shimmer",
                 "permission_handler",
                 "flutter_svg",
-                "intl",
             ],
             vec![
                 "auto_route_generator",
@@ -158,7 +157,6 @@ impl CreateModuleProjectFlutter {
                 "get_it",
                 "injectable",
                 "auto_route",
-                "intl",
             ],
             vec![
                 "auto_route_generator",
@@ -184,7 +182,6 @@ impl CreateModuleProjectFlutter {
                 "get_it",
                 "injectable",
                 "auto_route",
-                "intl",
             ],
             vec![
                 "auto_route_generator",
