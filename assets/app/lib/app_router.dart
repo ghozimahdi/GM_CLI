@@ -45,10 +45,10 @@ Route<T> modalSheetBuilder<T>(
       ),
     ),
     isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(16),
-        topRight: Radius.circular(16),
+        topLeft: Radius.circular(16.r),
+        topRight: Radius.circular(16.r),
       ),
     ),
     backgroundColor: colors.surface.white,
