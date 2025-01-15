@@ -34,7 +34,7 @@ impl CreateModuleProjectFlutter {
                 "freezed_annotation",
                 "easy_localization",
                 "flutter_svg",
-                "lottie",
+                "lottie:^3.3.0",
                 "json_annotation",
             ],
             vec![
@@ -133,6 +133,7 @@ impl CreateModuleProjectFlutter {
                 "shimmer",
                 "permission_handler",
                 "flutter_svg",
+                "intl",
             ],
             vec![
                 "auto_route_generator",
@@ -157,6 +158,7 @@ impl CreateModuleProjectFlutter {
                 "get_it",
                 "injectable",
                 "auto_route",
+                "intl",
             ],
             vec![
                 "auto_route_generator",
@@ -182,6 +184,7 @@ impl CreateModuleProjectFlutter {
                 "get_it",
                 "injectable",
                 "auto_route",
+                "intl",
             ],
             vec![
                 "auto_route_generator",
