@@ -14,7 +14,7 @@ Created by   : Ghozi Mahdi
 Occupation   : Mobile Software Engineer
 LinkedIn     : https://id.linkedin.com/in/ghozimahdi
 YouTube      : https://www.youtube.com/@mbahgojol
-Github       : https://github.com/mbahgojol
+Github       : https://github.com/ghozimahdi
 Email        : ghozimahdi@carpkingdom.com
 Website      : www.mbahgojol.com
 
