@@ -18,7 +18,7 @@ pub struct FlutterCommandHandler;
 impl FlutterCommandHandler {
     fn flutter_command() -> &'static str {
         if Path::new(".fvm").exists() {
-            "fvm flutter"
+            "fvm dart"
         } else {
             "flutter"
         }
@@ -353,7 +353,6 @@ impl FlutterCommandHandler {
         command
             .arg("--")
             .arg(Self::flutter_command())
-            .arg("pub")
             .arg("run")
             .arg("build_runner")
             .arg("build")
