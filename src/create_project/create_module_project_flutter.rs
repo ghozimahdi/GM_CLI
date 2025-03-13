@@ -289,6 +289,7 @@ impl CreateModuleProjectFlutter {
                         description: "Modular project for {}"
                         version: 1.0.0
                         publish_to: 'none'
+                        resolution: workspace
 
                         environment:
                           {}
@@ -328,9 +329,9 @@ impl CreateModuleProjectFlutter {
                 "Adding dependencies",
                 Box::new({
                     let dependencies = dependencies.clone();
-                    let module_path = module_path.clone();
+                    let module_name = module_name.clone();
                     move || {
-                        Self::add_dependencies(dependencies, &module_path, false);
+                        Self::add_dependencies(dependencies, &module_name, false);
                     }
                 }),
             ),
@@ -338,9 +339,9 @@ impl CreateModuleProjectFlutter {
                 "Adding dev dependencies",
                 Box::new({
                     let dev_dependencies = dev_dependencies.clone();
-                    let module_path = module_path.clone();
+                    let module_name = module_name.clone();
                     move || {
-                        Self::add_dependencies(dev_dependencies, &module_path, true);
+                        Self::add_dependencies(dev_dependencies, &module_name, true);
                     }
                 }),
             ),
@@ -377,7 +378,7 @@ impl CreateModuleProjectFlutter {
     }
 
     pub fn read_environment_from_main_project() -> String {
-        let main_pubspec_path = "./packages/app/pubspec.yaml".to_string();
+        let main_pubspec_path = "./app/pubspec.yaml".to_string();
 
         let pubspec_content = fs::read_to_string(&main_pubspec_path)
             .expect("Failed to read app module's pubspec.yaml");
@@ -396,6 +397,8 @@ impl CreateModuleProjectFlutter {
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,
     ) {
+        let app_module = "app";
+
         let dependencies = dependencies
             .iter()
             .map(|&s| s.to_string())
@@ -421,7 +424,7 @@ impl CreateModuleProjectFlutter {
                 Box::new({
                     let local_dependencies = local_dependencies.clone();
                     move || {
-                        let app_pubspec_path = "./packages/app/pubspec.yaml";
+                        let app_pubspec_path = "./app/pubspec.yaml";
                         let mut pubspec_content = fs::read_to_string(app_pubspec_path)
                             .expect("Failed to read app's pubspec.yaml");
 
@@ -472,7 +475,7 @@ impl CreateModuleProjectFlutter {
                 Box::new({
                     let dependencies = dependencies.clone();
                     move || {
-                        Self::add_dependencies(dependencies, "./packages/app", false);
+                        Self::add_dependencies(dependencies, app_module, false);
                     }
                 }),
             ),
@@ -481,7 +484,7 @@ impl CreateModuleProjectFlutter {
                 Box::new({
                     let dev_dependencies = dev_dependencies.clone();
                     move || {
-                        Self::add_dependencies(dev_dependencies, "./packages/app", true);
+                        Self::add_dependencies(dev_dependencies, app_module, true);
                     }
                 }),
             ),
@@ -530,19 +533,29 @@ impl CreateModuleProjectFlutter {
         println!();
     }
 
-    fn add_dependencies(dependencies: Vec<String>, path: &str, is_dev: bool) {
+    fn add_dependencies(dependencies: Vec<String>, module: &str, is_dev: bool) {
         for dependency in dependencies {
-            let mut command = std::process::Command::new("flutter");
-            command.arg("pub").arg("add").arg(&dependency);
+            let pub_command = if is_dev {
+                format!("pub add {} --dev", dependency)
+            } else {
+                format!("pub add {}", dependency)
+            };
 
-            if is_dev {
-                command.arg("--dev");
+            let mut command = std::process::Command::new("melos");
+            command
+                .arg("exec")
+                .arg("--scope")
+                .arg(module)
+                .arg("--")
+                .arg("flutter");
+
+            for arg in pub_command.split_whitespace() {
+                command.arg(arg);
             }
 
             let output = command
-                .current_dir(path)
                 .output()
-                .expect("Failed to add dependency");
+                .expect("Failed to add dependency using melos");
 
             if !output.status.success() {
                 eprintln!(

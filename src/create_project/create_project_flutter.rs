@@ -76,10 +76,10 @@ impl CreateProjectFlutter {
 
         if modular {
             println!("Creating modular structure...");
-            fs::create_dir_all("packages/app").expect("Failed to create app directory");
+            fs::create_dir_all("app").expect("Failed to create app directory");
 
-            println!("Generating Flutter project in packages/app...");
-            let app_path = "./packages/app";
+            println!("Generating Flutter project in app...");
+            let app_path = "./app";
             Command::run(&[
                 "flutter",
                 "create",
