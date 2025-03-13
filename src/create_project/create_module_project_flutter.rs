@@ -8,6 +8,13 @@ use std::sync::Arc;
 use std::time::Duration;
 use std::{fs, io, thread};
 
+// TODO 1: create module common
+// TODO 2: create default files for module common
+// TODO 3: change localization with l10n
+// TODO 4: replace color method with flutter_gen color.xml
+// TODO 5: keep env with envied
+// TODO 6: refactor melos to workspace melos mechanism
+
 pub struct CreateModuleProjectFlutter;
 
 impl CreateModuleProjectFlutter {
@@ -15,35 +22,14 @@ impl CreateModuleProjectFlutter {
         println!("{}", "Configuring other modules...".yellow());
         // Library
         Self::create_module(
-            "core",
-            "./packages/library/core",
-            vec!["envied", "easy_localization", "injectable", "async:^2.11.0"],
+            "common",
+            "./packages/library/common",
+            vec!["envied", "injectable", "async:^2.11.0"],
             vec![
                 "injectable_generator",
                 "build_runner",
                 "lint",
                 "envied_generator",
-            ],
-            vec![],
-        );
-        Self::create_module(
-            "resource",
-            "./packages/library/resource",
-            vec![
-                "flutter_screenutil",
-                "freezed_annotation",
-                "easy_localization",
-                "flutter_svg",
-                "lottie:^3.3.0",
-                "json_annotation",
-            ],
-            vec![
-                "json_serializable",
-                "injectable_generator",
-                "build_runner",
-                "lint",
-                "freezed",
-                "flutter_gen_runner",
             ],
             vec![],
         );
@@ -54,7 +40,7 @@ impl CreateModuleProjectFlutter {
             "./packages/domain/domain_common",
             vec!["injectable", "get_it", "freezed_annotation"],
             vec!["lint", "injectable_generator", "build_runner", "freezed"],
-            vec![("core", "../../library/core")],
+            vec![("common", "../../library/common")],
         );
         Self::create_module(
             "domain_auth",
@@ -62,7 +48,7 @@ impl CreateModuleProjectFlutter {
             vec!["injectable", "get_it", "freezed_annotation"],
             vec!["lint", "injectable_generator", "build_runner", "freezed"],
             vec![
-                ("core", "../../library/core"),
+                ("common", "../../library/common"),
                 ("domain_common", "../../domain/domain_common"),
             ],
         );
@@ -88,7 +74,7 @@ impl CreateModuleProjectFlutter {
                 "build_runner",
             ],
             vec![
-                ("core", "../../library/core"),
+                ("common", "../../library/common"),
                 ("domain_common", "../../domain/domain_common"),
             ],
         );
@@ -110,7 +96,7 @@ impl CreateModuleProjectFlutter {
                 "build_runner",
             ],
             vec![
-                ("core", "../../library/core"),
+                ("common", "../../library/common"),
                 ("data_common", "../../data/data_common"),
                 ("domain_auth", "../../domain/domain_auth"),
                 ("domain_common", "../../domain/domain_common"),
@@ -134,18 +120,21 @@ impl CreateModuleProjectFlutter {
                 "permission_handler",
                 "flutter_svg",
                 "intl",
+                "lottie:^3.3.0",
+                "json_annotation",
             ],
             vec![
+                "json_serializable",
                 "auto_route_generator",
                 "injectable_generator",
                 "build_runner",
                 "freezed",
                 "lint",
+                "flutter_gen_runner",
             ],
             vec![
-                ("resource", "../../library/resource"),
                 ("domain_common", "../../domain/domain_common"),
-                ("core", "../../library/core"),
+                ("common", "../../library/common"),
             ],
         );
         Self::create_module(
@@ -168,10 +157,9 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("core", "../../library/core"),
+                ("common", "../../library/common"),
                 ("feature_common", "../../presentation/feature_common"),
                 ("domain_common", "../../domain/domain_common"),
-                ("resource", "../../library/resource"),
             ],
         );
         Self::create_module(
@@ -194,10 +182,9 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("core", "../../library/core"),
+                ("common", "../../library/common"),
                 ("feature_common", "../../presentation/feature_common"),
                 ("domain_common", "../../domain/domain_common"),
-                ("resource", "../../library/resource"),
             ],
         );
 
@@ -211,7 +198,6 @@ impl CreateModuleProjectFlutter {
                 "firebase_messaging",
                 "flutter_local_notifications",
                 "freezed_annotation",
-                "easy_localization",
                 "flutter_flavorizr",
                 "change_app_package_name",
                 "flutter_bloc",
@@ -224,8 +210,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("resource", "../library/resource"),
-                ("core", "../library/core"),
+                ("common", "../../library/common"),
                 ("domain_common", "../domain/domain_common"),
                 ("domain_auth", "../domain/domain_auth"),
                 ("data_common", "../data/data_common"),
