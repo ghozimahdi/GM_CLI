@@ -218,7 +218,7 @@ impl CreateFileProjectFlutter {
                 <component name="ProjectRunConfigurationManager">
                   <configuration default="false" name="Flutter Run -&gt; '{}_{}'" type="FlutterRunConfigurationType" factoryName="Flutter">
                     <option name="additionalArgs" value="--flavor {}" />
-                    <option name="filePath" value="$PROJECT_DIR$/packages/app/lib/main_{}.dart" />
+                    <option name="filePath" value="$PROJECT_DIR$/app/lib/main_{}.dart" />
                     <method v="2" />
                   </configuration>
                 </component>

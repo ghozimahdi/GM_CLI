@@ -54,7 +54,7 @@ impl CreateSingleModuleProjectFlutter {
         match selected_option {
             // Feature
             0 => {
-                let path = format!("../presentation/{}", module_name);
+                let path = format!("../packages/presentation/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -75,21 +75,21 @@ impl CreateSingleModuleProjectFlutter {
                         "lint",
                     ],
                     vec![
-                        ("core", "../../library/core"),
+                        ("common", "../../library/common"),
                         ("feature_common", "../../presentation/feature_common"),
-                        ("resource", "../../library/resource"),
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
                 Self::create_default_feature_files(&module_name);
-                Self::refresh_module(&format!("./packages/presentation/{}", module_name));
 
                 let packages = &format!("packages/presentation/{}", module_name);
                 Self::update_melos(packages);
+
+                Self::refresh_module(&format!("./packages/presentation/{}", module_name));
             }
             // Data
             1 => {
-                let path = format!("../data/{}", module_name);
+                let path = format!("../packages/data/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -108,20 +108,21 @@ impl CreateSingleModuleProjectFlutter {
                         "build_runner",
                     ],
                     vec![
-                        ("core", "../../library/core"),
+                        ("common", "../../library/common"),
                         ("data_common", "../../data/data_common"),
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
                 Self::create_default_data_files(&module_name);
-                Self::refresh_module(&format!("./packages/data/{}", module_name));
 
                 let packages = &format!("packages/data/{}", module_name);
                 Self::update_melos(packages);
+
+                Self::refresh_module(&format!("./packages/data/{}", module_name));
             }
             // Domain
             2 => {
-                let path = format!("../domain/{}", module_name);
+                let path = format!("../packages/domain/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -129,19 +130,20 @@ impl CreateSingleModuleProjectFlutter {
                     vec!["injectable", "get_it", "freezed_annotation"],
                     vec!["lint", "injectable_generator", "build_runner", "freezed"],
                     vec![
-                        ("core", "../../library/core"),
+                        ("common", "../../library/common"),
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
                 Self::create_default_domain_files(&module_name);
-                Self::refresh_module(&format!("./packages/domain/{}", module_name));
 
                 let packages = &format!("packages/domain/{}", module_name);
                 Self::update_melos(packages);
+
+                Self::refresh_module(&format!("./packages/domain/{}", module_name));
             }
             // Library
             3 => {
-                let path = format!("../library/{}", module_name);
+                let path = format!("../packages/library/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -153,6 +155,8 @@ impl CreateSingleModuleProjectFlutter {
 
                 let packages = &format!("packages/library/{}", module_name);
                 Self::update_melos(packages);
+
+                Self::refresh_module(&format!("./packages/library/{}", module_name));
             }
             // In this path
             _ => {
@@ -173,45 +177,59 @@ impl CreateSingleModuleProjectFlutter {
             vec![],
             vec![(&*local_module.0, &*local_module.1)],
         );
-        Self::refresh_module("./packages/app");
+        Self::refresh_module("./app");
     }
 
     fn update_melos(new_package: &str) {
-        let melos_path = "melos.yaml";
+        let pubspec_path = "pubspec.yaml";
 
-        if !Path::new(melos_path).exists() {
-            println!("Melos configuration file not found. Please ensure melos.yaml exists in the root directory.");
+        if !Path::new(pubspec_path).exists() {
+            println!("Pubspec.yaml configuration file not found. Please ensure pubspec.yaml exists in the root directory.");
             return;
         }
 
-        let melos_content = fs::read_to_string(melos_path).expect("Failed to read melos.yaml");
-        let mut lines: Vec<String> = melos_content.lines().map(String::from).collect();
+        let pubspec_content =
+            fs::read_to_string(pubspec_path).expect("Failed to read pubspec.yaml");
+        let mut lines: Vec<String> = pubspec_content.lines().map(String::from).collect();
 
         if let Some(start_index) = lines
             .iter()
-            .position(|line| line.trim_start().starts_with("packages:"))
+            .position(|line| line.trim_start().starts_with("workspace:"))
         {
+            // Cari posisi terakhir dari daftar package dalam workspace
+            let mut last_index = start_index;
+
+            for (i, line) in lines.iter().enumerate().skip(start_index + 1) {
+                if line.trim().starts_with("- ") {
+                    last_index = i;
+                } else {
+                    break;
+                }
+            }
+
+            // Pastikan package tidak duplikat sebelum menambahkan
             let package_already_exists = lines
                 .iter()
                 .skip(start_index + 1)
                 .any(|line| line.trim() == format!("- {}", new_package));
 
             if !package_already_exists {
-                lines.insert(start_index + 1, format!("  - {}", new_package));
+                lines.insert(last_index + 1, format!("  - {}", new_package));
             }
         } else {
-            lines.push(String::from("packages:"));
+            // Jika workspace belum ada, buat baru
+            lines.push(String::from("workspace:"));
             lines.push(format!("  - {}", new_package));
         }
 
-        let updated_melos_content = lines.join("\n");
-        let mut melos_file = File::create(melos_path).expect("Failed to create melos.yaml");
-        melos_file
-            .write_all(updated_melos_content.as_bytes())
-            .expect("Failed to write melos.yaml");
+        let updated_pubspec_content = lines.join("\n");
+        let mut pubspec_file = File::create(pubspec_path).expect("Failed to create pubspec.yaml");
+        pubspec_file
+            .write_all(updated_pubspec_content.as_bytes())
+            .expect("Failed to write pubspec.yaml");
 
         println!(
-            "Package '{}' added to Melos configuration successfully.",
+            "Package '{}' added to pubspec.yaml workspace at the bottom successfully.",
             new_package
         );
     }
@@ -339,7 +357,7 @@ impl CreateSingleModuleProjectFlutter {
             + "Config";
 
         let file_content = indoc! {r#"
-            import 'package:core/core.dart';
+            import 'package:common/common.dart';
             import 'package:{module_name}/src/di/di.dart';
 
             class {class_name} extends AppConfig {
@@ -549,7 +567,6 @@ impl CreateSingleModuleProjectFlutter {
             import 'package:{module_name}/src/config/{split_name}_route_provider.dart';
             import 'package:flutter/material.dart';
             import 'package:injectable/injectable.dart';
-            import 'package:resource/resource.dart';
 
             @Injectable(as: {route_name}Provider)
             class {route_name}ProviderImpl implements {route_name}Provider {
@@ -578,7 +595,7 @@ impl CreateSingleModuleProjectFlutter {
                   body: Center(
                     child: Text(
                       'Hello $name! I thought you’d never show up! 😅',
-                      style: res.textTheme.titleLarge,
+                      style: textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -612,8 +629,8 @@ impl CreateSingleModuleProjectFlutter {
         }
 
         let file_content = indoc! {r#"
-            export 'package:{module_name}/src/config/{module_name}_config.dart';
-            export 'package:{module_name}/src/config/{module_name}_route.dart';
+            export 'src/config/{module_name}_config.dart';
+            export 'src/config/{module_name}_route.dart';
         "#}
         .replace("{module_name}", module_name);
 
@@ -637,7 +654,7 @@ impl CreateSingleModuleProjectFlutter {
         }
 
         let file_content = indoc! {r#"
-            export 'package:{module_name}/src/config/{module_name}_config.dart';
+            export 'src/config/{module_name}_config.dart';
         "#}
         .replace("{module_name}", module_name);
 
