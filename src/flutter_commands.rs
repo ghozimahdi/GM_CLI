@@ -2,17 +2,9 @@ use crate::module_manager::ModuleManager;
 use crate::{flutter_gen_runner, gen_easy_localization};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
-use serde::Deserialize;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command as StdCommand;
-use std::{fs, thread, time::Duration};
-
-#[derive(Deserialize, Debug)]
-struct Module {
-    name: String,
-    location: String,
-}
-
+use std::{thread, time::Duration};
 pub struct FlutterCommandHandler;
 
 impl FlutterCommandHandler {
@@ -180,7 +172,7 @@ impl FlutterCommandHandler {
 
             for (_, module) in selected_modules {
                 println!("{}: {}", "Clearing module".green(), module);
-                Self::run_clear_command(Some(&module));
+                Self::run_clear_command(&module);
                 thread::sleep(Duration::from_secs(1));
 
                 if do_flutter_get {
@@ -204,13 +196,15 @@ impl FlutterCommandHandler {
         println!("{}", "Clear process completed.".cyan());
     }
 
-    fn run_clear_command(scope: Option<&String>) {
+    fn run_clear_command(scope: &str) {
         let mut command = StdCommand::new("melos");
-        command.arg("exec");
-        if let Some(scope) = scope {
-            command.arg("--scope").arg(scope);
-        }
-        command.arg("--").arg(Self::flutter_command()).arg("clean");
+        command
+            .arg("exec")
+            .arg("--scope")
+            .arg(scope)
+            .arg("--")
+            .arg("flutter")
+            .arg("clean");
 
         let status = command
             .status()
@@ -219,82 +213,11 @@ impl FlutterCommandHandler {
         if !status.success() {
             eprintln!("{}", "Clear failed.".red());
         } else {
-            println!("{}", "Flutter clean successful.".green());
-            if let Some(scope_name) = scope {
-                if let Some(module_path) = Self::get_module_path_from_melos(scope_name) {
-                    let pubspec_lock_path = module_path.join("pubspec.lock");
-                    if fs::metadata(&pubspec_lock_path).is_ok() {
-                        if fs::remove_file(&pubspec_lock_path).is_ok() {
-                            println!(
-                                "{}: {}",
-                                "Successfully deleted pubspec.lock in module".green(),
-                                pubspec_lock_path.display()
-                            );
-                        } else {
-                            println!(
-                                "{}: {}",
-                                "Failed to delete pubspec.lock in module".yellow(),
-                                pubspec_lock_path.display()
-                            );
-                        }
-                    } else {
-                        println!(
-                            "{}: {}",
-                            "pubspec.lock file not found in module".yellow(),
-                            pubspec_lock_path.display()
-                        );
-                    }
-                } else {
-                    println!(
-                        "{}: {}",
-                        "Module directory not found for module".red(),
-                        scope_name
-                    );
-                }
-            }
-        }
-    }
-
-    fn get_module_path_from_melos(module_name: &str) -> Option<PathBuf> {
-        let output = StdCommand::new("melos")
-            .arg("list")
-            .arg("--json")
-            .output()
-            .expect("Failed to run melos list command");
-
-        if !output.status.success() {
-            eprintln!(
-                "{}: {}",
-                "Melos list failed to run".red(),
-                String::from_utf8_lossy(&output.stderr)
+            println!(
+                "{}",
+                format!("Flutter clean successful for module: {}", scope).green()
             );
-            return None;
         }
-
-        let raw_output = String::from_utf8_lossy(&output.stdout);
-        let end_of_json = raw_output.rfind(']');
-
-        if let Some(pos) = end_of_json {
-            let valid_json = &raw_output[..=pos];
-            match serde_json::from_str::<Vec<Module>>(valid_json) {
-                Ok(modules) => {
-                    for module in modules {
-                        if module.name.trim().to_lowercase() == module_name.trim().to_lowercase() {
-                            let module_path = PathBuf::from(module.location);
-                            return Some(module_path);
-                        }
-                    }
-                }
-                Err(e) => {
-                    eprintln!("Error parsing Melos JSON output: {}", e);
-                    eprintln!("Cleaned output: {}", valid_json);
-                }
-            }
-        } else {
-            eprintln!("No valid JSON found in output.");
-        }
-
-        None
     }
 
     pub fn flutter_build_runner() {
