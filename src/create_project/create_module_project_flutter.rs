@@ -1,19 +1,20 @@
 use crate::command::Command;
 use colored::Colorize;
-use indoc::indoc;
+use include_dir::{include_dir, Dir};
 use std::fs::File;
 use std::io::Write;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 use std::{fs, io, thread};
-
 // TODO 1: create module common
 // TODO 2: create default files for module common
 // TODO 3: change localization with l10n
 // TODO 4: replace color method with flutter_gen color.xml
 // TODO 5: keep env with envied
 // TODO 6: refactor melos to workspace melos mechanism
+
+static ASSETS: Dir = include_dir!("assets");
 
 pub struct CreateModuleProjectFlutter;
 
@@ -147,7 +148,6 @@ impl CreateModuleProjectFlutter {
                 "get_it",
                 "injectable",
                 "auto_route",
-                "intl",
             ],
             vec![
                 "auto_route_generator",
@@ -172,7 +172,6 @@ impl CreateModuleProjectFlutter {
                 "get_it",
                 "injectable",
                 "auto_route",
-                "intl",
             ],
             vec![
                 "auto_route_generator",
@@ -265,26 +264,19 @@ impl CreateModuleProjectFlutter {
                     let module_name = module_name.clone();
                     let module_path = module_path.clone();
                     let dev_dependencies = dev_dependencies.clone();
+
                     let local_dependencies = local_dependencies.clone();
                     move || {
                         let sdk_version = Self::read_environment_from_main_project();
-                        let mut pubspec_content = format!(
-                            indoc! {r#"
-                        name: {}
-                        description: "Modular project for {}"
-                        version: 1.0.0
-                        publish_to: 'none'
-                        resolution: workspace
+                        let template_content = ASSETS
+                            .get_file("pubspec_template.yaml")
+                            .expect("Failed to read pubspec template from assets")
+                            .contents_utf8()
+                            .expect("Failed to convert pubspec template to UTF-8");
 
-                        environment:
-                          {}
-
-                        dependencies:
-                          flutter:
-                            sdk: flutter
-                        "#},
-                            module_name, module_name, sdk_version
-                        );
+                        let mut pubspec_content = template_content
+                            .replace("{{module_name}}", &module_name)
+                            .replace("{{sdk_version}}", &sdk_version);
 
                         for (dependency_name, dependency_path) in &local_dependencies {
                             pubspec_content.push_str(&format!(
@@ -295,9 +287,6 @@ impl CreateModuleProjectFlutter {
 
                         if !dev_dependencies.is_empty() {
                             pubspec_content.push_str("\ndev_dependencies:\n");
-                            for dev_dependency in &dev_dependencies {
-                                pubspec_content.push_str(&format!("  {}: any\n", dev_dependency));
-                            }
                             pubspec_content.push_str("  flutter_test:\n    sdk: flutter\n");
                         }
 
@@ -452,7 +441,7 @@ impl CreateModuleProjectFlutter {
             (
                 "Writing updated pubspec.yaml",
                 Box::new(move || {
-                    thread::sleep(Duration::from_millis(300)); // Simulasi menulis file
+                    thread::sleep(Duration::from_millis(300));
                 }),
             ),
             (

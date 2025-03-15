@@ -1,0 +1,12 @@
+name: {{module_name}}
+description: "Modular project for {{module_name}}"
+version: 1.0.0
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  {{sdk_version}}
+
+dependencies:
+  flutter:
+    sdk: flutter
