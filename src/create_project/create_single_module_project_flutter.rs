@@ -56,6 +56,10 @@ impl CreateSingleModuleProjectFlutter {
             0 => {
                 let path = format!("../packages/presentation/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
+
+                let packages = &format!("packages/presentation/{}", module_name);
+                Self::update_melos_config(packages);
+
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
                     &format!("./packages/presentation/{}", module_name),
@@ -82,15 +86,16 @@ impl CreateSingleModuleProjectFlutter {
                 );
                 Self::create_default_feature_files(&module_name);
 
-                let packages = &format!("packages/presentation/{}", module_name);
-                Self::update_melos(packages);
-
                 Self::refresh_module(&format!("./packages/presentation/{}", module_name));
             }
             // Data
             1 => {
                 let path = format!("../packages/data/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
+
+                let packages = &format!("packages/data/{}", module_name);
+                Self::update_melos_config(packages);
+
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
                     &format!("./packages/data/{}", module_name),
@@ -115,15 +120,16 @@ impl CreateSingleModuleProjectFlutter {
                 );
                 Self::create_default_data_files(&module_name);
 
-                let packages = &format!("packages/data/{}", module_name);
-                Self::update_melos(packages);
-
                 Self::refresh_module(&format!("./packages/data/{}", module_name));
             }
             // Domain
             2 => {
                 let path = format!("../packages/domain/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
+
+                let packages = &format!("packages/domain/{}", module_name);
+                Self::update_melos_config(packages);
+
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
                     &format!("./packages/domain/{}", module_name),
@@ -136,15 +142,16 @@ impl CreateSingleModuleProjectFlutter {
                 );
                 Self::create_default_domain_files(&module_name);
 
-                let packages = &format!("packages/domain/{}", module_name);
-                Self::update_melos(packages);
-
                 Self::refresh_module(&format!("./packages/domain/{}", module_name));
             }
             // Library
             3 => {
                 let path = format!("../packages/library/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
+
+                let packages = &format!("packages/library/{}", module_name);
+                Self::update_melos_config(packages);
+
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
                     &format!("./packages/library/{}", module_name),
@@ -152,9 +159,6 @@ impl CreateSingleModuleProjectFlutter {
                     vec!["build_runner", "lint"],
                     vec![],
                 );
-
-                let packages = &format!("packages/library/{}", module_name);
-                Self::update_melos(packages);
 
                 Self::refresh_module(&format!("./packages/library/{}", module_name));
             }
@@ -180,7 +184,7 @@ impl CreateSingleModuleProjectFlutter {
         Self::refresh_module("./app");
     }
 
-    fn update_melos(new_package: &str) {
+    fn update_melos_config(new_package: &str) {
         let pubspec_path = "pubspec.yaml";
 
         if !Path::new(pubspec_path).exists() {
@@ -196,7 +200,6 @@ impl CreateSingleModuleProjectFlutter {
             .iter()
             .position(|line| line.trim_start().starts_with("workspace:"))
         {
-            // Cari posisi terakhir dari daftar package dalam workspace
             let mut last_index = start_index;
 
             for (i, line) in lines.iter().enumerate().skip(start_index + 1) {
@@ -207,7 +210,6 @@ impl CreateSingleModuleProjectFlutter {
                 }
             }
 
-            // Pastikan package tidak duplikat sebelum menambahkan
             let package_already_exists = lines
                 .iter()
                 .skip(start_index + 1)
@@ -217,7 +219,6 @@ impl CreateSingleModuleProjectFlutter {
                 lines.insert(last_index + 1, format!("  - {}", new_package));
             }
         } else {
-            // Jika workspace belum ada, buat baru
             lines.push(String::from("workspace:"));
             lines.push(format!("  - {}", new_package));
         }
@@ -450,8 +451,8 @@ impl CreateSingleModuleProjectFlutter {
         let file_content = indoc! {r#"
             import 'package:auto_route/auto_route.dart';
 
-            // TODO: Move this file to `feature_common` if this route will be shared and reused in other feature modules.
-            //       Placing shared routes in `feature_common` ensures better modularization and avoids duplication.
+            // TODO: Move this file to `feature_common` if this route is shared across multiple feature modules.
+            //       Keeping shared routes in `feature_common` improves modularization and prevents duplication.
             abstract class {route_name}Provider {
               PageRouteInfo route({
                 required String name,
@@ -479,21 +480,6 @@ impl CreateSingleModuleProjectFlutter {
             fs::create_dir_all(&module_dir).expect("Failed to create the module directory");
         }
 
-        let split_name = module_name.replace("feature_", "");
-        let pascal_case_name = split_name
-            .split('_')
-            .map(|word| {
-                let mut chars = word.chars();
-                chars
-                    .next()
-                    .map(|c| c.to_uppercase().to_string())
-                    .unwrap_or_default()
-                    + chars.as_str()
-            })
-            .collect::<String>();
-
-        let route_name = format!("{}Route", pascal_case_name);
-
         let pascal_case_class_name = module_name
             .split('_')
             .map(|word| {
@@ -510,20 +496,15 @@ impl CreateSingleModuleProjectFlutter {
 
         let file_content = indoc! {r#"
             import 'package:auto_route/auto_route.dart';
-            import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
 
             @AutoRouterConfig()
             class {class_name} extends RootStackRouter {
               @override
-              List<AutoRoute> get routes => [
-                    AutoRoute(page: {route_name}.page),
-                  ];
+              List<AutoRoute> get routes => [];
             }
 
         "#}
-        .replace("{module_name}", module_name)
-        .replace("{class_name}", &class_name)
-        .replace("{route_name}", &route_name);
+        .replace("{class_name}", &class_name);
 
         let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
