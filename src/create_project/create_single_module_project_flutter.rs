@@ -286,8 +286,12 @@ impl CreateSingleModuleProjectFlutter {
         Self::generated_di(&format!("{}/lib/src/di", dest_lib_dir), module_name);
         Self::generated_config(&format!("{}/lib/src/config", dest_lib_dir), module_name);
         Self::generated_exposed_feature_file(&format!("{}/lib", dest_lib_dir), module_name);
-        Self::generated_feature_route_provider(
-            &format!("{}/lib/src/config", dest_lib_dir),
+        // Self::generated_feature_route_provider(
+        //     &format!("{}/lib/src/config", dest_lib_dir),
+        //     module_name,
+        // );
+        Self::generated_route_provider_feature_common(
+            "packages/presentation/feature_common/lib/src/route",
             module_name,
         );
         Self::generated_feature_route(&format!("{}/lib/src/config", dest_lib_dir), module_name);
@@ -425,7 +429,7 @@ impl CreateSingleModuleProjectFlutter {
         );
     }
 
-    fn generated_feature_route_provider(module_dir: &str, module_name: &str) {
+    fn generated_route_provider_feature_common(module_dir: &str, module_name: &str) {
         let split_name = module_name.replace("feature_", "");
         let file_name = format!("{}_route_provider.dart", split_name);
         let file_path = format!("{}/{}", module_dir, file_name);
@@ -451,13 +455,11 @@ impl CreateSingleModuleProjectFlutter {
         let file_content = indoc! {r#"
             import 'package:auto_route/auto_route.dart';
 
-            // TODO: Move this file to `feature_common` if this route is shared across multiple feature modules.
-            //       Keeping shared routes in `feature_common` improves modularization and prevents duplication.
             abstract class {route_name}Provider {
               PageRouteInfo route();
             }
         "#}
-            .replace("{route_name}", &route_name);
+        .replace("{route_name}", &route_name);
 
         let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
@@ -468,6 +470,38 @@ impl CreateSingleModuleProjectFlutter {
             "{} has been successfully generated at {}",
             file_name, file_path
         );
+
+        // Update route in feature_common
+        let feature_common_path = "packages/presentation/feature_common/lib/feature_common.dart";
+
+        let mut feature_common_content = if Path::new(feature_common_path).exists() {
+            fs::read_to_string(feature_common_path).expect("Failed to read feature_common.dart")
+        } else {
+            String::new()
+        };
+
+        let export_line = format!("export 'src/route/{}';\n", file_name);
+
+        if !feature_common_content.contains(&export_line) {
+            feature_common_content.push_str(&export_line);
+            fs::write(feature_common_path, feature_common_content)
+                .expect("Failed to update feature_common.dart");
+
+            println!(
+                "Updated feature_common.dart with new export: {}",
+                export_line
+            );
+
+            let _ = std::process::Command::new("fvm")
+                .arg("dart")
+                .arg("fix")
+                .arg("--apply")
+                .arg(feature_common_path)
+                .output()
+                .expect("Failed to run dart format on feature_common.dart");
+
+            println!("Formatted feature_common.dart.");
+        }
     }
 
     fn generated_feature_route(module_dir: &str, module_name: &str) {
@@ -542,10 +576,9 @@ impl CreateSingleModuleProjectFlutter {
         let file_content = indoc! {r#"
             import 'package:auto_route/auto_route.dart';
             import 'package:feature_common/feature_common.dart';
-            import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
-            import 'package:{module_name}/src/config/{split_name}_route_provider.dart';
             import 'package:flutter/material.dart';
             import 'package:injectable/injectable.dart';
+            import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
 
             @Injectable(as: {route_name}Provider)
             class {route_name}ProviderImpl implements {route_name}Provider {
@@ -604,7 +637,6 @@ impl CreateSingleModuleProjectFlutter {
         let file_content = indoc! {r#"
             export 'src/config/{module_name}_config.dart';
             export 'src/config/{module_name}_route.dart';
-            export 'src/config/{module_name}_route.gr.dart';
         "#}
         .replace("{module_name}", module_name);
 
