@@ -454,9 +454,7 @@ impl CreateSingleModuleProjectFlutter {
             // TODO: Move this file to `feature_common` if this route is shared across multiple feature modules.
             //       Keeping shared routes in `feature_common` improves modularization and prevents duplication.
             abstract class {route_name}Provider {
-              PageRouteInfo route({
-                required String name,
-              });
+              PageRouteInfo route();
             }
         "#}
             .replace("{route_name}", &route_name);
@@ -552,22 +550,16 @@ impl CreateSingleModuleProjectFlutter {
             @Injectable(as: {route_name}Provider)
             class {route_name}ProviderImpl implements {route_name}Provider {
               @override
-              PageRouteInfo route({
-                required String name,
-              }) {
-                return {route_name}(
-                  name: name,
-                );
+              PageRouteInfo route() {
+                return const {route_name}();
               }
             }
 
             @RoutePage()
             class {class_name} extends StatelessWidget {
-              final String name;
 
               const {class_name}({
                 super.key,
-                required this.name,
               });
 
               @override
@@ -575,7 +567,7 @@ impl CreateSingleModuleProjectFlutter {
                 return Scaffold(
                   body: Center(
                     child: Text(
-                      'Hello $name! I thought you’d never show up! 😅',
+                      'Hello! I thought you’d never show up! 😅',
                       style: textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
