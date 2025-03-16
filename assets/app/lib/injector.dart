@@ -17,13 +17,13 @@ Future<void> configureDependencies({required String environment}) async {
   getIt.registerSingleton<AppRouter>(AppRouter());
 
   // TODO: Add injection here
-  DomainCommonConfig.getInstance().config(env: environment);
+  await DomainCommonConfig.getInstance().config(env: environment);
   DomainAuthConfig.getInstance().config(env: environment);
 
-  DataCommonConfig.getInstance().config(env: environment);
+  await DataCommonConfig.getInstance().config(env: environment);
   DataAuthConfig.getInstance().config(env: environment);
 
-  FeatureCommonConfig.getInstance().config(env: environment);
+  await FeatureCommonConfig.getInstance().config(env: environment);
   FeatureDashboardConfig.getInstance().config(env: environment);
   FeatureAuthConfig.getInstance().config(env: environment);
 
