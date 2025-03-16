@@ -57,9 +57,6 @@ impl CreateSingleModuleProjectFlutter {
                 let path = format!("../packages/presentation/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
 
-                let packages = &format!("packages/presentation/{}", module_name);
-                Self::update_melos_config(packages);
-
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
                     &format!("./packages/presentation/{}", module_name),
@@ -84,6 +81,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
+                // Self::update_app_injector_file(&module_name, &selected_choice);
                 Self::create_default_feature_files(&module_name);
 
                 Self::refresh_module(&format!("./packages/presentation/{}", module_name));
@@ -92,9 +90,6 @@ impl CreateSingleModuleProjectFlutter {
             1 => {
                 let path = format!("../packages/data/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
-
-                let packages = &format!("packages/data/{}", module_name);
-                Self::update_melos_config(packages);
 
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -118,6 +113,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
+                // Self::update_app_injector_file(&module_name, &selected_choice);
                 Self::create_default_data_files(&module_name);
 
                 Self::refresh_module(&format!("./packages/data/{}", module_name));
@@ -126,9 +122,6 @@ impl CreateSingleModuleProjectFlutter {
             2 => {
                 let path = format!("../packages/domain/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
-
-                let packages = &format!("packages/domain/{}", module_name);
-                Self::update_melos_config(packages);
 
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -140,6 +133,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
+                // Self::update_app_injector_file(&module_name, &selected_choice);
                 Self::create_default_domain_files(&module_name);
 
                 Self::refresh_module(&format!("./packages/domain/{}", module_name));
@@ -148,9 +142,6 @@ impl CreateSingleModuleProjectFlutter {
             3 => {
                 let path = format!("../packages/library/{}", module_name);
                 local_module = (module_name.clone(), path.clone());
-
-                let packages = &format!("packages/library/{}", module_name);
-                Self::update_melos_config(packages);
 
                 CreateModuleProjectFlutter::create_module(
                     &module_name,
@@ -267,6 +258,73 @@ impl CreateSingleModuleProjectFlutter {
         println!("{}", "Module refresh complete.".green());
     }
 
+    pub fn update_app_injector_file(module_name: &str, selected_choice: &str) {
+        let file_path = "./app/lib/injector.dart";
+
+        let mut content = fs::read_to_string(file_path).expect("Failed to read injector.dart");
+
+        let pascal_case_name = module_name
+            .split('_')
+            .map(|word| {
+                let mut chars = word.chars();
+                chars
+                    .next()
+                    .map(|c| c.to_uppercase().to_string())
+                    .unwrap_or_default()
+                    + chars.as_str()
+            })
+            .collect::<String>();
+
+        let insert_line = format!(
+            "  {}Config.getInstance().config(env: environment);",
+            pascal_case_name
+        );
+
+        if content.contains(&insert_line) {
+            println!("Injector already updated.");
+            return;
+        }
+
+        let insert_after = match selected_choice {
+            "domain" => "await DomainCommonConfig.getInstance().config(env: environment);",
+            "data" => "await DataCommonConfig.getInstance().config(env: environment);",
+            "feature" => "await FeatureCommonConfig.getInstance().config(env: environment);",
+            _ => return,
+        };
+
+        if let Some(pos) = content.rfind(insert_after) {
+            let insert_pos = pos + insert_after.len();
+            content.insert_str(insert_pos, &format!("\n{}", insert_line));
+
+            let import_line = format!("import 'package:{0}/{0}.dart';", module_name);
+            if !content.contains(&import_line) {
+                if let Some(last_import_pos) = content.rfind("import ") {
+                    let semi_colon_pos = content[last_import_pos..]
+                        .find(';')
+                        .map(|p| p + last_import_pos + 1)
+                        .unwrap_or(last_import_pos);
+                    content.insert_str(semi_colon_pos, &format!("\n{}", import_line));
+                    println!("Added import line: {}", import_line);
+                }
+            }
+
+            fs::write(file_path, content).expect("Failed to write injector.dart");
+            println!("Updated injector.dart with {}", insert_line);
+
+            let _ = std::process::Command::new("fvm")
+                .arg("dart")
+                .arg("fix")
+                .arg("--apply")
+                .arg(file_path)
+                .output()
+                .expect("Failed to run dart fix on injector.dart");
+
+            println!("Formatted injector.dart.");
+        } else {
+            println!("Target config call not found in injector.dart.");
+        }
+    }
+
     fn create_default_feature_files(module_name: &str) {
         let source_dir = "default_feature_module";
         let dest_lib_dir = &format!("packages/presentation/{}", module_name);
@@ -286,10 +344,6 @@ impl CreateSingleModuleProjectFlutter {
         Self::generated_di(&format!("{}/lib/src/di", dest_lib_dir), module_name);
         Self::generated_config(&format!("{}/lib/src/config", dest_lib_dir), module_name);
         Self::generated_exposed_feature_file(&format!("{}/lib", dest_lib_dir), module_name);
-        // Self::generated_feature_route_provider(
-        //     &format!("{}/lib/src/config", dest_lib_dir),
-        //     module_name,
-        // );
         Self::generated_route_provider_feature_common(
             "packages/presentation/feature_common/lib/src/route",
             module_name,
