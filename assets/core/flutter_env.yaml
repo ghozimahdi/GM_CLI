@@ -1,5 +1,0 @@
-flutter:
-  assets:
-    - .env_dev
-    - .env_staging
-    - .env_prod

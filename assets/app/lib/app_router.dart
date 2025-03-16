@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:feature_auth/feature_auth.dart';
+import 'package:feature_common/feature_common.dart';
 import 'package:feature_dashboard/feature_dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:resource/resource.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-@AutoRouterConfig()
 class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
@@ -51,7 +51,7 @@ Route<T> modalSheetBuilder<T>(
         topRight: Radius.circular(16.r),
       ),
     ),
-    backgroundColor: colors.surface.white,
+    backgroundColor: colors.white,
     elevation: 0,
   );
 }

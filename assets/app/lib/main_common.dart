@@ -3,18 +3,18 @@ import 'dart:ui';
 
 import 'package:app/app_router.dart';
 import 'package:app/injector.dart';
-import 'package:app/run_app.dart';
-import 'package:core/core.dart';
+import 'package:common/common.dart';
 import 'package:data_common/data_common.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:feature_common/feature_common.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:resource/resource.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> mainCommon(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
+  await S.load(const Locale('en'));
 
   await configureDependencies(environment: flavor.environment);
   await AppEnv.initialize(flavor);
@@ -22,9 +22,6 @@ Future<void> mainCommon(Flavor flavor) async {
   // Uncomment the following code to enable Firebase functionality.
   // For detailed documentation, refer to the .firebase folder in the packages/app directory.
   // await FirebaseHelper.initialize();
-
-  await EasyLocalization.ensureInitialized();
-  await res.initialize(useDarkTheme: false);
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -48,13 +45,24 @@ Future<void> mainCommon(Flavor flavor) async {
     };
   }
 
-  customRunApp(
-    child: MyApp(),
-  );
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = WidgetsBinding.instance.platformDispatcher.locale;
+
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   final _appRouter = getIt<AppRouter>();
 
@@ -74,10 +82,15 @@ class MyApp extends StatelessWidget {
               ],
             ),
             title: AppEnv.title,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            theme: res.themeData,
+            localizationsDelegates: const [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: S.delegate.supportedLocales,
+            locale: _locale,
+            theme: lightTheme,
             builder: (context, child) => Overlay(
               initialEntries: [
                 if (child != null) ...[

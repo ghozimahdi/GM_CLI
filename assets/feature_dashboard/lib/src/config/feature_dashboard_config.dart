@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:common/common.dart';
 import 'package:feature_dashboard/src/di/di.dart';
 
 class FeatureDashboardConfig extends AppConfig {

@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:common/common.dart';
 import 'package:flutter/material.dart';
 
 class FlavorBanner extends StatelessWidget {
