@@ -20,7 +20,7 @@ Future<void> mainCommon(Flavor flavor) async {
   await AppEnv.initialize(flavor);
 
   // Uncomment the following code to enable Firebase functionality.
-  // For detailed documentation, refer to the .firebase folder in the packages/app directory.
+  // For detailed documentation, refer to the .firebase folder in the app directory.
   // await FirebaseHelper.initialize();
 
   await SystemChrome.setPreferredOrientations([
