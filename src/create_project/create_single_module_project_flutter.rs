@@ -81,7 +81,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
-                // Self::update_app_injector_file(&module_name, &selected_choice);
+                Self::update_app_injector_file(&module_name, &selected_choice);
                 Self::create_default_feature_files(&module_name);
 
                 Self::refresh_module(&format!("./packages/presentation/{}", module_name));
@@ -113,7 +113,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
-                // Self::update_app_injector_file(&module_name, &selected_choice);
+                Self::update_app_injector_file(&module_name, &selected_choice);
                 Self::create_default_data_files(&module_name);
 
                 Self::refresh_module(&format!("./packages/data/{}", module_name));
@@ -133,7 +133,7 @@ impl CreateSingleModuleProjectFlutter {
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );
-                // Self::update_app_injector_file(&module_name, &selected_choice);
+                Self::update_app_injector_file(&module_name, &selected_choice);
                 Self::create_default_domain_files(&module_name);
 
                 Self::refresh_module(&format!("./packages/domain/{}", module_name));
@@ -173,6 +173,16 @@ impl CreateSingleModuleProjectFlutter {
             vec![(&*local_module.0, &*local_module.1)],
         );
         Self::refresh_module("./app");
+
+        let _ = std::process::Command::new("fvm")
+            .arg("dart")
+            .arg("fix")
+            .arg("--apply")
+            .arg("./app/lib/injector.dart")
+            .output()
+            .expect("Failed to run dart fix on injector.dart");
+
+        println!("dart fix applied to injector.dart.");
     }
 
     pub fn update_melos_config(new_package: &str) {
@@ -275,16 +285,6 @@ impl CreateSingleModuleProjectFlutter {
             })
             .collect::<String>();
 
-        let insert_line = format!(
-            "  {}Config.getInstance().config(env: environment);",
-            pascal_case_name
-        );
-
-        if content.contains(&insert_line) {
-            println!("Injector already updated.");
-            return;
-        }
-
         let insert_after = match selected_choice {
             "domain" => "await DomainCommonConfig.getInstance().config(env: environment);",
             "data" => "await DataCommonConfig.getInstance().config(env: environment);",
@@ -292,37 +292,39 @@ impl CreateSingleModuleProjectFlutter {
             _ => return,
         };
 
-        if let Some(pos) = content.rfind(insert_after) {
-            let insert_pos = pos + insert_after.len();
-            content.insert_str(insert_pos, &format!("\n{}", insert_line));
+        let config_line = format!(
+            "  {}Config.getInstance().config(env: environment);",
+            pascal_case_name
+        );
+        let import_line = format!("import 'package:{0}/{0}.dart';", module_name);
 
-            let import_line = format!("import 'package:{0}/{0}.dart';", module_name);
-            if !content.contains(&import_line) {
-                if let Some(last_import_pos) = content.rfind("import ") {
-                    let semi_colon_pos = content[last_import_pos..]
-                        .find(';')
-                        .map(|p| p + last_import_pos + 1)
-                        .unwrap_or(last_import_pos);
-                    content.insert_str(semi_colon_pos, &format!("\n{}", import_line));
-                    println!("Added import line: {}", import_line);
-                }
+        if !content.contains(&import_line) {
+            if let Some(last_import_pos) = content.rfind("import ") {
+                let semi_colon_pos = content[last_import_pos..]
+                    .find(';')
+                    .map(|p| p + last_import_pos + 1)
+                    .unwrap_or(last_import_pos);
+                content.insert_str(semi_colon_pos, &format!("\n{}", import_line));
+                println!("Added import line: {}", import_line);
             }
-
-            fs::write(file_path, content).expect("Failed to write injector.dart");
-            println!("Updated injector.dart with {}", insert_line);
-
-            let _ = std::process::Command::new("fvm")
-                .arg("dart")
-                .arg("fix")
-                .arg("--apply")
-                .arg(file_path)
-                .output()
-                .expect("Failed to run dart fix on injector.dart");
-
-            println!("Formatted injector.dart.");
-        } else {
-            println!("Target config call not found in injector.dart.");
         }
+
+        if !content.contains(&config_line) {
+            if let Some(pos) = content.rfind(insert_after) {
+                let insert_pos = pos + insert_after.len();
+                content.insert_str(insert_pos, &format!("\n{}", config_line));
+                println!("Inserted config line: {}", config_line);
+            } else {
+                println!("Target config call not found in injector.dart.");
+                return;
+            }
+        } else {
+            println!("Config line already exists.");
+        }
+
+        fs::write(file_path, content).expect("Failed to write injector.dart");
+
+        println!("injector.dart successfully updated.");
     }
 
     fn create_default_feature_files(module_name: &str) {
