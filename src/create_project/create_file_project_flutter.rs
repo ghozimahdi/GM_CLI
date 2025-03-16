@@ -282,7 +282,7 @@ impl CreateFileProjectFlutter {
     fn generate_feature_common_files() {
         let source_dir = "feature_common";
         let dest_lib_dir = "packages/presentation/feature_common";
-        let dest_pubspec_path = "packages/library/feature_common/pubspec.yaml";
+        let dest_pubspec_path = "packages/presentation/feature_common/pubspec.yaml";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 

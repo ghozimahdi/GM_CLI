@@ -91,18 +91,14 @@ impl CreateProjectFlutter {
             ]);
 
             println!("Setting up Melos...");
-            SetupMelosProjectFlutter::build(&project_name);
+            SetupMelosProjectFlutter::build(&project_name, &app_path);
 
             println!("Setting up FVM...");
             SetupFVMProjectFlutter::build();
 
+            println!("Generating files...");
             CreateModuleProjectFlutter::build();
             CreateModuleProjectFlutter::add_analysis_options(app_path);
-            std::process::Command::new("fvm")
-                .args(["dart", "run", "change_app_package_name:main", &package_name])
-                .current_dir(app_path)
-                .output()
-                .expect("Failed to execute command");
 
             CreateFileProjectFlutter::build(&project_name, &package_name);
 
@@ -110,10 +106,10 @@ impl CreateProjectFlutter {
             Command::run(&["fvm", "flutter", "pub", "get"]);
 
             println!("{}", "Bootstrapping with Melos...".yellow());
-            Command::run(&["melos", "bootstrap"]);
-            Command::run(&["melos", "locale"]);
+            Command::run(&["melos", "bs"]);
+            Command::run(&["melos", "generate:l10n"]);
             Command::run(&["melos", "build"]);
-            Command::run(&["melos", "flavors"]);
+            Command::run(&["melos", "generate:flavors"]);
             IOSAnalyzingProjectFlutter::build(&app_path);
 
             println!(

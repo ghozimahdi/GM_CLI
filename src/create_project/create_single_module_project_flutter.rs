@@ -184,7 +184,7 @@ impl CreateSingleModuleProjectFlutter {
         Self::refresh_module("./app");
     }
 
-    fn update_melos_config(new_package: &str) {
+    pub fn update_melos_config(new_package: &str) {
         let pubspec_path = "pubspec.yaml";
 
         if !Path::new(pubspec_path).exists() {

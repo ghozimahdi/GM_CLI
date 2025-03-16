@@ -1,4 +1,5 @@
 use crate::command::Command;
+use crate::create_project::create_single_module_project_flutter::CreateSingleModuleProjectFlutter;
 use colored::Colorize;
 use include_dir::{include_dir, Dir};
 use std::fs::File;
@@ -10,9 +11,6 @@ use std::{fs, io, thread};
 // TODO 1: create module common
 // TODO 2: create default files for module common
 // TODO 3: change localization with l10n
-// TODO 4: replace color method with flutter_gen color.xml
-// TODO 5: keep env with envied
-// TODO 6: refactor melos to workspace melos mechanism
 
 static ASSETS: Dir = include_dir!("assets");
 
@@ -25,13 +23,8 @@ impl CreateModuleProjectFlutter {
         Self::create_module(
             "common",
             "./packages/library/common",
-            vec!["envied", "injectable", "async:^2.11.0"],
-            vec![
-                "injectable_generator",
-                "build_runner",
-                "lint",
-                "envied_generator",
-            ],
+            vec!["injectable", "async:^2.11.0"],
+            vec!["injectable_generator", "build_runner", "lint"],
             vec![],
         );
 
@@ -131,6 +124,7 @@ impl CreateModuleProjectFlutter {
                 "build_runner",
                 "freezed",
                 "lint",
+                "intl_utils",
                 "flutter_gen_runner",
             ],
             vec![
@@ -228,6 +222,9 @@ impl CreateModuleProjectFlutter {
         dev_dependencies: Vec<&str>,
         local_dependencies: Vec<(&str, &str)>,
     ) {
+        let packages = module_path.trim_start_matches("./").to_string();
+        CreateSingleModuleProjectFlutter::update_melos_config(&packages);
+
         let module_name = module_name.to_string();
         let module_path = module_path.to_string();
         let dependencies = dependencies

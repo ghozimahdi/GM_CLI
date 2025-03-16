@@ -1,312 +1,55 @@
-use crate::command::Command;
 use crate::create_project::create_module_project_flutter::CreateModuleProjectFlutter;
-use indoc::indoc;
+use include_dir::{include_dir, Dir};
 use std::fs::File;
-use std::io::Write;
+use std::io::{BufRead, BufReader, BufWriter, Write};
 
+static ASSETS: Dir = include_dir!("assets");
 pub struct SetupMelosProjectFlutter;
 
 impl SetupMelosProjectFlutter {
-    pub fn build(project_name: &str) {
+    pub fn build(project_name: &str, app_path: &str) {
+        let pubspec_path = format!("{}/pubspec.yaml", app_path);
+        let file = File::open(&pubspec_path).expect("Failed to open pubspec.yaml");
+        let reader = BufReader::new(file);
+        let mut lines: Vec<String> = vec![];
+
+        let mut resolution_exists = false;
+
+        for line in reader.lines() {
+            let line = line.expect("Failed to read line");
+            if line.trim_start().starts_with("resolution:") {
+                resolution_exists = true;
+            }
+            lines.push(line);
+        }
+
+        if !resolution_exists {
+            lines.insert(4, "resolution: workspace".to_string());
+            let file = File::create(&pubspec_path).expect("Failed to write pubspec.yaml");
+            let mut writer = BufWriter::new(file);
+            for line in lines {
+                writeln!(writer, "{line}").expect("Failed to write line");
+            }
+            println!("✅ Added 'resolution: workspace' to {pubspec_path}");
+        } else {
+            println!("ℹ️ 'resolution: workspace' already exists in {pubspec_path}");
+        }
+
         let sdk_version = CreateModuleProjectFlutter::read_environment_from_main_project();
 
-        let pubspec_template = indoc! {r#"
-            name: {project_name}
-            description: Modular project for Flutter with Melos
-            version: 1.0.0
+        let template_content = ASSETS
+            .get_file("root_pubspec_template.yaml")
+            .expect("Failed to read pubspec template from assets")
+            .contents_utf8()
+            .expect("Failed to convert pubspec template to UTF-8");
 
-            environment:
-              {sdk_version}
-
-            dev_dependencies:
-              melos: ^7.0.0-dev.7
-
-            workspace:
-              - app
-              - packages/library/common
-              - packages/domain/domain_auth
-              - packages/domain/domain_common
-              - packages/data/data_auth
-              - packages/data/data_common
-              - packages/presentation/feature_common
-              - packages/presentation/feature_auth
-              - packages/presentation/feature_dashboard
-
-            melos:
-              scripts:
-                build:
-                  run: fvm dart run melos exec -c 1 --depends-on="build_runner" -- "fvm dart run build_runner build -d"
-                  description: "Run build runner with depends-on"
-
-                upgrade:
-                  run: fvm dart run melos exec --fail-fast -- "fvm flutter pub upgrade --major-versions"
-                  description: "Upgrade dependencies across all packages to their latest major versions"
-
-                run_app:dev:
-                  run: fvm dart run melos exec -- fvm flutter run --flavor dev -t lib/main_dev.dart
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-                      - ios
-
-                run_app:staging:
-                  run: fvm dart run melos exec -- fvm flutter run --flavor staging -t lib/main_staging.dart
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-                      - ios
-
-                run_app:production:
-                  run: fvm dart run melos exec -- fvm flutter run --flavor production -t lib/main_production.dart
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-                      - ios
-
-                generate:flavors:
-                  run: fvm dart run melos exec --depends-on="flutter_flavorizr" -- "fvm dart run flutter_flavorizr"
-                  description: "Run flutter_flavorizr with depends-on"
-
-                generate:flavors::assets:
-                  run: fvm dart run melos exec --depends-on="flutter_flavorizr" -- "fvm dart run flutter_flavorizr -p assets:download,assets:extract"
-                  description: "Run flutter_flavorizr for downloading and extracting assets"
-
-                generate:domain_common:
-                  run: fvm dart run melos exec -c 1 --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for domain common package
-                  packageFilters:
-                    scope: '*domain_common'
-
-                generate:domain:
-                  run: fvm dart run melos exec -c 3 --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for domain package expect common
-                  packageFilters:
-                    scope: '*domain*'
-                    ignore: '*domain_common'
-
-                generate:data_common:
-                  run: fvm dart run melos exec -c 1 --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for data common package
-                  packageFilters:
-                    scope: '*data_common'
-
-                generate:data:
-                  run: fvm dart run melos exec -c 3 --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for data package expect common
-                  packageFilters:
-                    scope: '*data*'
-                    ignore: '*data_common'
-
-                generate:l10n:
-                  run: fvm dart run melos exec -- "fvm dart run intl_utils:generate"
-                  description: Generate localizations in all packages
-                  packageFilters:
-                    dirExists:
-                      - lib/l10n
-
-                generate:assets:
-                  run: fvm dart run melos exec --depends-on="flutter_gen_runner" -- "fvm dart run build_runner build -d"
-                  description: "Run flutter_gen with depends-on"
-
-                generate:presentation_common:
-                  run: fvm dart run melos exec -c 1 --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for presentation common package
-                  packageFilters:
-                    scope: '*feature_common'
-
-                generate:presentation:
-                  run: fvm dart run melos exec -c 3 --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for presentation package expect common
-                  packageFilters:
-                    scope: '*feature*'
-                    ignore: '*feature_common'
-
-                generate:app:
-                  run: fvm dart run melos exec --depends-on="build_runner" --flutter -- "fvm dart run build_runner build --delete-conflicting-outputs"
-                  description: run build_runner for data package
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-                      - ios
-
-                generate:all:
-                  run: |
-                    fvm dart run melos generate:assets --no-select && \
-                    fvm dart run melos generate:l10n --no-select && \
-                    fvm dart run melos generate:domain_common --no-select && \
-                    fvm dart run melos generate:domain --no-select && \
-                    fvm dart run melos generate:data_common --no-select && \
-                    fvm dart run melos generate:data --no-select && \
-                    fvm dart run melos generate:presentation_common --no-select && \
-                    fvm dart run melos generate:presentation --no-select && \
-                    fvm dart run melos generate:app --no-select
-                  description: Build all example apps.
-
-                generate:first_time:
-                  run: |
-                    fvm dart run melos generate:build_runner --no-select && \
-                    fvm dart run melos generate:flavors --no-select
-                  description: Build all example apps.
-
-                create:splash:
-                  run: fvm dart run melos exec -- "fvm dart run flutter_native_splash:create"
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-                      - ios
-
-                create:launcher_icon:
-                  run: fvm dart run melos exec -- "fvm dart run flutter_launcher_icons"
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-                      - ios
-
-                test:
-                  run: fvm dart run melos exec --dir-exists="test" --fail-fast -- "fvm flutter test --coverage" && \
-                    fvm dart run melos exec --dir-exists="test" -- "lcov --remove 'coverage/lcov.info' --ignore-errors unused 'lib/src/l10n/generated/*' '*.g.dart' '*.config.dart' '*.gr.dart' -o coverage/lcov.info"
-                  description: Run Flutter Tests for a specific package in this project.
-                  select-package:
-                    flutter: true
-                    dirExists: test
-
-                analyze:
-                  run: fvm dart run melos exec -- "fvm flutter analyze"
-                  description: Run `dart analyze` in all packages.
-
-                coverage:
-                  run: |
-                    fvm dart run melos test && \
-                    rm -rf ./coverage_report && \
-                    fvm dart run melos exec -- "\$MELOS_ROOT_PATH/combine_coverage.sh" && \
-                    genhtml coverage_report/lcov.info -o coverage_report/html
-                  description: Generate coverage report.
-
-                generate_debug_dev_apk:
-                  run: |
-                    fvm dart run melos exec -c 1 --fail-fast -- \
-                      "fvm flutter build apk --debug --flavor dev -t lib/main_dev.dart --no-pub"
-                  description: Build a Debug Development for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_dev_apk:
-                  run: |
-                    fvm dart run melos exec -c 1 --fail-fast -- \
-                      "fvm flutter build apk --flavor dev -t lib/main_dev.dart --no-pub"
-                  description: Build a Release Development for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_staging_apk:
-                  run: |
-                    fvm dart run melos exec -c 1 --fail-fast -- \
-                      "fvm flutter build apk --flavor staging -t lib/main_staging.dart --no-pub"
-                  description: Build a Release Staging for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_prod_apk:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build apk --flavor production -t lib/main_production.dart --no-pub"
-                  description: Build a Release Production for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_dev_aab:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build appbundle --flavor dev -t lib/main_dev.dart --no-pub"
-                  description: Build a Release Development for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_staging_aab:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build appbundle --flavor staging -t lib/main_staging.dart --no-pub"
-                  description: Build a Release Staging for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_prod_aab:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build appbundle --flavor production -t lib/main_production.dart --no-pub"
-                  description: Build a Release Production for Android.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - android
-
-                generate_release_dev_ipa:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build ipa --flavor dev -t lib/main_dev.dart"
-                  description: Build a Release Development for iOS.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - ios
-
-                generate_release_staging_ipa:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build ipa --flavor staging -t lib/main_staging.dart"
-                  description: Build a Release Staging for iOS.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - ios
-
-                generate_release_prod_ipa:
-                  run: |
-                    fvm dart run melos exec -c 6 --fail-fast -- \
-                      "fvm flutter build ipa --flavor production -t lib/main_production.dart --no-pub"
-                  description: Build a Release Production for iOS.
-                  packageFilters:
-                    scope: 'app'
-                    dirExists:
-                      - ios
-
-                postclean: >
-                  fvm dart run melos exec -- \
-                    rm -rf ./pubspec.lock ./build ./android/.gradle ./ios/.symlinks ./ios/Pods ./android/.idea ./.idea ./.dart-tool/build ./lib/l10n/generated
-            "#};
-
-        let pubspec_content = pubspec_template
-            .replace("{project_name}", project_name)
-            .replace("{sdk_version}", &sdk_version);
+        let pubspec_content = template_content
+            .replace("{{project_name}}", &project_name)
+            .replace("{{sdk_version}}", &sdk_version);
 
         let mut pubspec_file = File::create("pubspec.yaml").expect("Failed to create pubspec.yaml");
         pubspec_file
             .write_all(pubspec_content.as_bytes())
             .expect("Failed to write pubspec.yaml");
-
-        println!("Adding Melos dependency...");
-        Command::run(&["flutter", "pub", "add", "melos", "--dev"]);
-        println!("Upgrading Melos to the latest version...");
-        Command::run(&["flutter", "pub", "upgrade", "melos"]);
-        println!("Running `flutter pub get`...");
-        Command::run(&["flutter", "pub", "get"]);
     }
 }
