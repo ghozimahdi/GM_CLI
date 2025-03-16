@@ -76,8 +76,8 @@ class NotificationHelper {
           channelDescription: androidNotificationChannel.description,
           importance: Importance.max,
           actions: actions,
-          color: colors
-              .primary, // TODO: Ensure this color matches your app's primary theme
+          // TODO: Ensure this color matches your app's primary theme
+          color: colors.primary,
           // Explanation: The icon color should be white because the notification will be displayed on dark backgrounds
           // and white icons provide better visibility and contrast. Additionally, it integrates well with the primary theme color.
         ),

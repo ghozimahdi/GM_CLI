@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:common/common.dart';
 import 'package:data_common/src/di/di.dart';
 
 class DataCommonConfig extends AppConfig {

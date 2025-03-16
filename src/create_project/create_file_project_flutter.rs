@@ -15,7 +15,7 @@ impl CreateFileProjectFlutter {
         Self::create_gitignore_in_app();
         Self::create_files_in_root();
         Self::generate_resource_files();
-        Self::generate_core_files();
+        Self::generate_common_files();
         Self::create_app_main_files();
         Self::create_flutter_run_config_in_root(project_name);
         Self::generate_feature_common_files();
@@ -274,22 +274,22 @@ impl CreateFileProjectFlutter {
         println!("All files and folders from resource successfully generated.");
     }
 
-    fn generate_core_files() {
-        let source_dir = "core";
-        let dest_lib_dir = "packages/library/core/lib";
-        let dest_env_dir = "packages/library/core";
-        let dest_pubspec_path = "packages/library/core/pubspec.yaml";
+    fn generate_common_files() {
+        let source_dir = "common";
+        let dest_lib_dir = "packages/library/common/lib";
+        let dest_env_dir = "packages/library/common";
+        let dest_pubspec_path = "packages/library/common/pubspec.yaml";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
         let lib_dir = ASSETS
             .get_dir(format!("{}/lib", source_dir))
-            .expect("Failed to find lib directory in core");
+            .expect("Failed to find lib directory in common");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
 
         let root_dir = ASSETS
             .get_dir(source_dir)
-            .expect("Failed to find core directory");
+            .expect("Failed to find common directory");
         Self::copy_contents_only(root_dir, Path::new(dest_env_dir));
 
         if let Some(flutter_gen_file) = root_dir
@@ -316,7 +316,7 @@ impl CreateFileProjectFlutter {
             eprintln!("flutter_env.yaml not found in resource directory!");
         }
 
-        println!("All files and folders from core successfully generated.");
+        println!("All files and folders from common successfully generated.");
     }
 
     fn generate_feature_common_files() {
