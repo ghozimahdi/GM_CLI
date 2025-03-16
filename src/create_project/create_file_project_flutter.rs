@@ -14,7 +14,6 @@ impl CreateFileProjectFlutter {
         Self::create_docs_in_root();
         Self::create_gitignore_in_app();
         Self::create_files_in_root();
-        Self::generate_resource_files();
         Self::generate_common_files();
         Self::create_app_main_files();
         Self::create_flutter_run_config_in_root(project_name);
@@ -235,45 +234,6 @@ impl CreateFileProjectFlutter {
         }
     }
 
-    fn generate_resource_files() {
-        let source_dir = "resource";
-        let dest_lib_dir = "packages/library/resource";
-        let dest_pubspec_path = "packages/library/resource/pubspec.yaml";
-
-        fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
-
-        let root_dir = ASSETS
-            .get_dir(source_dir)
-            .expect("Failed to find resource directory");
-        Self::copy_contents_only(root_dir, Path::new(dest_lib_dir));
-
-        if let Some(flutter_gen_file) = root_dir
-            .files()
-            .find(|f| f.path().file_name().unwrap() == "flutter_gen.yaml")
-        {
-            println!("Appending flutter_gen.yaml content to pubspec.yaml");
-
-            let mut existing_pubspec_content = String::new();
-            if Path::new(dest_pubspec_path).exists() {
-                if let Ok(content) = fs::read_to_string(dest_pubspec_path) {
-                    existing_pubspec_content = content;
-                }
-            }
-
-            let updated_content = format!(
-                "{}\n\n# Auto-generated flutter_gen configuration\n{}",
-                existing_pubspec_content,
-                String::from_utf8_lossy(flutter_gen_file.contents())
-            );
-
-            fs::write(dest_pubspec_path, updated_content).expect("Failed to update pubspec.yaml");
-        } else {
-            eprintln!("flutter_gen.yaml not found in resource directory!");
-        }
-
-        println!("All files and folders from resource successfully generated.");
-    }
-
     fn generate_common_files() {
         let source_dir = "common";
         let dest_lib_dir = "packages/library/common/lib";
@@ -322,6 +282,7 @@ impl CreateFileProjectFlutter {
     fn generate_feature_common_files() {
         let source_dir = "feature_common";
         let dest_lib_dir = "packages/presentation/feature_common";
+        let dest_pubspec_path = "packages/library/feature_common/pubspec.yaml";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 
@@ -329,6 +290,30 @@ impl CreateFileProjectFlutter {
             .get_dir(source_dir)
             .expect("Failed to find lib directory in feature_common");
         Self::copy_contents_only(lib_dir, Path::new(dest_lib_dir));
+
+        if let Some(flutter_gen_file) = lib_dir
+            .files()
+            .find(|f| f.path().file_name().unwrap() == "flutter_gen.yaml")
+        {
+            println!("Appending flutter_gen.yaml content to pubspec.yaml");
+
+            let mut existing_pubspec_content = String::new();
+            if Path::new(dest_pubspec_path).exists() {
+                if let Ok(content) = fs::read_to_string(dest_pubspec_path) {
+                    existing_pubspec_content = content;
+                }
+            }
+
+            let updated_content = format!(
+                "{}\n\n# Auto-generated flutter_gen configuration\n{}",
+                existing_pubspec_content,
+                String::from_utf8_lossy(flutter_gen_file.contents())
+            );
+
+            fs::write(dest_pubspec_path, updated_content).expect("Failed to update pubspec.yaml");
+        } else {
+            eprintln!("flutter_gen.yaml not found in resource directory!");
+        }
 
         println!("All files and folders from feature_common successfully generated.");
     }
