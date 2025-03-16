@@ -10,12 +10,12 @@ static ASSETS: Dir = include_dir!("assets");
 pub struct CreateFileProjectFlutter;
 
 impl CreateFileProjectFlutter {
-    pub fn build(project_name: &str, package_name: &str) {
+    pub fn build(project_name: &str, package_name: &str, app_path: &&str) {
         Self::create_docs_in_root();
-        Self::create_gitignore_in_app();
+        Self::create_gitignore_in_app(app_path);
         Self::create_files_in_root();
         Self::generate_common_files();
-        Self::create_app_main_files();
+        Self::create_app_main_files(app_path);
         Self::create_flutter_run_config_in_root(project_name);
         Self::generate_feature_common_files();
         Self::create_feature_auth_files();
@@ -24,13 +24,13 @@ impl CreateFileProjectFlutter {
         Self::generate_domain_auth_files();
         Self::generate_data_common_files();
         Self::generate_data_auth_files();
-        Self::generate_icon_logo_files();
-        Self::generate_flavorizr_yaml(project_name, package_name);
+        Self::generate_icon_logo_files(app_path);
+        Self::generate_flavorizr_yaml(project_name, package_name, app_path);
     }
 
-    fn create_app_main_files() {
+    fn create_app_main_files(app_path: &&str) {
         let source_dir = "app";
-        let dest_lib_dir = "packages/app";
+        let dest_lib_dir = app_path;
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create app lib directory");
 
@@ -39,19 +39,19 @@ impl CreateFileProjectFlutter {
             .expect("Failed to find resource directory");
         Self::copy_contents_only(root_dir, Path::new(dest_lib_dir));
 
-        let main_file_path = "packages/app/lib/main.dart";
+        let main_file_path = &format!("{}/lib/main.dart", app_path);
         if fs::metadata(main_file_path).is_ok() {
             println!("Removing file: {}", main_file_path);
             fs::remove_file(main_file_path).expect("Failed to remove main.dart");
         }
 
-        let widget_test_file_path = "packages/app/test/widget_test.dart";
+        let widget_test_file_path = &format!("{}/test/widget_test.dart", app_path);
         if fs::metadata(widget_test_file_path).is_ok() {
             println!("Removing file: {}", widget_test_file_path);
             fs::remove_file(widget_test_file_path).expect("Failed to remove widget_test.dart");
         }
 
-        let pubspec_path = "packages/app/pubspec.yaml";
+        let pubspec_path = &format!("{}/pubspec.yaml", app_path);
         if Path::new(pubspec_path).exists() {
             println!("Updating pubspec.yaml at {}", pubspec_path);
 
@@ -113,9 +113,9 @@ impl CreateFileProjectFlutter {
         println!("All files and folders from feature_dashboard successfully generated.");
     }
 
-    fn generate_icon_logo_files() {
+    fn generate_icon_logo_files(app_path: &str) {
         let icon_logo = "ic_logo.png";
-        let drawable_path = "packages/app/android/app/src/main/res/drawable";
+        let drawable_path = &format!("{}/android/app/src/main/res/drawable", app_path);
         let file_path = format!("{}/{}", drawable_path, icon_logo);
 
         let file = ASSETS
@@ -128,8 +128,7 @@ impl CreateFileProjectFlutter {
         fs::write(&file_path, file.contents()).expect("Failed to generate icon_logo file");
     }
 
-    fn create_gitignore_in_app() {
-        let app_path = "packages/app";
+    fn create_gitignore_in_app(app_path: &str) {
         let gitignore_path = format!("{}/.gitignore", app_path);
 
         let file = ASSETS
@@ -388,8 +387,8 @@ impl CreateFileProjectFlutter {
             .join(" ")
     }
 
-    fn generate_flavorizr_yaml(project_name: &str, package_name: &str) {
-        let module_dir = "packages/app";
+    fn generate_flavorizr_yaml(project_name: &str, package_name: &str, app_path: &&str) {
+        let module_dir = app_path;
         let file_path = format!("{}/flavorizr.yaml", module_dir);
 
         if !Path::new(module_dir).exists() {
@@ -398,78 +397,15 @@ impl CreateFileProjectFlutter {
 
         let formatted_project_name = Self::format_project_name(project_name);
 
-        let flavorizr_content = indoc! {r#"
-            app:
-              android:
-                flavorDimensions: "flavor-type"
+        let template_content = ASSETS
+            .get_file("flavorizr.yaml")
+            .expect("Failed to read flavorizr template from assets")
+            .contents_utf8()
+            .expect("Failed to convert flavorizr template to UTF-8");
 
-            flavors:
-              dev:
-                app:
-                  name: "{project_name} Dev"
-
-                android:
-                  icon: "assets/icons/android_app_dev.png"
-                  applicationId: "{package_name}.dev"
-                ios:
-                  icon: "assets/icons/ios_app_dev.png"
-                  bundleId: "{package_name}.dev"
-
-              staging:
-                app:
-                  name: "{project_name} Stg"
-
-                android:
-                  icon: "assets/icons/android_app_stg.png"
-                  applicationId: "{package_name}.staging"
-                ios:
-                  icon: "assets/icons/ios_app_stg.png"
-                  bundleId: "{package_name}.staging"
-
-              prod:
-                app:
-                  name: "{project_name}"
-
-                android:
-                  icon: "assets/icons/android_app_prod.png"
-                  applicationId: "{package_name}"
-                ios:
-                  icon: "assets/icons/ios_app_prod.png"
-                  bundleId: "{package_name}"
-
-            ide: idea
-
-            instructions:
-              - assets:download
-              - assets:extract
-              - android:androidManifest
-              - android:buildGradle
-              - android:dummyAssets
-              - android:icons
-              - ios:podfile
-              - ios:xcconfig
-              - ios:buildTargets
-              - ios:schema
-              - ios:dummyAssets
-              - ios:icons
-              - ios:plist
-              - ios:launchScreen
-              - macos:podfile
-              - macos:xcconfig
-              - macos:configs
-              - macos:buildTargets
-              - macos:schema
-              - macos:dummyAssets
-              - macos:icons
-              - macos:plist
-              - google:firebase
-              - huawei:agconnect
-              - assets:clean
-              - ide:config
-
-        "#}
-        .replace("{project_name}", &formatted_project_name)
-        .replace("{package_name}", package_name);
+        let flavorizr_content = template_content
+            .replace("{project_name}", &formatted_project_name)
+            .replace("{package_name}", package_name);
 
         let mut file = fs::File::create(&file_path).expect("Failed to create flavorizr.yaml");
         file.write_all(flavorizr_content.as_bytes())
