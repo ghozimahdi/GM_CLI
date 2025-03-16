@@ -24,8 +24,8 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          'Hello! I thought you’d never show up! 😅',
-          style: res.textTheme.titleLarge,
+          cw.loginDesc,
+          style: textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
       ),

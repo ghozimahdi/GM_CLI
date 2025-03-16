@@ -1,5 +1,4 @@
 import 'package:chucker_flutter/chucker_flutter.dart';
-import 'package:common/common.dart';
 import 'package:data_common/src/network/dio_error_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +10,6 @@ abstract class NetworkModule {
   Dio get dioProd {
     final dio = Dio(
       BaseOptions(
-        baseUrl: AppEnv.env.baseUrl,
         connectTimeout: const Duration(milliseconds: 20000),
         sendTimeout: const Duration(milliseconds: 30000),
         receiveTimeout: const Duration(milliseconds: 30000),
@@ -38,7 +36,6 @@ abstract class NetworkModule {
   Dio get dio {
     final dio = Dio(
       BaseOptions(
-        baseUrl: AppEnv.env.baseUrl,
         connectTimeout: const Duration(milliseconds: 20000),
         sendTimeout: const Duration(milliseconds: 30000),
         receiveTimeout: const Duration(milliseconds: 30000),

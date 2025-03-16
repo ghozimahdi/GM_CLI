@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:app/firebase/notification_helper_ext.dart';
+import 'package:feature_common/feature_common.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
-import 'package:resource/resource.dart';
 
 @singleton
 class NotificationHelper {
@@ -44,13 +44,15 @@ class NotificationHelper {
     if (Platform.isIOS) {
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
+          IOSFlutterLocalNotificationsPlugin
+      >()
           ?.requestPermissions();
     }
     if (Platform.isAndroid) {
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+      >()
           ?.createNotificationChannel(androidNotificationChannel);
     }
   }
