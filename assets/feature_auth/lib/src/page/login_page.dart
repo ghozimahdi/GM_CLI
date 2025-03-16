@@ -3,27 +3,20 @@ import 'package:feature_auth/src/config/feature_auth_route.gr.dart';
 import 'package:feature_common/feature_common.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
-import 'package:resource/resource.dart';
 
 @Injectable(as: LoginRouteProvider)
 class LoginRouteProviderImpl implements LoginRouteProvider {
   @override
-  PageRouteInfo route({
-    required String name,
-  }) {
-    return LoginRoute(
-      name: name,
-    );
+  PageRouteInfo route() {
+    return const LoginRoute();
   }
 }
 
 @RoutePage()
 class LoginPage extends StatelessWidget {
-  final String name;
 
   const LoginPage({
     super.key,
-    required this.name,
   });
 
   @override
@@ -31,7 +24,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          'Hello $name! I thought you’d never show up! 😅',
+          'Hello! I thought you’d never show up! 😅',
           style: res.textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),

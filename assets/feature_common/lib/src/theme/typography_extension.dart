@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:resource/resource.dart';
 
 extension HeadlineTextThemeExt on TextTheme {
+  TextStyle? get headlineLargeSemiBold => headlineLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+      );
+
+  TextStyle? get headlineLargeBold => headlineLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+      );
+
+  TextStyle? get headlineLargeRegular => headlineLarge;
+
+  TextStyle? get headlineMediumSemiBold => headlineMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+      );
+
+  TextStyle? get headlineMediumBold => headlineMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+      );
+
+  TextStyle? get headlineMediumRegular => headlineMedium;
+
   TextStyle? get headlineSmallSemiBold => headlineSmall?.copyWith(
         fontWeight: FontWeight.w600,
       );
@@ -82,14 +101,9 @@ extension BodyTextThemeExt on TextTheme {
         fontWeight: FontWeight.w600,
       );
 
-  TextStyle? get bodySmallBold => bodySmall?.copyWith(
-        fontWeight: FontWeight.w700,
-      );
-
   TextStyle? get bodySmallRegular => bodySmall;
 
   TextStyle? get bodySmallUnderline => bodySmall?.copyWith(
-        color: colors.semanticSuccess.shade700,
         decoration: TextDecoration.underline,
         decorationThickness: 1,
       );
