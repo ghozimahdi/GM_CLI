@@ -100,6 +100,7 @@ packages/library/core/.env_*
 
 # Linux related (it's optional). This is temporary solution
 **/linux/
+generated
 
 # FVM Version Cache
 .fvm/

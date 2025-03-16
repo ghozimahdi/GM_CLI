@@ -11,7 +11,7 @@ class FlavorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppEnv.currentFlavor != Flavor.prod
+    return AppEnv.flavor != Flavor.prod
         ? Banner(
             location: BannerLocation.topStart,
             message: AppEnv.flavorName,

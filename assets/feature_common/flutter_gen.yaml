@@ -29,9 +29,7 @@ flutter_gen:
 flutter:
   assets:
     - assets/icons/
-    - assets/translations/
     - assets/images/
-    - assets/themes/
 
   fonts:
     - family: Inter

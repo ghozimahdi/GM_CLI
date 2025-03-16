@@ -1,5 +1,5 @@
+import 'package:feature_common/src/theme/color_schemes.dart';
 import 'package:flutter/material.dart';
-import 'package:resource/resource.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AppShimmer extends StatelessWidget {
@@ -13,15 +13,15 @@ class AppShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: colors.addOn.grey,
-      highlightColor: colors.surface.white,
+      baseColor: colors.lightGray,
+      highlightColor: colors.white,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(
           borderRadius,
         ),
         child: Container(
-          decoration: BoxDecoration(
-            color: colors.addOn.grey,
+          decoration: const BoxDecoration(
+            color: colors.lightGray,
           ),
         ),
       ),
