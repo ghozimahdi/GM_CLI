@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:app/app_router.dart';
 import 'package:app/injector.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:common/common.dart';
 import 'package:data_common/data_common.dart';
 import 'package:feature_common/feature_common.dart';
@@ -79,6 +80,7 @@ class _MyAppState extends State<MyApp> {
             routerConfig: _appRouter.config(
               navigatorObservers: () => [
                 ChuckerFlutter.navigatorObserver,
+                AutoRouteObserver(),
               ],
             ),
             title: AppEnv.title,
