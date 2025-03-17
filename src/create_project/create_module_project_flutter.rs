@@ -53,6 +53,7 @@ impl CreateModuleProjectFlutter {
             "./packages/data/data_common",
             vec![
                 "dio",
+                "retrofit",
                 "chucker_flutter",
                 "freezed_annotation",
                 "json_annotation",
@@ -62,6 +63,7 @@ impl CreateModuleProjectFlutter {
             ],
             vec![
                 "lint",
+                "retrofit_generator",
                 "json_serializable",
                 "injectable_generator",
                 "freezed",
@@ -77,6 +79,7 @@ impl CreateModuleProjectFlutter {
             "./packages/data/data_auth",
             vec![
                 "dio",
+                "retrofit",
                 "injectable",
                 "get_it",
                 "freezed_annotation",
@@ -84,6 +87,7 @@ impl CreateModuleProjectFlutter {
             ],
             vec![
                 "lint",
+                "retrofit_generator",
                 "json_serializable",
                 "injectable_generator",
                 "freezed",
