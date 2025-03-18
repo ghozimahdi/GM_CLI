@@ -495,7 +495,7 @@ impl CreateSingleModuleProjectFlutter {
 
               @POST('/v1/path')
               Future<void> example({
-                @Field('action') required String? action,
+                @Field('action') required String action,
               });
             }
         "#}
