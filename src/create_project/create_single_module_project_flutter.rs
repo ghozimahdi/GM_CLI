@@ -749,7 +749,7 @@ impl CreateSingleModuleProjectFlutter {
 
         let file_content = indoc! {r#"
             export 'src/config/{module_name}_config.dart';
-            export 'src/config/{module_name}_route.dart';
+            export 'src/config/{module_name}_route.gr.dart';
         "#}
         .replace("{module_name}", module_name);
 
