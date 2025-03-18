@@ -99,9 +99,12 @@ impl CreateSingleModuleProjectFlutter {
                         "get_it",
                         "freezed_annotation",
                         "json_annotation",
+                        "dio",
+                        "retrofit",
                     ],
                     vec![
                         "lint",
+                        "retrofit_generator",
                         "json_serializable",
                         "injectable_generator",
                         "freezed",
@@ -372,6 +375,10 @@ impl CreateSingleModuleProjectFlutter {
 
         Self::generated_di(&format!("{}/lib/src/di", dest_lib_dir), module_name);
         Self::generated_config(&format!("{}/lib/src/config", dest_lib_dir), module_name);
+        Self::generated_data_source(
+            &format!("{}/lib/src/data_source", dest_lib_dir),
+            module_name,
+        );
         Self::generated_exposed_file(&format!("{}/lib", dest_lib_dir), module_name)
     }
 
@@ -441,6 +448,59 @@ impl CreateSingleModuleProjectFlutter {
         "#}
         .replace("{module_name}", module_name)
         .replace("{class_name}", &class_name);
+
+        let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
+
+        file.write_all(file_content.as_bytes())
+            .expect(&format!("Failed to generate to {}", file_name));
+
+        println!(
+            "{} has been successfully generated at {}",
+            file_name, file_path
+        );
+    }
+
+    fn generated_data_source(module_dir: &str, module_name: &str) {
+        let name = module_name.strip_prefix("data_").unwrap_or(module_name);
+
+        let class_name = format!(
+            "{}{}",
+            name.chars().next().unwrap().to_uppercase(),
+            &name[1..]
+        );
+
+        let file_name = format!("{}_data_source", name);
+        let file_path = format!("{}/{}.dart", module_dir, file_name);
+
+        if !Path::new(module_dir).exists() {
+            fs::create_dir_all(module_dir).expect("Failed to create the module directory");
+        }
+
+        let file_content = indoc! {r#"
+            import 'package:data_common/data_common.dart';
+            import 'package:dio/dio.dart';
+            import 'package:injectable/injectable.dart';
+            import 'package:retrofit/retrofit.dart';
+
+            part '{name}_data_source.g.dart';
+
+            @lazySingleton
+            @RestApi()
+            abstract class {class_name}DataSource {
+              @factoryMethod
+              factory {class_name}DataSource(Dio dio, DataSourceConfig config) => _{class_name}DataSource(
+                    dio,
+                    baseUrl: config.baseUrl,
+                  );
+
+              @POST('/v1/path')
+              Future<void> example({
+                @Field('action') required String? action,
+              });
+            }
+        "#}
+            .replace("{name}", name)
+            .replace("{class_name}", &class_name);
 
         let mut file = File::create(&file_path).expect(&format!("Failed to create {}", file_name));
 
