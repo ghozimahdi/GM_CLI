@@ -646,10 +646,7 @@ impl CreateSingleModuleProjectFlutter {
             import 'package:auto_route/auto_route.dart';
 
             @AutoRouterConfig()
-            class {class_name} extends RootStackRouter {
-              @override
-              List<AutoRoute> get routes => [];
-            }
+            abstract class {class_name} {}
 
         "#}
         .replace("{class_name}", &class_name);
