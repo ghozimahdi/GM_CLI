@@ -1,7 +1,10 @@
 use crate::command::Command;
+use crate::create_project::create_single_module_project_flutter::CreateSingleModuleProjectFlutter;
+use dialoguer::Input;
 use include_dir::{include_dir, Dir};
 use indoc::indoc;
 use std::fs;
+use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 
@@ -26,6 +29,54 @@ impl CreateFileProjectFlutter {
         Self::generate_data_auth_files();
         Self::generate_icon_logo_files(app_path);
         Self::generate_flavorizr_yaml(project_name, package_name, app_path);
+    }
+
+    fn pascal_case(snake: &str) -> String {
+        snake
+            .split('_')
+            .map(|word| {
+                let mut chars = word.chars();
+                match chars.next() {
+                    Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+                    None => String::new(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("")
+    }
+
+    pub fn create_abstract_route() {
+        let name: String = Input::new()
+            .with_prompt("Enter route name (e.g., filter)")
+            .interact_text()
+            .unwrap();
+
+        let full_name_snake = format!("{}_route_provider", name);
+        let full_name_pascal = Self::pascal_case(&full_name_snake);
+
+        let template_content = ASSETS
+            .get_file("abstract_route_provider_template.dart")
+            .expect("Failed to read template from assets")
+            .contents_utf8()
+            .expect("Failed to convert template to UTF-8");
+
+        let pubspec_content = template_content.replace("{{class_name}}", &full_name_pascal);
+
+        let file_name = format!("{}.dart", full_name_snake);
+        let file_route = format!(
+            "packages/presentation/feature_common/lib/src/route/{}",
+            file_name
+        );
+
+        let mut output_file =
+            File::create(&file_route).expect("Failed to create the route provider file");
+        output_file
+            .write_all(pubspec_content.as_bytes())
+            .expect("Failed to write route provider file");
+
+        CreateSingleModuleProjectFlutter::update_feature_common_export(&file_name);
+
+        println!("✅ {} successfully generated and formatted!", file_name);
     }
 
     fn create_app_main_files(app_path: &&str) {

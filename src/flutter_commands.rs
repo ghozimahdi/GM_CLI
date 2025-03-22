@@ -1,5 +1,5 @@
 use crate::module_manager::ModuleManager;
-use crate::{flutter_gen_runner, gen_easy_localization};
+use crate::{flutter_gen_runner, gen_localization};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
 use std::path::Path;
@@ -39,14 +39,14 @@ impl FlutterCommandHandler {
             Self::flutter_build_runner();
         }
         if matches.get_flag("localize") {
-            gen_easy_localization::easy_localization();
+            gen_localization::intl_localization();
         }
         if matches.get_flag("assets") {
             flutter_gen_runner::gen_assets();
         }
         if matches.get_flag("all") {
             Self::flutter_build_runner();
-            gen_easy_localization::easy_localization();
+            gen_localization::intl_localization();
             flutter_gen_runner::gen_assets();
         }
     }

@@ -587,7 +587,10 @@ impl CreateSingleModuleProjectFlutter {
             file_name, file_path
         );
 
-        // Update route in feature_common
+        Self::update_feature_common_export(&file_name);
+    }
+
+    pub fn update_feature_common_export(file_name: &str) {
         let feature_common_path = "packages/presentation/feature_common/lib/feature_common.dart";
 
         let mut feature_common_content = if Path::new(feature_common_path).exists() {
