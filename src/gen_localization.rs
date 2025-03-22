@@ -6,21 +6,16 @@ use std::{
     time::Duration,
 };
 
-pub fn easy_localization() {
-    println!("{}", "Generating easy_localization files...".green());
+pub fn intl_localization() {
+    println!("{}", "Generating intl_utils files...".green());
 
     let mut child = StdCommand::new("melos")
         .arg("exec")
-        .arg("--depends-on=easy_localization")
+        .arg("--depends-on=intl_utils")
         .arg("--")
-        .arg("flutter")
-        .arg("pub")
+        .arg("dart")
         .arg("run")
-        .arg("easy_localization:generate")
-        .arg("-f")
-        .arg("keys")
-        .arg("-S")
-        .arg("assets/translations")
+        .arg("intl_utils:generate")
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()

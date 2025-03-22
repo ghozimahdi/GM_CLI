@@ -1,5 +1,6 @@
 extern crate core;
 
+use crate::create_project::create_file_project_flutter::CreateFileProjectFlutter;
 use crate::create_project::create_project_flutter::CreateProjectFlutter;
 use crate::create_project::create_single_module_project_flutter::CreateSingleModuleProjectFlutter;
 use crate::flutter_build_app::FlutterBuildApp;
@@ -16,7 +17,7 @@ pub mod command;
 mod flutter_build_app;
 mod flutter_commands;
 mod flutter_gen_runner;
-mod gen_easy_localization;
+mod gen_localization;
 mod header;
 mod module_manager;
 mod table;
@@ -100,6 +101,9 @@ fn main() {
                 .about("Show gratitude and support the development of this CLI tool"),
         )
         .subcommand(
+            Command::new("route").about("Automatically generate route files for Flutter project"),
+        )
+        .subcommand(
             Command::new("info")
                 .about("Displays prerequisites and usage instructions for the gm CLI"),
         )
@@ -115,7 +119,7 @@ fn main() {
                 .short('l')
                 .long("localize")
                 .action(ArgAction::SetTrue)
-                .help("Generate easy_localization files"),
+                .help("Generate intl_localization files"),
         )
         .arg(
             Arg::new("assets")
@@ -139,7 +143,7 @@ fn main() {
                 .help("Flutter Pub Get for single module"),
         )
         .arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help(
-            "Run build_runner, generate easy_localization, and assets after selecting a module",
+            "Run build_runner, generate intl_localization, and assets after selecting a module",
         ))
         .get_matches();
 
@@ -154,6 +158,7 @@ fn main() {
         Some(("build", _)) => FlutterCommandHandler::flutter_build_runner(),
         Some(("app", _)) => FlutterBuildApp::build_app(),
         Some(("donate", _)) => show_donate(),
+        Some(("route", _)) => CreateFileProjectFlutter::create_abstract_route(),
         Some(("info", _)) => show_info(),
         Some(("flutter", sub)) | Some(("dart", sub)) => {
             let cmd_parts: Vec<&str> = sub
