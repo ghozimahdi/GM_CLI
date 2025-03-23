@@ -1,4 +1,5 @@
 export 'package:chucker_flutter/chucker_flutter.dart';
+export 'package:shared_preferences/shared_preferences.dart';
 
 export 'src/config/data_common_config.dart';
 export 'src/config/data_source_config.dart';
