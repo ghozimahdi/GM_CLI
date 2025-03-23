@@ -493,9 +493,9 @@ impl CreateSingleModuleProjectFlutter {
                     baseUrl: config.baseUrl,
                   );
 
-              @POST('/v1/path')
-              Future<void> example({
-                @Field('action') required String action,
+              @GET('/v1/path')
+              Future<void> getExample({
+                @Query('query') required String query,
               });
             }
         "#}
