@@ -75,6 +75,9 @@ class _MyAppState extends State<MyApp> {
         statusBarIconBrightness: Brightness.dark,
       ),
       child: ScreenUtilInit(
+        // TODO: Please ensure this follows your Figma guidelines
+        //  and aligns with the base frame used in your Figma design.
+        designSize: const Size(360, 768),
         builder: (context, child) {
           return MaterialApp.router(
             routerConfig: _appRouter.config(
