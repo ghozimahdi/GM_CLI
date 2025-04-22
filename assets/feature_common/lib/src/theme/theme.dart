@@ -4,7 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final ThemeData lightTheme = ThemeData.light(useMaterial3: true).copyWith(
   colorScheme: lightColorSchemes,
-  textTheme: textTheme,
+  textTheme: textTheme.apply(
+    bodyColor: colors.primaryText,
+    displayColor: colors.primaryText,
+  ),
   scaffoldBackgroundColor: lightColorSchemes.surface,
   dividerColor: lightColorSchemes.outline,
   listTileTheme: const ListTileThemeData(
