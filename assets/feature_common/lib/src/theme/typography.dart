@@ -42,6 +42,4 @@ final textTheme = TextTheme(
   ),
 ).apply(
   fontFamily: AppFonts.inter,
-  bodyColor: colors.primaryText,
-  displayColor: colors.primaryText,
 );
