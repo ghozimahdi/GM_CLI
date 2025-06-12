@@ -6,7 +6,7 @@ environment:
   {{sdk_version}}
 
 dev_dependencies:
-  melos: ^7.0.0-dev.7
+  melos: ^7.0.0-dev.9
 
 workspace:
   - app
@@ -46,11 +46,11 @@ melos:
           - ios
 
     generate:flavors:
-      run: fvm dart run melos exec --depends-on="flutter_flavorizr" -- "fvm dart run flutter_flavorizr"
+      run: fvm dart run melos exec --depends-on="flutter_flavorizr" -- "fvm dart run flutter_flavorizr -f"
       description: "Run flutter_flavorizr with depends-on"
 
     generate:flavors::assets:
-      run: fvm dart run melos exec --depends-on="flutter_flavorizr" -- "fvm dart run flutter_flavorizr -p assets:download,assets:extract"
+      run: fvm dart run melos exec --depends-on="flutter_flavorizr" -- "fvm dart run flutter_flavorizr -p -f assets:download,assets:extract"
       description: "Run flutter_flavorizr for downloading and extracting assets"
 
     generate:domain_common:

@@ -52,7 +52,7 @@ final ThemeData lightTheme = ThemeData.light(useMaterial3: true).copyWith(
       color: lightColorSchemes.tertiary,
     ),
   ),
-  tabBarTheme: TabBarTheme(
+  tabBarTheme: TabBarThemeData(
     splashFactory: NoSplash.splashFactory,
     indicatorSize: TabBarIndicatorSize.tab,
     indicatorColor: lightColorSchemes.secondary,
