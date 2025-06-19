@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP_NAME="gm"
-VERSION="3.0.0"
+VERSION="3.0.1"
 RELEASE_URL="https://github.com/ghozimahdi/homebrew-ghozimahdi-cli/releases/download/v$VERSION"
 
 # Platform targets
