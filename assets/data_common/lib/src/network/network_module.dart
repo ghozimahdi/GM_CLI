@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class NetworkModule {
-  @LazySingleton(env: [Environment.prod])
+  @Singleton(env: [Environment.prod])
   Dio get dioProd {
     final dio = Dio(
       BaseOptions(
@@ -32,7 +32,7 @@ abstract class NetworkModule {
     return dio;
   }
 
-  @LazySingleton(env: [Environment.dev, Environment.test])
+  @Singleton(env: [Environment.dev, Environment.test])
   Dio get dio {
     final dio = Dio(
       BaseOptions(

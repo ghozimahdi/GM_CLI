@@ -1,6 +1,6 @@
 [package]
 name = "gm"
-version = "3.0.1"
+version = "3.0.2"
 description = "Ghozi Mahdi CLI"
 authors = ["Ghozi Mahdi"]
 edition = "2021"

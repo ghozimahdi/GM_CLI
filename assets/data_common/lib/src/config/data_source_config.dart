@@ -19,7 +19,7 @@ abstract interface class DataSourceConfig {
   abstract final String iosFirebaseClientId;
 }
 
-@Injectable(
+@LazySingleton(
   as: DataSourceConfig,
   env: [
     Environment.dev,
@@ -79,7 +79,7 @@ class DevDataSourceConfig implements DataSourceConfig {
   String get iosFirebaseStorageBucket => throw UnimplementedError();
 }
 
-@Injectable(as: DataSourceConfig, env: [Environment.prod])
+@LazySingleton(as: DataSourceConfig, env: [Environment.prod])
 class ProdDataSourceConfig implements DataSourceConfig {
   @override
   String get baseUrl => 'https://www.ghozimahdi.com';

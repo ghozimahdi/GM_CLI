@@ -4,7 +4,7 @@ import 'package:domain_auth/domain_auth.dart';
 import 'package:domain_common/domain_common.dart';
 import 'package:injectable/injectable.dart';
 
-@Injectable(as: AuthRepository)
+@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl extends AuthRepository with FailureHandlerMixin {
   final AuthDataSource _authDataSource;
   final SharedPreferenceDataSource _preferenceDataSource;

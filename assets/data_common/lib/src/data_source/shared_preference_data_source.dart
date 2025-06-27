@@ -11,7 +11,7 @@ abstract class SharedPreferenceDataSource {
   Future<bool> clearAllData();
 }
 
-@Injectable(as: SharedPreferenceDataSource)
+@LazySingleton(as: SharedPreferenceDataSource)
 class SharedPreferenceDataSourceImpl extends SharedPreferenceDataSource {
   final SharedPreferences sharedPreferences;
 

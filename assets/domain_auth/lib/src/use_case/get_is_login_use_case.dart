@@ -1,7 +1,7 @@
 import 'package:domain_auth/domain_auth.dart';
 import 'package:injectable/injectable.dart';
 
-@injectable
+@lazySingleton
 class GetIsLoginUseCase {
   final AuthRepository _repository;
 
