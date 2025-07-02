@@ -4,17 +4,15 @@ abstract interface class DataSourceConfig {
   abstract final String baseUrl;
 
   // Firebase keys
+  abstract final String firebaseMessagingSenderId;
+  abstract final String firebaseProjectId;
+  abstract final String firebaseStorageBucket;
+
   abstract final String androidFirebaseApiKey;
   abstract final String androidFirebaseAppId;
-  abstract final String androidFirebaseMessagingSenderId;
-  abstract final String androidFirebaseProjectId;
-  abstract final String androidFirebaseStorageBucket;
 
   abstract final String iosFirebaseApiKey;
   abstract final String iosFirebaseAppId;
-  abstract final String iosFirebaseMessagingSenderId;
-  abstract final String iosFirebaseProjectId;
-  abstract final String iosFirebaseStorageBucket;
   abstract final String iosFirebaseBundleId;
   abstract final String iosFirebaseClientId;
 }
@@ -39,18 +37,6 @@ class DevDataSourceConfig implements DataSourceConfig {
   String get androidFirebaseAppId => throw UnimplementedError();
 
   @override
-  // TODO: implement androidFirebaseMessagingSenderId
-  String get androidFirebaseMessagingSenderId => throw UnimplementedError();
-
-  @override
-  // TODO: implement androidFirebaseProjectId
-  String get androidFirebaseProjectId => throw UnimplementedError();
-
-  @override
-  // TODO: implement androidFirebaseStorageBucket
-  String get androidFirebaseStorageBucket => throw UnimplementedError();
-
-  @override
   // TODO: implement iosFirebaseApiKey
   String get iosFirebaseApiKey => throw UnimplementedError();
 
@@ -67,16 +53,16 @@ class DevDataSourceConfig implements DataSourceConfig {
   String get iosFirebaseClientId => throw UnimplementedError();
 
   @override
-  // TODO: implement iosFirebaseMessagingSenderId
-  String get iosFirebaseMessagingSenderId => throw UnimplementedError();
+  // TODO: implement firebaseMessagingSenderId
+  String get firebaseMessagingSenderId => throw UnimplementedError();
 
   @override
-  // TODO: implement iosFirebaseProjectId
-  String get iosFirebaseProjectId => throw UnimplementedError();
+  // TODO: implement firebaseProjectId
+  String get firebaseProjectId => throw UnimplementedError();
 
   @override
-  // TODO: implement iosFirebaseStorageBucket
-  String get iosFirebaseStorageBucket => throw UnimplementedError();
+  // TODO: implement firebaseStorageBucket
+  String get firebaseStorageBucket => throw UnimplementedError();
 }
 
 @LazySingleton(as: DataSourceConfig, env: [Environment.prod])
@@ -93,18 +79,6 @@ class ProdDataSourceConfig implements DataSourceConfig {
   String get androidFirebaseAppId => throw UnimplementedError();
 
   @override
-  // TODO: implement androidFirebaseMessagingSenderId
-  String get androidFirebaseMessagingSenderId => throw UnimplementedError();
-
-  @override
-  // TODO: implement androidFirebaseProjectId
-  String get androidFirebaseProjectId => throw UnimplementedError();
-
-  @override
-  // TODO: implement androidFirebaseStorageBucket
-  String get androidFirebaseStorageBucket => throw UnimplementedError();
-
-  @override
   // TODO: implement iosFirebaseApiKey
   String get iosFirebaseApiKey => throw UnimplementedError();
 
@@ -121,14 +95,14 @@ class ProdDataSourceConfig implements DataSourceConfig {
   String get iosFirebaseClientId => throw UnimplementedError();
 
   @override
-  // TODO: implement iosFirebaseMessagingSenderId
-  String get iosFirebaseMessagingSenderId => throw UnimplementedError();
+  // TODO: implement firebaseMessagingSenderId
+  String get firebaseMessagingSenderId => throw UnimplementedError();
 
   @override
-  // TODO: implement iosFirebaseProjectId
-  String get iosFirebaseProjectId => throw UnimplementedError();
+  // TODO: implement firebaseProjectId
+  String get firebaseProjectId => throw UnimplementedError();
 
   @override
-  // TODO: implement iosFirebaseStorageBucket
-  String get iosFirebaseStorageBucket => throw UnimplementedError();
+  // TODO: implement firebaseStorageBucket
+  String get firebaseStorageBucket => throw UnimplementedError();
 }
