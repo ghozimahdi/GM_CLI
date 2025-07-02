@@ -10,9 +10,13 @@ flavors:
     android:
       icon: "assets/icons/android_app_dev.png"
       applicationId: "{package_name}.dev"
+#      firebase:
+#        config: ".firebase/dev/google-services.json"
     ios:
       icon: "assets/icons/ios_app_dev.png"
       bundleId: "{package_name}.dev"
+#      firebase:
+#        config: ".firebase/dev/GoogleService-Info.plist"
 
   staging:
     app:
@@ -21,9 +25,13 @@ flavors:
     android:
       icon: "assets/icons/android_app_stg.png"
       applicationId: "{package_name}.staging"
+#      firebase:
+#        config: ".firebase/staging/google-services.json"
     ios:
       icon: "assets/icons/ios_app_stg.png"
       bundleId: "{package_name}.staging"
+#      firebase:
+#        config: ".firebase/staging/GoogleService-Info.plist"
 
   prod:
     app:
@@ -32,9 +40,13 @@ flavors:
     android:
       icon: "assets/icons/android_app_prod.png"
       applicationId: "{package_name}"
+#      firebase:
+#        config: ".firebase/prod/google-services.json"
     ios:
       icon: "assets/icons/ios_app_prod.png"
       bundleId: "{package_name}"
+#      firebase:
+#        config: ".firebase/prod/GoogleService-Info.plist"
 
 ide: idea
 
