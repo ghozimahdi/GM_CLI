@@ -286,9 +286,9 @@ impl CreateFileProjectFlutter {
 
     fn generate_common_files() {
         let source_dir = "common";
-        let dest_lib_dir = "packages/library/common/lib";
-        let dest_env_dir = "packages/library/common";
-        let dest_pubspec_path = "packages/library/common/pubspec.yaml";
+        let dest_lib_dir = "packages/library/library_common/lib";
+        let dest_env_dir = "packages/library/library_common";
+        let dest_pubspec_path = "packages/library/library_common/pubspec.yaml";
 
         fs::create_dir_all(dest_lib_dir).expect("Failed to create lib directory");
 

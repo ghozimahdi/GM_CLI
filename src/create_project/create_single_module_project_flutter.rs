@@ -76,7 +76,7 @@ impl CreateSingleModuleProjectFlutter {
                         "lint",
                     ],
                     vec![
-                        ("common", "../../library/common"),
+                        ("library_common", "../../library/library_common"),
                         ("feature_common", "../../presentation/feature_common"),
                         ("domain_common", "../../domain/domain_common"),
                     ],
@@ -111,7 +111,7 @@ impl CreateSingleModuleProjectFlutter {
                         "build_runner",
                     ],
                     vec![
-                        ("common", "../../library/common"),
+                        ("library_common", "../../library/library_common"),
                         ("data_common", "../../data/data_common"),
                         ("domain_common", "../../domain/domain_common"),
                     ],
@@ -132,7 +132,7 @@ impl CreateSingleModuleProjectFlutter {
                     vec!["injectable", "get_it", "freezed_annotation"],
                     vec!["lint", "injectable_generator", "build_runner", "freezed"],
                     vec![
-                        ("common", "../../library/common"),
+                        ("library_common", "../../library/library_common"),
                         ("domain_common", "../../domain/domain_common"),
                     ],
                 );

@@ -21,8 +21,8 @@ impl CreateModuleProjectFlutter {
         println!("{}", "Configuring other modules...".yellow());
         // Library
         Self::create_module(
-            "common",
-            "./packages/library/common",
+            "library_common",
+            "./packages/library/library_common",
             vec!["injectable", "async:^2.11.0"],
             vec!["injectable_generator", "build_runner", "lint"],
             vec![],
@@ -34,7 +34,7 @@ impl CreateModuleProjectFlutter {
             "./packages/domain/domain_common",
             vec!["injectable", "get_it", "freezed_annotation"],
             vec!["lint", "injectable_generator", "build_runner", "freezed"],
-            vec![("common", "../../library/common")],
+            vec![("library_common", "../../library/library_common")],
         );
         Self::create_module(
             "domain_auth",
@@ -42,7 +42,7 @@ impl CreateModuleProjectFlutter {
             vec!["injectable", "get_it", "freezed_annotation"],
             vec!["lint", "injectable_generator", "build_runner", "freezed"],
             vec![
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
                 ("domain_common", "../../domain/domain_common"),
             ],
         );
@@ -70,7 +70,7 @@ impl CreateModuleProjectFlutter {
                 "build_runner",
             ],
             vec![
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
                 ("domain_common", "../../domain/domain_common"),
             ],
         );
@@ -94,7 +94,7 @@ impl CreateModuleProjectFlutter {
                 "build_runner",
             ],
             vec![
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
                 ("data_common", "../../data/data_common"),
                 ("domain_auth", "../../domain/domain_auth"),
                 ("domain_common", "../../domain/domain_common"),
@@ -133,7 +133,7 @@ impl CreateModuleProjectFlutter {
             ],
             vec![
                 ("domain_common", "../../domain/domain_common"),
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
             ],
         );
         Self::create_module(
@@ -155,7 +155,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
                 ("feature_common", "../../presentation/feature_common"),
                 ("domain_common", "../../domain/domain_common"),
             ],
@@ -179,7 +179,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
                 ("feature_common", "../../presentation/feature_common"),
                 ("domain_common", "../../domain/domain_common"),
             ],
@@ -207,7 +207,7 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("common", "../../library/common"),
+                ("library_common", "../../library/library_common"),
                 ("domain_common", "../domain/domain_common"),
                 ("domain_auth", "../domain/domain_auth"),
                 ("data_common", "../data/data_common"),
