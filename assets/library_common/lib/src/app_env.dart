@@ -1,4 +1,4 @@
-import 'package:common/src/flavor.dart';
+import 'package:library_common/src/flavor.dart';
 
 mixin AppEnv {
   static Flavor? _currentFlavor;

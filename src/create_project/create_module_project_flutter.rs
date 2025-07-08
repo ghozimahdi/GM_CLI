@@ -8,9 +8,6 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 use std::{fs, io, thread};
-// TODO 1: create module common
-// TODO 2: create default files for module common
-// TODO 3: change localization with l10n
 
 static ASSETS: Dir = include_dir!("assets");
 
