@@ -204,14 +204,14 @@ impl CreateModuleProjectFlutter {
                 "lint",
             ],
             vec![
-                ("library_common", "../../library/library_common"),
-                ("domain_common", "../domain/domain_common"),
-                ("domain_auth", "../domain/domain_auth"),
-                ("data_common", "../data/data_common"),
-                ("data_auth", "../data/data_auth"),
-                ("feature_common", "../presentation/feature_common"),
-                ("feature_auth", "../presentation/feature_auth"),
-                ("feature_dashboard", "../presentation/feature_dashboard"),
+                ("library_common", "../packages/library/library_common"),
+                ("domain_common", "../packages/domain/domain_common"),
+                ("domain_auth", "../packages/domain/domain_auth"),
+                ("data_common", "../packages/data/data_common"),
+                ("data_auth", "../packages/data/data_auth"),
+                ("feature_common", "../packages/presentation/feature_common"),
+                ("feature_auth", "../packages/presentation/feature_auth"),
+                ("feature_dashboard", "../packages/presentation/feature_dashboard"),
             ],
         );
     }
