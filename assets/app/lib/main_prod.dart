@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app/main_common.dart';
-import 'package:library/library_common.dart';
+import 'package:library_common/library_common.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 Future<void> main() async {

@@ -425,7 +425,7 @@ impl CreateSingleModuleProjectFlutter {
             + "Config";
 
         let file_content = indoc! {r#"
-            import 'package:library/library_common.dart';
+            import 'package:library_common/library_common.dart';
             import 'package:{module_name}/src/di/di.dart';
 
             class {class_name} extends AppConfig {

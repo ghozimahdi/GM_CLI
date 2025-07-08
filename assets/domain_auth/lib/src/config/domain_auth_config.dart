@@ -1,4 +1,4 @@
-import 'package:library/library_common.dart';
+import 'package:library_common/library_common.dart';
 import 'package:domain_auth/src/di/di.dart';
 
 class DomainAuthConfig extends AppConfig {

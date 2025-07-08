@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:app/app_router.dart';
 import 'package:app/injector.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:library/library_common.dart';
+import 'package:library_common/library_common.dart';
 import 'package:data_common/data_common.dart';
 import 'package:feature_common/feature_common.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

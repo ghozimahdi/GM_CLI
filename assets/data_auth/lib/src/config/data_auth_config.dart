@@ -1,4 +1,4 @@
-import 'package:library/library_common.dart';
+import 'package:library_common/library_common.dart';
 import 'package:data_auth/src/di/di.dart';
 
 class DataAuthConfig extends AppConfig {
