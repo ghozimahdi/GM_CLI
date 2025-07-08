@@ -23,7 +23,7 @@ pub fn show_info() {
 pub fn show_donate() {
     let ko_fi_link = "https://ko-fi.com/ghozimahdi";
     let trakteer_link = "https://teer.id/ghozimahdi";
-    let github_sponsor_link = "https://github.com/sponsors/mbahgojol";
+    let github_sponsor_link = "https://github.com/sponsors/ghozimahdi";
     let saweria_link = "https://saweria.co/ghozimahdi";
 
     println!("{}", "❤️ Support My Work! ❤️".bold().yellow());
