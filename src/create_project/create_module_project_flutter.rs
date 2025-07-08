@@ -103,6 +103,7 @@ impl CreateModuleProjectFlutter {
             "feature_common",
             "./packages/presentation/feature_common",
             vec![
+                "flutter_localizations --sdk=flutter",
                 "flutter_screenutil",
                 "freezed_annotation",
                 "flutter_bloc",
@@ -184,6 +185,7 @@ impl CreateModuleProjectFlutter {
 
         Self::update_app_pubspec_dependencies(
             vec![
+                "flutter_localizations --sdk=flutter",
                 "get_it",
                 "injectable",
                 "auto_route",

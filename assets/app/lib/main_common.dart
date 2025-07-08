@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:app/app_router.dart';
 import 'package:app/injector.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:library_common/library_common.dart';
 import 'package:data_common/data_common.dart';
 import 'package:feature_common/feature_common.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:library_common/library_common.dart';
 
 Future<void> mainCommon(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
