@@ -30,18 +30,25 @@ mixin AppDialog {
 
   Future<void> showAlertDialog(
     BuildContext context, {
-    required Widget title,
-    required Widget content,
-    required List<TextButton> actions,
-  }) async {
+    Widget? title,
+    required Widget Function(BuildContext context) content,
+    required List<TextButton> Function(BuildContext context) actions,
+    bool barrierDismissible = false,
+    ShapeBorder? shape,
+  }) {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: barrierDismissible,
       builder: (BuildContext context) {
         return AlertDialog(
+          insetPadding: EdgeInsets.all(20.r),
+          shape: shape,
           title: title,
-          content: content,
-          actions: actions,
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: content(context),
+          ),
+          actions: actions(context),
         );
       },
     );
