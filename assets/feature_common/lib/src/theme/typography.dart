@@ -1,5 +1,4 @@
 import 'package:feature_common/generated/fonts.gen.dart';
-import 'package:feature_common/src/theme/color_schemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

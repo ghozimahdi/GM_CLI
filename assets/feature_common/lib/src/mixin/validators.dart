@@ -1,5 +1,3 @@
-import 'package:feature_common/feature_common.dart';
-
 mixin Validators {
   bool isEmailValid(String email) {
     final RegExp emailValidatorRegExp = RegExp(

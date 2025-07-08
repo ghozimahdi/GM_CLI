@@ -9,15 +9,12 @@ class AuthRepositoryImpl extends AuthRepository with FailureHandlerMixin {
   final AuthDataSource _authDataSource;
   final SharedPreferenceDataSource _preferenceDataSource;
 
-  AuthRepositoryImpl(
-    this._authDataSource,
-    this._preferenceDataSource,
-  );
+  AuthRepositoryImpl(this._authDataSource, this._preferenceDataSource);
 
   @override
   Future<Failure> login() async {
     try {
-      final response = await _authDataSource.login(
+      await _authDataSource.login(
         action: 'login',
         username: 'input.username',
         password: 'input.password',
@@ -34,7 +31,7 @@ class AuthRepositoryImpl extends AuthRepository with FailureHandlerMixin {
   @override
   Future<Failure> register() async {
     try {
-      final response = await _authDataSource.createNewAccount(
+      await _authDataSource.createNewAccount(
         action: 'createNewAccount',
         name: 'input.name',
         password: 'input.password',
