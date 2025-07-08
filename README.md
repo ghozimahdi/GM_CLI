@@ -9,8 +9,8 @@ A simple CLI tool designed to simplify the process of managing **Flutter** proje
 - **Clear**: Clean the Flutter project and remove `pubspec.lock` for selected modules.
 - **App**: Interactively build APK or IPA files.
 - **Create**:
-    - **Create Project**: Generate a new Flutter project with a well-organized Clean Architecture and modular structure.
-    - **Create Module**: Create a module for modularization to enhance scalability and maintainability.
+   - **Create Project**: Generate a new Flutter project with a well-organized Clean Architecture and modular structure.
+   - **Create Module**: Create a module for modularization to enhance scalability and maintainability.
 - **Build**: Run `build_runner` after selecting a module.
 - **Get**: Execute `flutter pub get` for selected modules.
 - **Donate**: Show gratitude and support the development of this CLI tool.
@@ -24,15 +24,15 @@ A simple CLI tool designed to simplify the process of managing **Flutter** proje
 Ensure you have the following prerequisites installed before using this CLI:
 
 1. **Flutter**:
-    - Ensure Flutter is installed on your system.
-    - Install Flutter: [https://flutter.dev/docs/get-started/install](https://flutter.dev/docs/get-started/install)
+   - Ensure Flutter is installed on your system.
+   - Install Flutter: [https://flutter.dev/docs/get-started/install](https://flutter.dev/docs/get-started/install)
 
 ---
 
 ## **Installation via Homebrew**
 1. **Add the Ghozi Mahdi CLI tap**:
    ```bash
-   brew tap ghozimahdi/homebrew-ghozimahdi-cli
+   brew tap mbahgojol/homebrew-ghozimahdi-cli
    ```
 
 2. **Install the Ghozi Mahdi CLI** via Homebrew:
@@ -47,26 +47,11 @@ Ensure you have the following prerequisites installed before using this CLI:
 
 ---
 
-## **Update via Homebrew**
-
-To update the Ghozi Mahdi CLI to the latest version, run:
-```bash
-brew update
-brew upgrade gm
-```
-
----
-
 ## **Usage**
 Run the following command inside your Flutter project directory:
 ```bash
 gm [OPTIONS] [COMMAND]
 ```
-
-### Examples
-- `gm -b` : Run `build_runner` (shortcut for `gm build`).
-- `gm -g` : Run `flutter pub get` (shortcut for `gm get`).
-- `gm -c` : Run `flutter clean` (shortcut for `gm clear`).
 
 ### **Commands**
 - `clear`: Run `flutter_clean` and remove `pubspec.lock` for selected modules.
@@ -83,16 +68,11 @@ gm [OPTIONS] [COMMAND]
 - `-b`, `--build`: Run `build_runner` after module selection.
 - `-l`, `--localize`: Generate `easy_localization` files.
 - `-a`, `--assets`: Generate assets with `flutter gen`.
-- `-c`, `--flutter_clean`: Flutter clear for a single module.
+- `-c`, `--flutter_clean`: Flutter clean for a single module.
 - `-g`, `--flutter_get`: Run `flutter pub get` for a single module.
 - `--all`: Run `build_runner`, generate `easy_localization`, and assets after selecting a module.
 - `-h`, `--help`: Print help information.
 - `-V`, `--version`: Print version information.
-
-### Notes
-
-- You can use **commands** (e.g., `gm build`) or their corresponding **options** (e.g., `gm -b`) for faster access.
-- **Options** are designed to simplify frequently used commands.
 
 ---
 
@@ -101,10 +81,10 @@ gm [OPTIONS] [COMMAND]
 When you use the `gm create` command, the generated project follows the **Clean Architecture** principles with a modular structure. Below is an example of the generated structure:
 
 ```
+app/
 packages/
   ├── library/
-  │   ├── core/
-  │   └── resource/
+  │   ├── library_common/
   ├── data/
   │   ├── data_common/
   │   ├── data_auth/
@@ -135,13 +115,13 @@ packages/
 
 ### **Description of Main Directories**
 1. **Library**:
-    - Contains core utilities and shared resources that can be reused across modules.
+   - Contains core utilities and shared resources that can be reused across modules.
 2. **Data**:
-    - Responsible for managing data sources, configurations, models, mappers, and repository implementations for different modules.
+   - Responsible for managing data sources, configurations, models, mappers, and repository implementations for different modules.
 3. **Domain**:
-    - Defines business logic, including use cases, repository interfaces, and domain-specific configurations for each module.
+   - Defines business logic, including use cases, repository interfaces, and domain-specific configurations for each module.
 4. **Presentation**:
-    - Manages the UI layer, which includes features, pages, state management (e.g., BLoC), and configurations for the presentation layer.
+   - Manages the UI layer, which includes features, pages, state management (e.g., BLoC), and configurations for the presentation layer.
 
 ### **Highlights**
 - **Modularity**: Each feature (e.g., `auth`, `dashboard`, `analytic`) is modularized to improve scalability and maintainability.
@@ -154,15 +134,15 @@ The `gm build` command provides an interactive interface to select specific modu
 
 ### **Example Interface**:
 ```dart
-+----------------+------------------+----------------------+---------------+
-| Data Modules   | Domain Modules   | Feature Modules      | Other Modules |
-+----------------+------------------+----------------------+---------------+
-| 3. data_auth   | 5. domain_auth   | 7. feature_auth      | 1. app        |
-| 4. data_common | 6. domain_common | 8. feature_common    | 2. core       |
-|                |                  | 9. feature_dashboard | 10. resource  |
-|                |                  |                      | 11. MSG       |
-+----------------+------------------+----------------------+---------------+
-Total modules available: 11, Select modules (example: 1,2,3 or 0 for all): 
++----------------+------------------+----------------------+---------------------+
+| Data Modules   | Domain Modules   | Feature Modules      | Other Modules       |
++----------------+------------------+----------------------+---------------------+
+| 3. data_auth   | 5. domain_auth   | 7. feature_auth      | 1. app              |
+| 4. data_common | 6. domain_common | 8. feature_common    | 2. library_common   |
+|                |                  | 9. feature_dashboard |                     |
+|                |                  |                      |                     |
++----------------+------------------+----------------------+---------------------+
+Total modules available: 9, Select modules (example: 1,2,3 or 0 for all): 
 ```
 
 ### **Key Features**:
@@ -181,7 +161,7 @@ This project is maintained by an independent developer. Support further developm
 - Fix bugs faster.
 - Improve documentation.
 
-[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-blue)](https://github.com/sponsors/mbahgojol)
+[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-blue)](https://github.com/sponsors/ghozimahdi)
 
 Ko-fi: [ghozimahdi-ko-fi](https://ko-fi.com/ghozimahdi)  
 Saweria: [ghozimahdi-saweria](https://saweria.co/ghozimahdi)
