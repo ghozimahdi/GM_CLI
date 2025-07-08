@@ -27,5 +27,5 @@ Future<void> configureDependencies({required String environment}) async {
   FeatureDashboardConfig.getInstance().config(env: environment);
   FeatureAuthConfig.getInstance().config(env: environment);
 
-  await getIt.init(environment: environment);
+  getIt.init(environment: environment);
 }

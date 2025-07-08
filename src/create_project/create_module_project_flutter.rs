@@ -195,6 +195,7 @@ impl CreateModuleProjectFlutter {
                 "flutter_flavorizr",
                 "change_app_package_name",
                 "flutter_bloc",
+                "flutter_screenutil",
             ],
             vec![
                 "auto_route_generator",
@@ -211,7 +212,10 @@ impl CreateModuleProjectFlutter {
                 ("data_auth", "../packages/data/data_auth"),
                 ("feature_common", "../packages/presentation/feature_common"),
                 ("feature_auth", "../packages/presentation/feature_auth"),
-                ("feature_dashboard", "../packages/presentation/feature_dashboard"),
+                (
+                    "feature_dashboard",
+                    "../packages/presentation/feature_dashboard",
+                ),
             ],
         );
     }

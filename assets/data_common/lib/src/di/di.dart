@@ -5,5 +5,5 @@ import 'package:injectable/injectable.dart';
 final getIt = GetIt.instance;
 
 @injectableInit
-Future<void> configureInjection({required String env}) async =>
+Future<void> configureInjection({required String env}) =>
     getIt.init(environment: env);

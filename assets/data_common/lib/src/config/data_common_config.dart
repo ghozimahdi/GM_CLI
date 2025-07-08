@@ -1,5 +1,5 @@
-import 'package:library_common/library_common.dart';
 import 'package:data_common/src/di/di.dart';
+import 'package:library_common/library_common.dart';
 
 class DataCommonConfig extends AppConfig {
   DataCommonConfig._();
@@ -11,9 +11,7 @@ class DataCommonConfig extends AppConfig {
   static final DataCommonConfig _instance = DataCommonConfig._();
 
   @override
-  Future<bool> config({
-    required String env,
-  }) async {
+  Future<bool> config({required String env}) async {
     await configureInjection(env: env);
     return true;
   }

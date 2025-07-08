@@ -1,5 +1,5 @@
-import 'package:library_common/library_common.dart';
 import 'package:feature_dashboard/src/di/di.dart';
+import 'package:library_common/library_common.dart';
 
 class FeatureDashboardConfig extends AppConfig {
   FeatureDashboardConfig._();
@@ -11,9 +11,7 @@ class FeatureDashboardConfig extends AppConfig {
   static final FeatureDashboardConfig _instance = FeatureDashboardConfig._();
 
   @override
-  Future<bool> config({
-    required String env,
-  }) async {
+  Future<bool> config({required String env}) async {
     await configureInjection(env: env);
     return true;
   }

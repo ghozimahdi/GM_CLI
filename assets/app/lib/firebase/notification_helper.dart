@@ -36,7 +36,7 @@ class NotificationHelper {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
         handleNotificationClick(payload: response.payload);
       },
     );

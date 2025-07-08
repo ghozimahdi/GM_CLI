@@ -1,5 +1,5 @@
-import 'package:library_common/library_common.dart';
 import 'package:data_auth/src/di/di.dart';
+import 'package:library_common/library_common.dart';
 
 class DataAuthConfig extends AppConfig {
   DataAuthConfig._();
@@ -11,9 +11,7 @@ class DataAuthConfig extends AppConfig {
   static final DataAuthConfig _instance = DataAuthConfig._();
 
   @override
-  Future<bool> config({
-    required String env,
-  }) async {
+  Future<bool> config({required String env}) async {
     await configureInjection(env: env);
     return true;
   }

@@ -425,8 +425,8 @@ impl CreateSingleModuleProjectFlutter {
             + "Config";
 
         let file_content = indoc! {r#"
-            import 'package:library_common/library_common.dart';
             import 'package:{module_name}/src/di/di.dart';
+            import 'package:library_common/library_common.dart';
 
             class {class_name} extends AppConfig {
               {class_name}._();
@@ -438,9 +438,7 @@ impl CreateSingleModuleProjectFlutter {
               static final {class_name} _instance = {class_name}._();
 
               @override
-              Future<bool> config({
-                required String env,
-              }) async {
+              Future<bool> config({required String env}) async {
                 await configureInjection(env: env);
                 return true;
               }

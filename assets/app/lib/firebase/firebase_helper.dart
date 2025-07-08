@@ -21,7 +21,7 @@ mixin FirebaseHelper {
     await notificationHelper.initialize();
 
     await getIt<MessagingHelper>().initialize(
-      onMessage: (message) async {
+      onMessage: (message) {
         final notification = message.notification;
 
         if (notification?.title != null && notification?.body != null) {
