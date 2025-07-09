@@ -8,9 +8,9 @@ class Failure with _$Failure {
 
   /// General Failures
   const factory Failure.noFailure() = NoFailure;
-  const factory Failure.unexpectedError({
+  const factory Failure.unexpected({
     @Default('An unexpected error occurred') String message,
-  }) = UnexpectedError;
+  }) = UnexpectedFailure;
 
   /// Network Failures
   const factory Failure.timeout() = TimeoutFailure;
@@ -26,6 +26,7 @@ class Failure with _$Failure {
   const factory Failure.unauthorized() = UnauthorizedFailure;
 
   /// App-Specific Failures
+  const factory Failure.permissionDenied() = PermissionDeniedFailure;
   const factory Failure.forceUpdateRequired() = ForceUpdateFailure;
   const factory Failure.businessLogicFailure({
     @Default('Business logic validation failed') String message,

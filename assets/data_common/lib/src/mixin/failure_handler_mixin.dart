@@ -9,7 +9,7 @@ mixin FailureHandlerMixin {
     } else if (error is DioException) {
       return _mapDioExceptionToFailure(error);
     } else {
-      return Failure.unexpectedError(message: error.toString());
+      return Failure.unexpected(message: error.toString());
     }
   }
 
@@ -26,7 +26,7 @@ mixin FailureHandlerMixin {
       return const Failure.noConnection();
     }
 
-    return Failure.unexpectedError(
+    return Failure.unexpected(
       message: exception.message ?? exception.toString(),
     );
   }
@@ -40,7 +40,7 @@ mixin FailureHandlerMixin {
       case DioExceptionType.connectionError:
         return const Failure.noConnection();
       default:
-        return Failure.unexpectedError(
+        return Failure.unexpected(
           message: exception.message ?? 'Unknown Dio error',
         );
     }
