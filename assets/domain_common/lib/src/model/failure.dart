@@ -8,9 +8,9 @@ class Failure with _$Failure {
 
   /// General Failures
   const factory Failure.noFailure() = NoFailure;
-  const factory Failure.unexpected({
+  const factory Failure.unexpectedError({
     @Default('An unexpected error occurred') String message,
-  }) = UnexpectedFailure;
+  }) = UnexpectedErrorFailure;
 
   /// Network Failures
   const factory Failure.timeout() = TimeoutFailure;
