@@ -3,8 +3,13 @@ import 'package:dio/dio.dart';
 class AppException extends DioException {
   final int? statusCode;
 
-  AppException({required String message, this.statusCode})
-      : super(requestOptions: RequestOptions(), message: message);
+  AppException({
+    required String message,
+    this.statusCode,
+  }) : super(
+    requestOptions: RequestOptions(),
+    message: message,
+  );
 
   @override
   String toString() {
