@@ -14,6 +14,7 @@ mixin FailureHandlerMixin {
   }
 
   Failure _mapAppExceptionToFailure(AppException exception) {
+    final message = exception.message ?? exception.toString();
     if (exception is UnauthorizedException) {
       return const Failure.unauthorized();
     } else if (exception is ServerException) {
@@ -26,9 +27,7 @@ mixin FailureHandlerMixin {
       return const Failure.noConnection();
     }
 
-    return Failure.unexpectedError(
-      message: exception.message ?? exception.toString(),
-    );
+    return Failure.unexpectedError(message: message);
   }
 
   Failure _mapDioExceptionToFailure(DioException exception) {
