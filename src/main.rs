@@ -203,14 +203,14 @@ fn is_flutter_installed() -> bool {
 }
 
 fn is_melos_installed() -> bool {
-    match StdCommand::new("melos").arg("--version").output() {
+    match StdCommand::new("fvm").args(&["dart", "run", "melos", "--version"]).output() {
         Ok(output) => output.status.success(),
         Err(_) => false,
     }
 }
 
 fn install_melos() -> bool {
-    match StdCommand::new("dart")
+    match StdCommand::new("fvm").arg("dart")
         .args(&["pub", "global", "activate", "melos"])
         .status()
     {

@@ -106,10 +106,10 @@ impl CreateProjectFlutter {
             Command::run(&["fvm", "flutter", "pub", "get"]);
 
             println!("{}", "Bootstrapping with Melos...".yellow());
-            Command::run(&["melos", "bs"]);
-            Command::run(&["melos", "generate:l10n"]);
-            Command::run(&["melos", "build"]);
-            Command::run(&["melos", "generate:flavors"]);
+            Command::run(&["fvm", "dart", "run", "melos", "bs"]);
+            Command::run(&["fvm", "dart", "run", "melos", "generate:l10n"]);
+            Command::run(&["fvm", "dart", "run", "melos", "build"]);
+            Command::run(&["fvm", "dart", "run", "melos", "generate:flavors"]);
             IOSAnalyzingProjectFlutter::build(&app_path);
 
             println!(

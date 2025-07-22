@@ -16,7 +16,10 @@ pub struct ModuleManager;
 
 impl ModuleManager {
     pub fn get_available_modules() -> Vec<String> {
-        let output = ProcessCommand::new("melos")
+        let output = ProcessCommand::new("fvm")
+            .arg("dart")
+            .arg("run")
+            .arg("melos")
             .arg("list")
             .output()
             .expect("Failed to run the melos list command");

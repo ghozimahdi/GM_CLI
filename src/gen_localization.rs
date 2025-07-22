@@ -9,7 +9,10 @@ use std::{
 pub fn intl_localization() {
     println!("{}", "Generating intl_utils files...".green());
 
-    let mut child = StdCommand::new("melos")
+    let mut child = StdCommand::new("fvm")
+        .arg("dart")
+        .arg("run")
+        .arg("melos")
         .arg("exec")
         .arg("--depends-on=intl_utils")
         .arg("--")

@@ -5,7 +5,10 @@ use std::process::{Command as StdCommand, Stdio};
 pub fn gen_assets() {
     println!("{}", "Generating assets...".green());
 
-    let mut child = StdCommand::new("melos")
+    let mut child = StdCommand::new("fvm")
+        .arg("dart")
+        .arg("run")
+        .arg("melos")
         .arg("exec")
         .arg("--depends-on=flutter_gen_runner")
         .arg("--")

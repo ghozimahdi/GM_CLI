@@ -87,7 +87,8 @@ impl FlutterCommandHandler {
     }
 
     fn run_get_command(scope: Option<&String>) {
-        let mut command = StdCommand::new("melos");
+        let mut command = StdCommand::new("fvm");
+        command.arg("dart").arg("run").arg("melos");
         command.arg("exec");
         if let Some(scope) = scope {
             command.arg("--scope").arg(scope);
@@ -116,7 +117,8 @@ impl FlutterCommandHandler {
                     module.yellow()
                 );
 
-                let mut command = StdCommand::new("melos");
+                let mut command = StdCommand::new("fvm");
+                command.arg("dart").arg("run").arg("melos");
                 command
                     .arg("exec")
                     .arg("--scope")
@@ -197,7 +199,8 @@ impl FlutterCommandHandler {
     }
 
     fn run_clear_command(scope: &str) {
-        let mut command = StdCommand::new("melos");
+        let mut command = StdCommand::new("fvm");
+        command.arg("dart").arg("run").arg("melos");
         command
             .arg("exec")
             .arg("--scope")
@@ -268,7 +271,8 @@ impl FlutterCommandHandler {
     }
 
     fn run_build_command(scope: Option<&String>) {
-        let mut command = StdCommand::new("melos");
+        let mut command = StdCommand::new("fvm");
+        command.arg("dart").arg("run").arg("melos");
         command.arg("exec");
         if let Some(scope) = scope {
             command.arg("--scope").arg(scope);

@@ -519,8 +519,11 @@ impl CreateModuleProjectFlutter {
                 format!("pub add {}", dependency)
             };
 
-            let mut command = std::process::Command::new("melos");
+            let mut command = std::process::Command::new("fvm");
             command
+                .arg("dart")
+                .arg("run")
+                .arg("melos")
                 .arg("exec")
                 .arg("--scope")
                 .arg(module)
