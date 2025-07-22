@@ -10,7 +10,7 @@ pub struct FlutterCommandHandler;
 impl FlutterCommandHandler {
     fn flutter_command() -> &'static str {
         if Path::new(".fvm").exists() {
-            "fvm dart"
+            "fvm"
         } else {
             "flutter"
         }
@@ -52,11 +52,11 @@ impl FlutterCommandHandler {
     }
 
     pub fn run_flutter_get(&self) {
-        Self::execute_command(&["pub", "get"]);
+        Self::execute_command(&["dart", "pub", "get"]);
     }
 
     pub fn run_flutter_clean(&self) {
-        Self::execute_command(&["clean"]);
+        Self::execute_command(&["dart", "clean"]);
     }
 
     pub fn flutter_get() {
