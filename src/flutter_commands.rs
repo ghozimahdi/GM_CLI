@@ -96,6 +96,7 @@ impl FlutterCommandHandler {
         command
             .arg("--")
             .arg(Self::flutter_command())
+            .arg("dart")
             .arg("pub")
             .arg("get");
 
@@ -272,14 +273,15 @@ impl FlutterCommandHandler {
 
     fn run_build_command(scope: Option<&String>) {
         let mut command = StdCommand::new("fvm");
-        command.arg("dart").arg("run").arg("melos");
-        command.arg("exec");
+        command.arg("dart").arg("run").arg("melos").arg("exec");
+
         if let Some(scope) = scope {
             command.arg("--scope").arg(scope);
         }
         command
             .arg("--")
             .arg(Self::flutter_command())
+            .arg("dart")
             .arg("run")
             .arg("build_runner")
             .arg("build")
