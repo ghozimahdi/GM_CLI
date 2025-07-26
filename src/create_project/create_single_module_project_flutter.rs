@@ -461,11 +461,17 @@ impl CreateSingleModuleProjectFlutter {
     fn generated_data_source(module_dir: &str, module_name: &str) {
         let name = module_name.strip_prefix("data_").unwrap_or(module_name);
 
-        let class_name = format!(
-            "{}{}",
-            name.chars().next().unwrap().to_uppercase(),
-            &name[1..]
-        );
+        let class_name = name
+            .split('_')
+            .map(|word| {
+                let mut chars = word.chars();
+                chars
+                    .next()
+                    .map(|c| c.to_uppercase().to_string())
+                    .unwrap_or_default()
+                    + chars.as_str()
+            })
+            .collect::<String>();
 
         let file_name = format!("{}_data_source", name);
         let file_path = format!("{}/{}.dart", module_dir, file_name);
