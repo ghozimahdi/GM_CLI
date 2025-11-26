@@ -1,21 +1,5 @@
+import 'package:domain_common/domain_common.dart';
 import 'package:injectable/injectable.dart';
-
-abstract interface class DataSourceConfig {
-  abstract final String baseUrl;
-
-  // Firebase keys
-  abstract final String firebaseMessagingSenderId;
-  abstract final String firebaseProjectId;
-  abstract final String firebaseStorageBucket;
-
-  abstract final String androidFirebaseApiKey;
-  abstract final String androidFirebaseAppId;
-
-  abstract final String iosFirebaseApiKey;
-  abstract final String iosFirebaseAppId;
-  abstract final String iosFirebaseBundleId;
-  abstract final String iosFirebaseClientId;
-}
 
 @LazySingleton(
   as: DataSourceConfig,

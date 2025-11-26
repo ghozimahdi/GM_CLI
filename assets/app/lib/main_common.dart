@@ -17,8 +17,8 @@ Future<void> mainCommon(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   await S.load(const Locale('en'));
 
-  await configureDependencies(environment: flavor.environment);
   await AppEnv.initialize(flavor);
+  await configureDependencies(environment: flavor.environment);
 
   // Uncomment the following code to enable Firebase functionality.
   // For detailed documentation, refer to the .firebase folder in the app directory.

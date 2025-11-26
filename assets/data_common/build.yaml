@@ -17,7 +17,7 @@ targets:
       injectable_generator:injectable_builder:
         generate_for:
           include:
-            - lib/src/config/data_source_config.dart
+            - lib/src/config/**.dart
             - lib/src/data_source/**.dart
             - lib/src/repository/**
             - lib/src/network/**
