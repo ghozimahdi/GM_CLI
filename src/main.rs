@@ -101,7 +101,13 @@ fn main() {
                 .about("Show gratitude and support the development of this CLI tool"),
         )
         .subcommand(
-            Command::new("route").about("Automatically generate route files for Flutter project"),
+            Command::new("route")
+                .about("Automatically generate route files for Flutter project")
+                .arg(
+                    Arg::new("name")
+                        .help("Route name (e.g., register, filter, profile)")
+                        .index(1),
+                ),
         )
         .subcommand(
             Command::new("info")
@@ -158,7 +164,10 @@ fn main() {
         Some(("build", _)) => FlutterCommandHandler::flutter_build_runner(),
         Some(("app", _)) => FlutterBuildApp::build_app(),
         Some(("donate", _)) => show_donate(),
-        Some(("route", _)) => CreateFileProjectFlutter::create_abstract_route(),
+        Some(("route", sub)) => {
+            let route_name = sub.get_one::<String>("name").map(|s| s.as_str());
+            CreateFileProjectFlutter::create_abstract_route(route_name);
+        }
         Some(("info", _)) => show_info(),
         Some(("flutter", sub)) | Some(("dart", sub)) => {
             let cmd_parts: Vec<&str> = sub

@@ -1,5 +1,6 @@
 use crate::command::Command;
 use colored::Colorize;
+use indoc::indoc;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
@@ -7,7 +8,7 @@ use std::io::{Read, Write};
 pub struct SetupFVMProjectFlutter;
 
 impl SetupFVMProjectFlutter {
-    pub fn build() {
+    pub fn build(project_name: &str) {
         println!(
             "{}",
             "Setting up FVM for Flutter version management...".yellow()
@@ -39,6 +40,8 @@ impl SetupFVMProjectFlutter {
 
         Self::add_fvm_to_gitignore();
 
+        let flutter_version: String;
+
         if let Some(version) = global_flutter_version {
             println!(
                 "{}",
@@ -64,6 +67,7 @@ impl SetupFVMProjectFlutter {
                 format!("Setting project to use version {}...", version).yellow()
             );
             Command::run(&["fvm", "use", &version]);
+            flutter_version = version;
         } else {
             println!(
                 "{}",
@@ -71,9 +75,124 @@ impl SetupFVMProjectFlutter {
             );
             Command::run(&["fvm", "install", "stable"]);
             Command::run(&["fvm", "use", "stable"]);
+            flutter_version = "stable".to_string();
         }
 
+        Self::generate_vscode_config(project_name, &flutter_version);
+
         println!("{}", "FVM setup completed!".green());
+    }
+
+    fn generate_vscode_config(project_name: &str, flutter_version: &str) {
+        let vscode_dir = ".vscode";
+        fs::create_dir_all(vscode_dir).expect("Failed to create .vscode directory");
+
+        // Generate settings.json
+        let settings_content = indoc! {r#"
+{
+    "dart.flutterSdkPath": ".fvm/versions/{flutter_version}",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 0,
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "always",
+            "source.organizeImports": "always"
+        }
+    },
+    "dart.flutterHotReloadOnSave": "never",
+    "gotoNextPreviousMember.symbolKinds": [
+        "class",
+        "method",
+        "function",
+        "constructor",
+        "widget"
+    ],
+    "gotoNextPreviousMember.selectEntireSymbol": false,
+    "gotoNextPreviousMember.symbolPosition": "center",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        ".mdnotes": true,
+        ".vxnotes": true
+    }
+}
+"#}
+        .replace("{flutter_version}", flutter_version);
+
+        let settings_path = format!("{}/settings.json", vscode_dir);
+        fs::write(&settings_path, settings_content).expect("Failed to write settings.json");
+        println!("{}", format!("Generated {}", settings_path).green());
+
+        // Generate launch.json
+        let launch_content = indoc! {r#"
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "{project_name}_dev",
+            "request": "launch",
+            "type": "dart",
+            "program": "app/lib/main_dev.dart",
+            "args": [
+                "--flavor",
+                "dev"
+            ]
+        },
+        {
+            "name": "{project_name}_staging",
+            "request": "launch",
+            "type": "dart",
+            "program": "app/lib/main_staging.dart",
+            "args": [
+                "--flavor",
+                "staging"
+            ]
+        },
+        {
+            "name": "{project_name}_prod",
+            "request": "launch",
+            "type": "dart",
+            "program": "app/lib/main_prod.dart",
+            "args": [
+                "--flavor",
+                "prod"
+            ]
+        },
+        {
+            "name": "{project_name}_dev_release",
+            "request": "launch",
+            "type": "dart",
+            "program": "app/lib/main_dev.dart",
+            "args": [
+                "--flavor",
+                "dev",
+                "--release"
+            ]
+        },
+        {
+            "name": "{project_name}_prod_release",
+            "request": "launch",
+            "type": "dart",
+            "program": "app/lib/main_prod.dart",
+            "args": [
+                "--flavor",
+                "prod",
+                "--release"
+            ]
+        }
+    ]
+}
+"#}
+        .replace("{project_name}", project_name);
+
+        let launch_path = format!("{}/launch.json", vscode_dir);
+        fs::write(&launch_path, launch_content).expect("Failed to write launch.json");
+        println!("{}", format!("Generated {}", launch_path).green());
     }
 
     fn add_fvm_to_gitignore() {

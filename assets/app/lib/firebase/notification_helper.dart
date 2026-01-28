@@ -35,7 +35,7 @@ class NotificationHelper {
     );
 
     await _flutterLocalNotificationsPlugin.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         handleNotificationClick(payload: response.payload);
       },
@@ -44,15 +44,15 @@ class NotificationHelper {
     if (Platform.isIOS) {
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-      >()
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions();
     }
     if (Platform.isAndroid) {
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-      >()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(androidNotificationChannel);
     }
   }
@@ -68,10 +68,10 @@ class NotificationHelper {
     List<AndroidNotificationAction>? actions,
   }) async {
     await _flutterLocalNotificationsPlugin.show(
-      id ?? hashCode,
-      title,
-      body,
-      NotificationDetails(
+      id: id ?? hashCode,
+      title: title,
+      body: body,
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           androidNotificationChannel.id,
           androidNotificationChannel.name,

@@ -1,4 +1,4 @@
-import 'package:feature_common/src/theme/color_schemes.dart';
+import 'package:feature_common/src/themes/color_schemes.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

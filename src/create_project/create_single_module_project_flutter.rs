@@ -350,11 +350,11 @@ impl CreateSingleModuleProjectFlutter {
         Self::generated_config(&format!("{}/lib/src/config", dest_lib_dir), module_name);
         Self::generated_exposed_feature_file(&format!("{}/lib", dest_lib_dir), module_name);
         Self::generated_route_provider_feature_common(
-            "packages/presentation/feature_common/lib/src/route",
+            "packages/presentation/feature_common/lib/src/routes",
             module_name,
         );
         Self::generated_feature_route(&format!("{}/lib/src/config", dest_lib_dir), module_name);
-        Self::generated_feature_page(&format!("{}/lib/src/page", dest_lib_dir), module_name);
+        Self::generated_feature_page(&format!("{}/lib/src/pages", dest_lib_dir), module_name);
     }
 
     fn create_default_data_files(module_name: &str) {
@@ -376,7 +376,7 @@ impl CreateSingleModuleProjectFlutter {
         Self::generated_di(&format!("{}/lib/src/di", dest_lib_dir), module_name);
         Self::generated_config(&format!("{}/lib/src/config", dest_lib_dir), module_name);
         Self::generated_data_source(
-            &format!("{}/lib/src/data_source", dest_lib_dir),
+            &format!("{}/lib/src/data_sources", dest_lib_dir),
             module_name,
         );
         Self::generated_exposed_file(&format!("{}/lib", dest_lib_dir), module_name)
@@ -603,7 +603,7 @@ impl CreateSingleModuleProjectFlutter {
             String::new()
         };
 
-        let export_line = format!("export 'src/route/{}';\n", file_name);
+        let export_line = format!("export 'src/routes/{}';\n", file_name);
 
         if !feature_common_content.contains(&export_line) {
             feature_common_content.push_str(&export_line);
@@ -654,7 +654,6 @@ impl CreateSingleModuleProjectFlutter {
 
             @AutoRouterConfig()
             abstract class {class_name} {}
-
         "#}
         .replace("{class_name}", &class_name);
 

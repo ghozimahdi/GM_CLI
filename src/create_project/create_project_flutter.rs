@@ -94,7 +94,7 @@ impl CreateProjectFlutter {
             SetupMelosProjectFlutter::build(&project_name, &app_path);
 
             println!("Setting up FVM...");
-            SetupFVMProjectFlutter::build();
+            SetupFVMProjectFlutter::build(&project_name);
 
             println!("Generating files...");
             CreateModuleProjectFlutter::build();

@@ -4,15 +4,15 @@ targets:
       freezed:
         generate_for:
           include:
-            - lib/src/bloc/**
+            - lib/src/blocs/**
       auto_route_generator:auto_route_generator:
         generate_for:
           include:
             - lib/src/config/**.dart
-            - lib/src/page/**
+            - lib/src/pages/**
       injectable_generator:injectable_builder:
         generate_for:
           include:
-            - lib/src/bloc/**
-            - lib/src/page/**
+            - lib/src/blocs/**
+            - lib/src/pages/**
             - lib/src/di/di.dart

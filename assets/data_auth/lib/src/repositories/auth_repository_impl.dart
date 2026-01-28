@@ -1,4 +1,4 @@
-import 'package:data_auth/src/data_source/auth_data_source.dart';
+import 'package:data_auth/src/data_sources/auth_data_source.dart';
 import 'package:data_common/data_common.dart';
 import 'package:domain_auth/domain_auth.dart';
 import 'package:domain_common/domain_common.dart';

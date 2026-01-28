@@ -1,5 +1,5 @@
-import 'package:data_common/data_common.dart';
 import 'package:dio/dio.dart';
+import 'package:domain_common/domain_common.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -9,10 +9,8 @@ part 'auth_data_source.g.dart';
 @RestApi()
 abstract class AuthDataSource {
   @factoryMethod
-  factory AuthDataSource(Dio dio, DataSourceConfig config) => _AuthDataSource(
-        dio,
-        baseUrl: config.baseUrl,
-      );
+  factory AuthDataSource(Dio dio, DataSourceConfig config) =>
+      _AuthDataSource(dio, baseUrl: config.baseUrl);
 
   @POST('/v1/register')
   @FormUrlEncoded()

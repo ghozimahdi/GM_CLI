@@ -45,11 +45,14 @@ impl CreateFileProjectFlutter {
             .join("")
     }
 
-    pub fn create_abstract_route() {
-        let name: String = Input::new()
-            .with_prompt("Enter route name (e.g., filter)")
-            .interact_text()
-            .unwrap();
+    pub fn create_abstract_route(route_name: Option<&str>) {
+        let name: String = match route_name {
+            Some(n) => n.to_string(),
+            None => Input::new()
+                .with_prompt("Enter route name (e.g., filter)")
+                .interact_text()
+                .unwrap(),
+        };
 
         let full_name_snake = format!("{}_route_provider", name);
         let full_name_pascal = Self::pascal_case(&full_name_snake);
@@ -62,11 +65,21 @@ impl CreateFileProjectFlutter {
 
         let pubspec_content = template_content.replace("{{class_name}}", &full_name_pascal);
 
+        let routes_dir = "packages/presentation/feature_common/lib/src/routes";
+
+        // Check if feature_common module exists
+        if !std::path::Path::new("packages/presentation/feature_common").exists() {
+            eprintln!(
+                "Error: feature_common module not found. Make sure you are in the root of a GM CLI generated project."
+            );
+            std::process::exit(1);
+        }
+
+        // Create routes directory if it doesn't exist
+        fs::create_dir_all(routes_dir).expect("Failed to create routes directory");
+
         let file_name = format!("{}.dart", full_name_snake);
-        let file_route = format!(
-            "packages/presentation/feature_common/lib/src/route/{}",
-            file_name
-        );
+        let file_route = format!("{}/{}", routes_dir, file_name);
 
         let mut output_file =
             File::create(&file_route).expect("Failed to create the route provider file");
