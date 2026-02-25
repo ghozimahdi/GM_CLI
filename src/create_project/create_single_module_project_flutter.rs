@@ -695,9 +695,9 @@ impl CreateSingleModuleProjectFlutter {
         let file_content = indoc! {r#"
             import 'package:auto_route/auto_route.dart';
             import 'package:feature_common/feature_common.dart';
+            import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
             import 'package:flutter/material.dart';
             import 'package:injectable/injectable.dart';
-            import 'package:{module_name}/src/config/{module_name}_route.gr.dart';
 
             @Injectable(as: {route_name}Provider)
             class {route_name}ProviderImpl implements {route_name}Provider {
