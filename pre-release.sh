@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP_NAME="gm"
-VERSION="4.0.0"
+VERSION="4.0.1"
 RELEASE_URL="https://github.com/ghozimahdi/homebrew-ghozimahdi-cli/releases/download/v$VERSION"
 
 # Platform targets
@@ -27,6 +27,9 @@ class Gm < Formula
 
 EOL
 
+# Track apakah ini platform pertama (untuk if vs elsif)
+FIRST_PLATFORM=true
+
 # Proses setiap pasangan target dan platform
 for ((i=0; i<${#TARGETS[@]}; i+=2)); do
   TARGET="${TARGETS[$i]}"
@@ -41,10 +44,10 @@ for ((i=0; i<${#TARGETS[@]}; i+=2)); do
 
   TAR_NAME="$APP_NAME-$TARGET.tar.gz"
 
-  # Periksa apakah binary ada
+  # Periksa apakah binary ada, skip jika tidak ada
   if [[ ! -f $BINARY_PATH ]]; then
-    echo "Error: Binary not found at $BINARY_PATH"
-    exit 1
+    echo "Warning: Binary not found at $BINARY_PATH, skipping $PLATFORM..."
+    continue
   fi
 
   # Buat tar.gz dari binary
@@ -55,18 +58,30 @@ for ((i=0; i<${#TARGETS[@]}; i+=2)); do
   echo "Calculating SHA256 for $TAR_NAME..."
   SHA256=$(shasum -a 256 $TAR_NAME | awk '{print $1}')
 
-  # Salin tar.gz ke root
-  mv $TAR_NAME .
-
   # Tambahkan URL dan SHA256 ke formula
-  if [[ $PLATFORM == "intel_mac" ]]; then
-    echo "  if OS.mac? && Hardware::CPU.intel?" >> $FORMULA_FILE
-  elif [[ $PLATFORM == "arm_mac" ]]; then
-    echo "  elsif OS.mac? && Hardware::CPU.arm?" >> $FORMULA_FILE
-  elif [[ $PLATFORM == "windows" ]]; then
-    echo "  elsif OS.windows?" >> $FORMULA_FILE
-  elif [[ $PLATFORM == "linux" ]]; then
-    echo "  elsif OS.linux?" >> $FORMULA_FILE
+  if [[ $FIRST_PLATFORM == true ]]; then
+    # Platform pertama pakai 'if'
+    if [[ $PLATFORM == "intel_mac" ]]; then
+      echo "  if OS.mac? && Hardware::CPU.intel?" >> $FORMULA_FILE
+    elif [[ $PLATFORM == "arm_mac" ]]; then
+      echo "  if OS.mac? && Hardware::CPU.arm?" >> $FORMULA_FILE
+    elif [[ $PLATFORM == "windows" ]]; then
+      echo "  if OS.windows?" >> $FORMULA_FILE
+    elif [[ $PLATFORM == "linux" ]]; then
+      echo "  if OS.linux?" >> $FORMULA_FILE
+    fi
+    FIRST_PLATFORM=false
+  else
+    # Platform selanjutnya pakai 'elsif'
+    if [[ $PLATFORM == "intel_mac" ]]; then
+      echo "  elsif OS.mac? && Hardware::CPU.intel?" >> $FORMULA_FILE
+    elif [[ $PLATFORM == "arm_mac" ]]; then
+      echo "  elsif OS.mac? && Hardware::CPU.arm?" >> $FORMULA_FILE
+    elif [[ $PLATFORM == "windows" ]]; then
+      echo "  elsif OS.windows?" >> $FORMULA_FILE
+    elif [[ $PLATFORM == "linux" ]]; then
+      echo "  elsif OS.linux?" >> $FORMULA_FILE
+    fi
   fi
 
   echo "    url \"$RELEASE_URL/$TAR_NAME\"" >> $FORMULA_FILE
@@ -74,7 +89,23 @@ for ((i=0; i<${#TARGETS[@]}; i+=2)); do
 done
 
 # Tambahkan bagian install ke formula
-cat <<EOL >> $FORMULA_FILE
+if [[ $FIRST_PLATFORM == true ]]; then
+  # Tidak ada platform yang ditemukan, buat formula tanpa conditional
+  echo "Warning: No binaries found for any platform!"
+  cat <<EOL >> $FORMULA_FILE
+  # No platform binaries found during build
+
+  def install
+    bin.install "$APP_NAME"
+  end
+
+  test do
+    system "#{bin}/gm", "--help"
+  end
+end
+EOL
+else
+  cat <<EOL >> $FORMULA_FILE
   end
 
   def install
@@ -86,5 +117,6 @@ cat <<EOL >> $FORMULA_FILE
   end
 end
 EOL
+fi
 
 echo "Pre-release script completed! Formula file '$FORMULA_FILE' created."

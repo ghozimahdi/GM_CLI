@@ -1,0 +1,116 @@
+name: Build and Release to Homebrew
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+env:
+  HOMEBREW_TAP_REPO: ghozimahdi/homebrew-ghozimahdi-cli
+  BINARY_NAME: gm
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-14
+          - target: x86_64-apple-darwin
+            os: macos-13
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/${{ env.BINARY_NAME }} dist/
+          cd dist
+          tar -czvf ${{ env.BINARY_NAME }}-${{ matrix.target }}.tar.gz ${{ env.BINARY_NAME }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ matrix.target }}
+          path: dist/${{ env.BINARY_NAME }}-${{ matrix.target }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Get version from Cargo.toml
+        id: version
+        run: |
+          VERSION=$(grep -oP '^version = "\K[^"]+' Cargo.toml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Calculate SHA256
+        id: sha256
+        run: |
+          cd artifacts
+          AARCH64_SHA=$(sha256sum gm-aarch64-apple-darwin.tar.gz | cut -d' ' -f1)
+          X86_64_SHA=$(sha256sum gm-x86_64-apple-darwin.tar.gz | cut -d' ' -f1)
+          echo "aarch64_sha=$AARCH64_SHA" >> $GITHUB_OUTPUT
+          echo "x86_64_sha=$X86_64_SHA" >> $GITHUB_OUTPUT
+
+      - name: Clone Homebrew tap
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          git clone https://x-access-token:${TAP_TOKEN}@github.com/${{ env.HOMEBREW_TAP_REPO }}.git homebrew-tap
+
+      - name: Update formula
+        run: |
+          cd homebrew-tap
+          VERSION="${{ steps.version.outputs.version }}"
+          AARCH64_SHA="${{ steps.sha256.outputs.aarch64_sha }}"
+          X86_64_SHA="${{ steps.sha256.outputs.x86_64_sha }}"
+
+          sed -i "s/version \".*\"/version \"$VERSION\"/" gm.rb
+          sed -i "s|releases/download/v[^/]*/gm-x86_64|releases/download/v$VERSION/gm-x86_64|g" gm.rb
+          sed -i "s|releases/download/v[^/]*/gm-aarch64|releases/download/v$VERSION/gm-aarch64|g" gm.rb
+          sed -i "0,/sha256 \"[a-f0-9]\{64\}\"/s/sha256 \"[a-f0-9]\{64\}\"/sha256 \"$X86_64_SHA\"/" gm.rb
+          sed -i "0,/sha256 \"$X86_64_SHA\"/b; s/sha256 \"[a-f0-9]\{64\}\"/sha256 \"$AARCH64_SHA\"/" gm.rb
+
+          echo "Updated gm.rb:"
+          cat gm.rb
+
+      - name: Push to Homebrew tap
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          cd homebrew-tap
+          VERSION="${{ steps.version.outputs.version }}"
+
+          cp ../artifacts/*.tar.gz .
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gm.rb *.tar.gz
+          git commit -m "feat: update version to $VERSION and corresponding URLs"
+          git push
+
+          echo "✅ Pushed to Homebrew tap!"
