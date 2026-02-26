@@ -100,7 +100,7 @@ jobs:
 
       - name: Create PR to Homebrew tap
         env:
-          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         run: |
           cd homebrew-tap
           VERSION="${{ steps.version.outputs.version }}"
@@ -123,16 +123,28 @@ jobs:
           # Push branch
           git push -u origin "$BRANCH_NAME"
 
-          # Create PR using GitHub API
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $TAP_TOKEN" \
-            https://api.github.com/repos/${{ env.HOMEBREW_TAP_REPO }}/pulls \
-            -d "{
-              \"title\": \"Release v$VERSION\",
-              \"body\": \"## GM CLI v$VERSION\n\nAutomated release from private repo.\n\n### Changes\n- Update version to $VERSION\n- Update SHA256 checksums\n- Add binary files\n\n### SHA256 Checksums\n\\\`\\\`\\\`\n${{ steps.sha256.outputs.aarch64_sha }}  gm-aarch64-apple-darwin.tar.gz\n${{ steps.sha256.outputs.x86_64_sha }}  gm-x86_64-apple-darwin.tar.gz\n\\\`\\\`\\\`\",
-              \"head\": \"$BRANCH_NAME\",
-              \"base\": \"master\"
-            }"
+          # Create PR using gh CLI
+          gh pr create \
+            --repo "${{ env.HOMEBREW_TAP_REPO }}" \
+            --title "Release v$VERSION" \
+            --body "$(cat <<EOF
+          ## GM CLI v$VERSION
+
+          Automated release from private repo.
+
+          ### Changes
+          - Update version to $VERSION
+          - Update SHA256 checksums
+          - Add binary files
+
+          ### SHA256 Checksums
+          \`\`\`
+          ${{ steps.sha256.outputs.aarch64_sha }}  gm-aarch64-apple-darwin.tar.gz
+          ${{ steps.sha256.outputs.x86_64_sha }}  gm-x86_64-apple-darwin.tar.gz
+          \`\`\`
+          EOF
+          )" \
+            --base master \
+            --head "$BRANCH_NAME"
 
           echo "✅ PR created for v$VERSION!"
