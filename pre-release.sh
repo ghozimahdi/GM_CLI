@@ -1,8 +1,8 @@
 #!/bin/bash
 
 APP_NAME="gm"
-VERSION="4.0.1"
-RELEASE_URL="https://github.com/ghozimahdi/homebrew-ghozimahdi-cli/releases/download/v$VERSION"
+VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+RELEASE_URL="https://github.com/ghozimahdi/GM_CLI/releases/download/v$VERSION"
 
 # Platform targets
 declare -a TARGETS=(
@@ -13,7 +13,7 @@ declare -a TARGETS=(
 )
 
 # Output formula file
-FORMULA_FILE="gm.rb"
+FORMULA_FILE="Formula/gm.rb"
 
 # Bersihkan formula file lama
 rm -f $FORMULA_FILE
@@ -22,7 +22,7 @@ rm -f $FORMULA_FILE
 cat <<EOL > $FORMULA_FILE
 class Gm < Formula
   desc "GM CLI tool for managing Flutter projects"
-  homepage "https://github.com/ghozimahdi/homebrew-ghozimahdi-cli"
+  homepage "https://github.com/ghozimahdi/GM_CLI"
   version "$VERSION"
 
 EOL

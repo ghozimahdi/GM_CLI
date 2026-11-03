@@ -33,37 +33,52 @@ Ensure you have the following prerequisites installed before using this CLI:
 ---
 
 ## **Installation via Homebrew**
-This repository contains the source code. Prebuilt binaries are distributed through the Homebrew tap [ghozimahdi/homebrew-ghozimahdi-cli](https://github.com/ghozimahdi/homebrew-ghozimahdi-cli), which is updated automatically on every release.
+The Homebrew formula lives in this repository (`Formula/gm.rb`) and prebuilt binaries are published on the [Releases](https://github.com/ghozimahdi/GM_CLI/releases) page.
 
-1. **Add the Ghozi Mahdi CLI tap**:
+1. **Add the GM CLI tap**:
    ```bash
-   brew tap ghozimahdi/homebrew-ghozimahdi-cli
+   brew tap ghozimahdi/gm https://github.com/ghozimahdi/GM_CLI
    ```
 
-2. **Install the Ghozi Mahdi CLI** via Homebrew:
+2. **Install the GM CLI**:
    ```bash
-   brew install gm
+   brew install ghozimahdi/gm/gm
    ```
 
-   Or in a single command, without tapping first:
-   ```bash
-   brew install ghozimahdi/homebrew-ghozimahdi-cli/gm
-   ```
+   Use the full name `ghozimahdi/gm/gm`: a plain `brew install gm` may install GraphicsMagick from homebrew-core instead.
 
 3. Once installed, you can run the CLI tool from your Flutter project directory:
    ```bash
    gm help
    ```
 
+### Migrating from the old tap
+If you installed from `ghozimahdi/homebrew-ghozimahdi-cli` before:
+```bash
+brew uninstall gm 2>/dev/null
+brew untap ghozimahdi/ghozimahdi-cli
+brew tap ghozimahdi/gm https://github.com/ghozimahdi/GM_CLI
+brew install ghozimahdi/gm/gm
+```
+
 ---
 
 ## **Update via Homebrew**
 
-To update the Ghozi Mahdi CLI to the latest version, run:
+To update the GM CLI to the latest version, run:
 ```bash
 brew update
-brew upgrade gm
+brew upgrade ghozimahdi/gm/gm
 ```
+
+---
+
+## **Releasing a New Version** (maintainers)
+1. Bump `version` in `Cargo.toml` and commit it to `master`.
+2. Tag and push: `git tag v<version> && git push origin v<version>`.
+3. The `Release` workflow builds the macOS binaries, publishes the GitHub Release, and commits the updated checksums to `Formula/gm.rb`.
+
+Never re-upload or replace assets of an existing release: the formula's checksums would stop matching. Publish a new version instead.
 
 ---
 
