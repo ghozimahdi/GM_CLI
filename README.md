@@ -218,5 +218,8 @@ This project is maintained by an independent developer. Support further developm
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-blue)](https://github.com/sponsors/ghozimahdi)
 
-Ko-fi: [ghozimahdi-ko-fi](https://ko-fi.com/ghozimahdi)  
-Saweria: [ghozimahdi-saweria](https://saweria.co/ghozimahdi)
+Ko-fi: [ghozimahdi-ko-fi](https://ko-fi.com/ghozimahdi)
+
+QRIS (GoPay, BCA, Mandiri, BNI, BRI, and other Indonesian banks / e-wallets):
+
+<img src=".github/assets/qris-gopay.jpg" alt="QRIS donation code" width="280">
