@@ -59,6 +59,19 @@ The Homebrew formula lives in this repository (`Formula/gm-cli.rb`) and prebuilt
 
 ---
 
+## **Installation via script (no Homebrew)**
+Downloads the macOS binary for your CPU from the latest release, verifies it against `SHA256SUMS`, and installs `gm`:
+
+```bash
+curl -fsSL https://ghozimahdi.github.io/GM_CLI/install.sh | sh
+```
+
+- Installs to `/usr/local/bin` when writable, otherwise `~/.local/bin`.
+- Pin a version or choose the directory: `curl -fsSL https://ghozimahdi.github.io/GM_CLI/install.sh | GM_VERSION=v4.0.1 GM_INSTALL_DIR=~/bin sh`
+- Re-run the same command to update.
+
+---
+
 ## **Update via Homebrew**
 
 To update the GM CLI to the latest version, run:

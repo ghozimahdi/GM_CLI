@@ -141,7 +141,7 @@ section.block{padding:88px 0}
 .hl-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .chip{font:700 12px var(--body);padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 
-.install{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.install{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 @media(max-width:900px){.install{grid-template-columns:1fr}}
 .icard{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
 .icard h3{margin-bottom:6px}
@@ -192,7 +192,7 @@ footer a:first-child{margin-left:0}
       <p class="lead">Scaffold a Clean Architecture project, then run pub get, build_runner, routes, localization, assets, clean and APK/IPA builds across every module from one fast, interactive CLI.</p>
       <div class="install-hero">
         <div class="cmd"><code>brew install gm-cli</code><button class="copy" type="button">Copy</button></div>
-        <small>First time? Run <code>brew tap ghozimahdi/gm-cli https://github.com/ghozimahdi/GM_CLI</code> and <code>brew trust ghozimahdi/gm-cli</code> before installing. The command is <code>gm</code>.</small>
+        <small>No Homebrew? <code>curl -fsSL https://ghozimahdi.github.io/GM_CLI/install.sh &#124; sh</code><br>First time with Homebrew? Run <code>brew tap ghozimahdi/gm-cli https://github.com/ghozimahdi/GM_CLI</code> and <code>brew trust ghozimahdi/gm-cli</code> before installing. The command is <code>gm</code>.</small>
       </div>
       <div class="ctas">
         <a class="btn btn--primary" href="#install">Get started</a>
@@ -309,6 +309,12 @@ Total modules available: 9, Select modules (example: 1,2,3 or 0 for all): <span 
         <div class="cmd flat"><code>brew trust ghozimahdi/gm-cli</code><button class="copy" type="button">Copy</button></div>
         <div class="cmd flat"><code>brew install gm-cli</code><button class="copy" type="button">Copy</button></div>
         <div class="warn">Homebrew 7+ only loads third-party taps you trust. The formula is <b>gm-cli</b>; the command it installs is <b>gm</b>.</div>
+      </div>
+      <div class="icard">
+        <h3>Install script</h3>
+        <p>No Homebrew needed. Downloads the binary for your Mac and verifies its checksum.</p>
+        <div class="cmd flat"><code>curl -fsSL https://ghozimahdi.github.io/GM_CLI/install.sh | sh</code><button class="copy" type="button">Copy</button></div>
+        <p style="margin:12px 0 0;font-size:13px">Installs to <code>/usr/local/bin</code> or <code>~/.local/bin</code>. Pin a version with <code>GM_VERSION=v4.0.1</code>, pick a folder with <code>GM_INSTALL_DIR</code>. Re-run to update.</p>
       </div>
       <div class="icard">
         <h3>Update</h3>
