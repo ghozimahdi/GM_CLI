@@ -45,7 +45,7 @@ The Homebrew formula lives in this repository (`Formula/gm.rb`) and prebuilt bin
    brew install ghozimahdi/gm/gm
    ```
 
-   Use the full name `ghozimahdi/gm/gm`: a plain `brew install gm` may install GraphicsMagick from homebrew-core instead.
+   Use the full name `ghozimahdi/gm/gm` (tap `ghozimahdi/gm`, formula `gm`) so Homebrew always resolves the formula from this tap.
 
 3. Once installed, you can run the CLI tool from your Flutter project directory:
    ```bash
