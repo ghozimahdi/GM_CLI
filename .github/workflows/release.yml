@@ -2,7 +2,7 @@ name: Release
 
 # Push a tag that matches the version in Cargo.toml (e.g. `git tag v4.0.1 && git push origin v4.0.1`).
 # The workflow builds the macOS binaries, publishes them as a GitHub Release in this
-# repository, and updates Formula/gm.rb on master with the checksums of those exact files.
+# repository, and updates Formula/gm-cli.rb on master with the checksums of those exact files.
 on:
   push:
     tags:
@@ -102,8 +102,8 @@ jobs:
           X86_64_SHA=$(awk '/x86_64-apple-darwin/ {print $1}' dist/SHA256SUMS)
           BASE="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${VERSION}"
 
-          cat > Formula/gm.rb <<FORMULA
-          class Gm < Formula
+          cat > Formula/gm-cli.rb <<FORMULA
+          class GmCli < Formula
             desc "GM CLI tool for managing Flutter projects"
             homepage "https://github.com/${GITHUB_REPOSITORY}"
             version "${VERSION}"
@@ -128,9 +128,9 @@ jobs:
             end
           end
           FORMULA
-          sed -i 's/^          //' Formula/gm.rb
-          echo "Generated Formula/gm.rb:"
-          cat Formula/gm.rb
+          sed -i 's/^          //' Formula/gm-cli.rb
+          echo "Generated Formula/gm-cli.rb:"
+          cat Formula/gm-cli.rb
 
       - name: Commit formula
         env:
@@ -138,7 +138,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Formula/gm.rb
+          git add Formula/gm-cli.rb
           if git diff --cached --quiet; then
             echo "Formula already up to date"
             exit 0

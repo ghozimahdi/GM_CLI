@@ -1,4 +1,4 @@
-class Gm < Formula
+class GmCli < Formula
   desc "GM CLI tool for managing Flutter projects"
   homepage "https://github.com/ghozimahdi/GM_CLI"
   version "4.0.1"

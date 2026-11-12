@@ -13,14 +13,14 @@ declare -a TARGETS=(
 )
 
 # Output formula file
-FORMULA_FILE="Formula/gm.rb"
+FORMULA_FILE="Formula/gm-cli.rb"
 
 # Bersihkan formula file lama
 rm -f $FORMULA_FILE
 
 # Header formula Homebrew
 cat <<EOL > $FORMULA_FILE
-class Gm < Formula
+class GmCli < Formula
   desc "GM CLI tool for managing Flutter projects"
   homepage "https://github.com/ghozimahdi/GM_CLI"
   version "$VERSION"
