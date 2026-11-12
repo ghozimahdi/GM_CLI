@@ -40,14 +40,19 @@ The Homebrew formula lives in this repository (`Formula/gm-cli.rb`) and prebuilt
    brew tap ghozimahdi/gm-cli https://github.com/ghozimahdi/GM_CLI
    ```
 
-2. **Install the GM CLI**:
+2. **Trust the tap** (Homebrew 7+ only loads third-party taps you trust):
+   ```bash
+   brew trust ghozimahdi/gm-cli
+   ```
+
+3. **Install the GM CLI**:
    ```bash
    brew install gm-cli
    ```
 
    The formula is named `gm-cli`; the command it installs is `gm`.
 
-3. Once installed, you can run the CLI tool from your Flutter project directory:
+4. Once installed, you can run the CLI tool from your Flutter project directory:
    ```bash
    gm help
    ```
