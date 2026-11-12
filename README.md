@@ -52,15 +52,6 @@ The Homebrew formula lives in this repository (`Formula/gm.rb`) and prebuilt bin
    gm help
    ```
 
-### Migrating from the old tap
-If you installed from `ghozimahdi/homebrew-ghozimahdi-cli` before:
-```bash
-brew uninstall gm 2>/dev/null
-brew untap ghozimahdi/ghozimahdi-cli
-brew tap ghozimahdi/gm https://github.com/ghozimahdi/GM_CLI
-brew install ghozimahdi/gm/gm
-```
-
 ---
 
 ## **Update via Homebrew**
