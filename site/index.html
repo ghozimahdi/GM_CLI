@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GM CLI</title>
+<meta name="description" content="gm is a Rust CLI for Flutter: scaffold Clean Architecture + modular projects, then run pub get, build_runner, routes, clean and APK/IPA builds across all modules from one interactive command.">
+<meta property="og:title" content="GM CLI · modular Flutter from one command">
+<meta property="og:description" content="Scaffold Clean Architecture Flutter projects and manage every module from one fast Rust CLI.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='6' width='52' height='52' rx='14' fill='%23192C42'/%3E%3Crect x='2' y='2' width='52' height='52' rx='14' fill='%23D3F7AC' stroke='%23192C42' stroke-width='3'/%3E%3Cpath d='M15 20l10 8-10 8M29 38h14' stroke='%23192C42' stroke-width='4.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Mulish:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F8F9F3;--surface:#FFFFFF;--soft:#F0F2E9;--ink:#192C42;--muted:#526174;--line:#DCE1D9;
+  --blue:#1460ED;--blue-ink:#FFFFFF;--sky:#E8F1FF;--mint:#D3F7AC;--mint-ink:#1D4B19;--peach:#FFD2B2;--peach-ink:#6B3A14;
+  --lav:#E6DDFF;--lav-ink:#5E4283;--link:#1460ED;--hard:3px 3px 0 var(--ink);--stroke:var(--ink);
+  --term:#121B27;--term-ink:#E6EDF5;--term-muted:#8A9BB0;--term-line:#26344A;
+  --display:Jost,system-ui,sans-serif;--body:Mulish,system-ui,-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141416;--surface:#1C1C1F;--soft:#18181B;--ink:#EDEDF0;--muted:#A1A1AA;--line:#303034;
+  --blue:#A8C8FF;--blue-ink:#00297A;--sky:#263249;--mint:#29352D;--mint-ink:#B9E59A;--peach:#3B302A;--peach-ink:#F0C4A0;
+  --lav:#322F40;--lav-ink:#C4ACD9;--link:#91B7EF;--hard:none;--stroke:transparent;--term:#0D0D0F;--term-line:#303034;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#141416;--surface:#1C1C1F;--soft:#18181B;--ink:#EDEDF0;--muted:#A1A1AA;--line:#303034;
+  --blue:#A8C8FF;--blue-ink:#00297A;--sky:#263249;--mint:#29352D;--mint-ink:#B9E59A;--peach:#3B302A;--peach-ink:#F0C4A0;
+  --lav:#322F40;--lav-ink:#C4ACD9;--link:#91B7EF;--hard:none;--stroke:transparent;--term:#0D0D0F;--term-line:#303034;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,p{margin:0}
+a{color:var(--link)}
+img{max-width:100%}
+code{font-family:var(--mono)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+@media(max-width:600px){.wrap{padding:0 16px}}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--link);display:inline-flex;align-items:center;gap:8px}
+.eyebrow.tag{background:var(--mint);color:var(--mint-ink);border:1px solid var(--line);padding:7px 10px;border-radius:6px}
+h1{font:700 clamp(40px,6.2vw,70px)/1.03 var(--display);letter-spacing:-1.5px}
+h2{font:700 clamp(30px,4vw,44px)/1.1 var(--display);letter-spacing:-.8px}
+h3{font:700 20px/1.25 var(--display)}
+.lead{color:var(--muted);font-size:18px;max-width:540px}
+.hl{color:var(--link)}
+
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font:700 20px var(--display);color:var(--ink);text-decoration:none}
+.mark{width:34px;height:34px;border-radius:9px;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;border:1.5px solid var(--stroke);box-shadow:2px 2px 0 var(--stroke)}
+.ver{font:700 11px var(--mono);background:var(--sky);color:var(--link);padding:3px 7px;border-radius:5px}
+.nav nav{display:flex;gap:22px;margin-left:auto}
+.nav nav a{color:var(--ink);text-decoration:none;font-weight:700;font-size:14px}
+.nav nav a:hover{color:var(--link)}
+.iconbtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+@media(max-width:820px){.nav nav{display:none}.nav .spacer{margin-left:auto}}
+
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:0 20px;border-radius:12px;font:800 15px/1 var(--body);text-decoration:none;cursor:pointer;border:1.5px solid var(--stroke);transition:transform .08s,box-shadow .08s}
+.btn--primary{background:var(--blue);color:var(--blue-ink);box-shadow:var(--hard)}
+.btn--primary:active{transform:translate(3px,3px);box-shadow:none}
+.btn--ghost{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn--ghost:hover{border-color:var(--ink)}
+
+.hero{padding:72px 0 64px}
+.hero .wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:44px;align-items:center}
+.hero .wrap>*{min-width:0}
+.hero h1{margin:20px 0 22px}
+.install-hero{margin-top:28px;max-width:520px}
+.install-hero small{display:block;color:var(--muted);font-size:12.5px;margin-top:10px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+@media(max-width:940px){.hero .wrap{grid-template-columns:1fr;gap:40px}.hero{padding:48px 0 40px}}
+@media(max-width:600px){.hero .ctas .btn{flex:1 1 100%;justify-content:center}}
+
+.cmd{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--stroke);box-shadow:var(--hard);border-radius:12px;padding:10px 10px 10px 16px}
+.cmd.flat{border:1px solid var(--line);box-shadow:none;background:var(--paper)}
+:root[data-theme="dark"] .cmd{border-color:var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cmd{border-color:var(--line)}}
+.cmd code{flex:1;min-width:0;font-size:14px;overflow-x:auto;white-space:nowrap}
+.cmd code::before{content:"$ ";color:var(--muted)}
+.copy{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:8px;padding:7px 11px;font:700 12px var(--body);cursor:pointer;flex:none}
+.copy.done{background:var(--mint);color:var(--mint-ink);border-color:transparent}
+
+.term{background:var(--term);color:var(--term-ink);border:1.5px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);overflow:hidden}
+:root[data-theme="dark"] .term{box-shadow:none;border-color:var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .term{box-shadow:none;border-color:var(--line)}}
+.term__bar{display:flex;align-items:center;gap:7px;padding:12px 14px;border-bottom:1px solid var(--term-line);font:600 11px var(--mono);letter-spacing:1.4px;text-transform:uppercase;color:var(--term-muted)}
+.term__bar i{width:10px;height:10px;border-radius:50%}
+.term__bar i:nth-child(1){background:#F28B82}.term__bar i:nth-child(2){background:#FDD663}.term__bar i:nth-child(3){background:#81C995}
+.term__bar span{margin-left:auto}
+.term pre{margin:0;padding:18px 16px 22px;font:10.6px/1.7 var(--mono);overflow-x:auto;color:var(--term-ink)}
+.term .p{color:#D3F7AC;font-weight:700}.term .m{color:var(--term-muted)}.term .b{color:#8CB4FF}.term .y{color:#FDD663}.term .g{color:#81C995}
+.cursor{display:inline-block;width:8px;height:15px;background:#D3F7AC;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cursor{animation:none}}
+@media(max-width:940px){.term pre{font-size:12px}}
+
+.band{background:#192C42;color:#F8F9F3;border-block:1.5px solid #192C42}
+.band .wrap{display:flex;flex-wrap:wrap;gap:12px 36px;justify-content:center;padding-block:18px;font:600 13px var(--mono);letter-spacing:1.6px;text-transform:uppercase}
+.band span{display:inline-flex;align-items:center;gap:10px}
+.band span::before{content:"✦";color:#D3F7AC}
+
+section.block{padding:88px 0}
+@media(max-width:600px){section.block{padding:64px 0}}
+.block__head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+.block__head p{color:var(--muted);max-width:460px}
+.block__head h2{margin-top:14px}
+
+.cmds{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.cmds{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cmds{grid-template-columns:1fr}}
+.ccard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;gap:14px;align-items:flex-start}
+.ccard.hero-card{border:1.5px solid var(--stroke);box-shadow:var(--hard)}
+:root[data-theme="dark"] .ccard.hero-card{border-color:var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ccard.hero-card{border-color:var(--line)}}
+.tile{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;border:1.5px solid var(--stroke)}
+.tile.mint{background:var(--mint);color:var(--mint-ink)}.tile.peach{background:var(--peach);color:var(--peach-ink)}.tile.lav{background:var(--lav);color:var(--lav-ink)}.tile.sky{background:var(--sky);color:var(--link)}
+.ccard code{font:700 14px var(--mono);color:var(--link)}
+.ccard p{color:var(--muted);font-size:14px;margin-top:4px}
+.ccard .alias{display:inline-block;margin-left:6px;font:600 11px var(--mono);background:var(--soft);color:var(--muted);padding:2px 6px;border-radius:4px}
+
+.opts{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:28px}
+.opts th,.opts td{text-align:left;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14.5px;vertical-align:top}
+.opts tr:last-child td{border-bottom:0}
+.opts th{font:600 11px var(--mono);letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+.opts td:first-child{white-space:nowrap}
+.opts td code{font-size:13px;background:var(--sky);color:var(--link);padding:2px 7px;border-radius:5px}
+.opts td:last-child{color:var(--muted)}
+.tablewrap{overflow-x:auto}
+
+.arch{background:var(--sky)}
+.arch__grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.arch__grid>*{min-width:0}
+@media(max-width:900px){.arch__grid{grid-template-columns:1fr}}
+.tree{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;font:13px/1.7 var(--mono);overflow-x:auto;margin:0;color:var(--ink)}
+.tree .d{color:var(--link);font-weight:700}.tree .m{color:var(--muted)}
+.layers{display:grid;gap:14px}
+.layer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;gap:14px}
+.layer p{color:var(--muted);font-size:14.5px;margin-top:4px}
+.hl-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{font:700 12px var(--body);padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+
+.install{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.install{grid-template-columns:1fr}}
+.icard{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.icard h3{margin-bottom:6px}
+.icard>p{color:var(--muted);font-size:14px;margin-bottom:14px}
+.icard .cmd{margin-top:10px}
+.icard .cmd code{font-size:12.5px}
+.warn{margin-top:14px;font-size:13px;color:var(--peach-ink);background:var(--peach);padding:10px 12px;border-radius:10px}
+
+.support{background:var(--soft);border-top:1px solid var(--line)}
+.support .wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+@media(max-width:900px){.support .wrap{grid-template-columns:1fr}}
+.support ul{color:var(--muted);padding-left:20px;margin:16px 0 24px}
+.support .ctas{display:flex;flex-wrap:wrap;gap:12px}
+.qris{margin:0;background:var(--surface);border:1.5px solid var(--stroke);border-radius:18px;padding:14px;box-shadow:var(--hard);max-width:250px;justify-self:center;text-align:center}
+.qris img{border-radius:10px;display:block;height:auto}
+.qris p{font-size:12px;color:var(--muted);margin-top:10px}
+
+footer{padding:36px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
+footer a{color:var(--ink);font-weight:700;text-decoration:none;margin-left:18px}
+footer a:first-child{margin-left:0}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M12 18h7"/></svg></span>gm <span class="ver" id="ver">v4.0.1</span></a>
+    <nav aria-label="Sections">
+      <a href="#commands">Commands</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#install">Install</a>
+      <a href="#support">Support</a>
+      <a href="https://github.com/ghozimahdi/GM_CLI">GitHub</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="iconbtn" id="theme" type="button" aria-label="Toggle dark mode">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow tag">Rust CLI for Flutter</span>
+      <h1>Your whole modular Flutter app, <span class="hl">one command.</span></h1>
+      <p class="lead">Scaffold a Clean Architecture project, then run pub get, build_runner, routes, localization, assets, clean and APK/IPA builds across every module from one fast, interactive CLI.</p>
+      <div class="install-hero">
+        <div class="cmd"><code>brew install ghozimahdi/gm/gm</code><button class="copy" type="button">Copy</button></div>
+        <small>First time? Run <code>brew tap ghozimahdi/gm https://github.com/ghozimahdi/GM_CLI</code> before installing.</small>
+      </div>
+      <div class="ctas">
+        <a class="btn btn--primary" href="#install">Get started</a>
+        <a class="btn btn--ghost" href="https://github.com/ghozimahdi/GM_CLI/releases">Releases</a>
+      </div>
+    </div>
+    <div class="term" role="img" aria-label="Terminal running gm build and selecting modules for build_runner">
+      <div class="term__bar"><i></i><i></i><i></i><span>~/my_app · gm build</span></div>
+<pre><span class="p">$</span> gm -b
+<span class="m">+----------------+------------------+----------------------+-------------------+</span>
+<span class="m">|</span> <span class="b">Data Modules</span>   <span class="m">|</span> <span class="b">Domain Modules</span>   <span class="m">|</span> <span class="b">Feature Modules</span>      <span class="m">|</span> <span class="b">Other Modules</span>     <span class="m">|</span>
+<span class="m">+----------------+------------------+----------------------+-------------------+</span>
+<span class="m">|</span> 3. data_auth   <span class="m">|</span> 5. domain_auth   <span class="m">|</span> 7. feature_auth      <span class="m">|</span> 1. app            <span class="m">|</span>
+<span class="m">|</span> 4. data_common <span class="m">|</span> 6. domain_common <span class="m">|</span> 8. feature_common    <span class="m">|</span> 2. library_common <span class="m">|</span>
+<span class="m">|</span>                <span class="m">|</span>                  <span class="m">|</span> 9. feature_dashboard <span class="m">|</span>                   <span class="m">|</span>
+<span class="m">+----------------+------------------+----------------------+-------------------+</span>
+Total modules available: 9, Select modules (example: 1,2,3 or 0 for all): <span class="y">3,5,7</span>
+
+<span class="g">✓</span> data_auth      build_runner done
+<span class="g">✓</span> domain_auth    build_runner done
+<span class="g">✓</span> feature_auth   build_runner done
+<span class="p">$</span> <span class="cursor"></span></pre>
+    </div>
+  </div>
+</section>
+
+<div class="band"><div class="wrap"><span>Written in Rust</span><span>Clean Architecture</span><span>Multi-module</span><span>macOS · Homebrew</span></div></div>
+
+<section class="block" id="commands">
+  <div class="wrap">
+    <div class="block__head">
+      <div><span class="eyebrow">Commands</span><h2>Everything you run daily.</h2></div>
+      <p>Run inside your Flutter project: <code>gm [OPTIONS] [COMMAND]</code>. Commands that touch modules let you pick one, several or all of them.</p>
+    </div>
+    <div class="cmds">
+      <div class="ccard hero-card"><span class="tile mint"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg></span><div><code>create project</code><p>New Flutter project with a Clean Architecture, modular structure.</p></div></div>
+      <div class="ccard hero-card"><span class="tile lav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg></span><div><code>create module</code><p>Add a data, domain or feature module for modularization.</p></div></div>
+      <div class="ccard hero-card"><span class="tile sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg></span><div><code>build</code><span class="alias">-b</span><p>Run build_runner for the modules you select.</p></div></div>
+      <div class="ccard"><span class="tile sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><div><code>get</code><span class="alias">-g</span><p><code style="font-size:12px;color:inherit">flutter pub get</code> for selected modules.</p></div></div>
+      <div class="ccard"><span class="tile peach"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></span><div><code>clear</code><span class="alias">-c</span><p>flutter clean and remove pubspec.lock for selected modules.</p></div></div>
+      <div class="ccard"><span class="tile mint"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><div><code>app</code><p>Interactively build APK or IPA files.</p></div></div>
+      <div class="ccard"><span class="tile lav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h6a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h6"/></svg></span><div><code>route</code><p>Generate route files for your Flutter project.</p></div></div>
+      <div class="ccard"><span class="tile sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 17 6-5-6-5M12 19h8"/></svg></span><div><code>flutter</code> · <code>dart</code><p>Pass-through commands such as <code style="font-size:12px;color:inherit">pub add &lt;package&gt;</code>.</p></div></div>
+      <div class="ccard"><span class="tile peach"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></span><div><code>info</code> · <code>help</code> · <code>donate</code><p>Prerequisites, usage and ways to support the project.</p></div></div>
+    </div>
+
+    <div class="tablewrap">
+    <table class="opts">
+      <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>-b</code> <code>--build</code></td><td>Run build_runner after module selection</td></tr>
+        <tr><td><code>-l</code> <code>--localize</code></td><td>Generate easy_localization files</td></tr>
+        <tr><td><code>-a</code> <code>--assets</code></td><td>Generate assets with flutter gen</td></tr>
+        <tr><td><code>-c</code> <code>--flutter_clean</code></td><td>Flutter clean for a single module</td></tr>
+        <tr><td><code>-g</code> <code>--flutter_get</code></td><td>flutter pub get for a single module</td></tr>
+        <tr><td><code>--all</code></td><td>build_runner, easy_localization and assets in one go</td></tr>
+        <tr><td><code>-V</code> <code>--version</code></td><td>Print version information</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section class="block arch" id="architecture">
+  <div class="wrap">
+    <div class="block__head">
+      <div><span class="eyebrow">gm create project</span><h2>Clean Architecture,<br>already wired.</h2></div>
+      <p>Every feature lives in its own data, domain and presentation module, so the app stays scalable as it grows.</p>
+    </div>
+    <div class="arch__grid">
+<pre class="tree"><span class="d">app/</span>
+<span class="d">packages/</span>
+  ├── <span class="d">library/</span>
+  │   └── library_common/
+  ├── <span class="d">data/</span>
+  │   ├── data_common/
+  │   ├── data_auth/
+  │   └── data_analytic/
+  │       ├── di/  config/  model/
+  │       └── mapper/  repository/
+  ├── <span class="d">domain/</span>
+  │   ├── domain_common/
+  │   ├── domain_auth/
+  │   └── domain_analytic/
+  │       ├── di/  config/  model/
+  │       └── use_case/  repository/
+  └── <span class="d">presentation/</span>
+      ├── feature_common/
+      ├── feature_dashboard/
+      └── feature_auth/
+          └── bloc/  config/  di/  page/</pre>
+      <div class="layers">
+        <div class="layer"><span class="tile sky"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM8 7h8"/></svg></span><div><h3>Library</h3><p>Shared utilities, components and resources reused across modules.</p></div></div>
+        <div class="layer"><span class="tile mint"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span><div><h3>Data</h3><p>Data sources, models, mappers and repository implementations.</p></div></div>
+        <div class="layer"><span class="tile lav"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span><div><h3>Domain</h3><p>Business logic: use cases and repository interfaces per module.</p></div></div>
+        <div class="layer"><span class="tile peach"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></span><div><h3>Presentation</h3><p>Features, pages and BLoC state management.</p></div></div>
+        <div class="hl-list"><span class="chip">Modularity</span><span class="chip">Separation of concerns</span><span class="chip">Reusable components</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="install">
+  <div class="wrap">
+    <div class="block__head">
+      <div><span class="eyebrow">Install</span><h2>Up and running in a minute.</h2></div>
+      <p>Requires <a href="https://flutter.dev/docs/get-started/install">Flutter</a>. Prebuilt macOS binaries ship with every <a href="https://github.com/ghozimahdi/GM_CLI/releases">release</a>.</p>
+    </div>
+    <div class="install">
+      <div class="icard">
+        <h3>Homebrew</h3>
+        <p>Recommended on macOS.</p>
+        <div class="cmd flat"><code>brew tap ghozimahdi/gm https://github.com/ghozimahdi/GM_CLI</code><button class="copy" type="button">Copy</button></div>
+        <div class="cmd flat"><code>brew install ghozimahdi/gm/gm</code><button class="copy" type="button">Copy</button></div>
+        <div class="warn">Use the full name <b>ghozimahdi/gm/gm</b>. A plain <code>brew install gm</code> installs GraphicsMagick.</div>
+      </div>
+      <div class="icard">
+        <h3>Update</h3>
+        <p>Pull the latest formula and upgrade.</p>
+        <div class="cmd flat"><code>brew update</code><button class="copy" type="button">Copy</button></div>
+        <div class="cmd flat"><code>brew upgrade ghozimahdi/gm/gm</code><button class="copy" type="button">Copy</button></div>
+      </div>
+      <div class="icard">
+        <h3>Build from source</h3>
+        <p>Requires <a href="https://www.rust-lang.org/tools/install">Rust</a>.</p>
+        <div class="cmd flat"><code>git clone https://github.com/ghozimahdi/GM_CLI.git</code><button class="copy" type="button">Copy</button></div>
+        <div class="cmd flat"><code>cd GM_CLI &amp;&amp; cargo build --release</code><button class="copy" type="button">Copy</button></div>
+        <div class="cmd flat"><code>./target/release/gm help</code><button class="copy" type="button">Copy</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block support" id="support">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Support us</span>
+      <h2 style="margin-top:14px">Help gm level up.</h2>
+      <p class="lead" style="margin-top:14px">This project is maintained by an independent developer. Your donations help to:</p>
+      <ul><li>Add new features</li><li>Fix bugs faster</li><li>Improve documentation</li></ul>
+      <div class="ctas">
+        <a class="btn btn--primary" href="https://github.com/sponsors/ghozimahdi">♥ GitHub Sponsors</a>
+        <a class="btn btn--ghost" href="https://ko-fi.com/ghozimahdi">Ko-fi</a>
+      </div>
+    </div>
+    <figure class="qris">
+      <img src="qris-gopay.jpg" alt="QRIS donation code (GoPay, BCA, Mandiri, BNI, BRI and other Indonesian banks)" width="903" height="1280" loading="lazy">
+      <p>QRIS · GoPay, BCA, Mandiri, BNI, BRI and more</p>
+    </figure>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Ghozi Mahdi</span>
+    <span><a href="https://github.com/ghozimahdi/GM_CLI">GitHub</a><a href="https://github.com/ghozimahdi/GM_CLI/releases">Releases</a><a href="https://ghozimahdi.github.io/gm-aiagent-plugins/">AI agent plugins</a></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.parentNode.querySelector("code").textContent;
+      var done = function () { btn.textContent = "Copied"; btn.classList.add("done"); setTimeout(function () { btn.textContent = "Copy"; btn.classList.remove("done"); }, 1600); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done, done); } else { done(); }
+    });
+  });
+
+  var root = document.documentElement;
+  var forced = new URLSearchParams(location.search).get("theme");
+  try { var saved = forced || localStorage.getItem("gm-theme"); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+  document.getElementById("theme").addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("gm-theme", next); } catch (e) {}
+  });
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  // Latest release tag (falls back to the baked-in version when offline or rate limited)
+  if (window.fetch) {
+    fetch("https://api.github.com/repos/ghozimahdi/GM_CLI/releases/latest")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && d.tag_name) document.getElementById("ver").textContent = d.tag_name; })
+      .catch(function () {});
+  }
+})();
+</script>
+</body>
+</html>
